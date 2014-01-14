@@ -100,10 +100,10 @@ public class Config
 					config.set(wgmpref+".environment.canBeDamaged",true);					
 					config.set(wgmpref+".environment.doExplosionsDamageEnvironment",true);					
 				}
-				config.set("Worlds."+name+".environment.canBeDamaged",true);
-				config.set("Worlds."+name+".environment.doExplosionsDamageEnvironment",true);
-				config.set("Worlds."+name+".leaveWorld","world");
-				config.set("Worlds."+name+".minimapEnabled",true);
+				config.set(wpref+".environment.canBeDamaged",true);
+				config.set(wpref+".environment.doExplosionsDamageEnvironment",true);
+				config.set(wpref+".leaveWorld","world");
+				config.set(wpref+".minimapEnabled",true);
 			}
 			config.set("CombatClass.Sniper.Kit","261:0,1;262:0,64;337:0,4;268:0,1");
 			config.set("CombatClass.Sniper.Armor","298,299,300,301");
