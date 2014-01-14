@@ -1,0 +1,11 @@
++Item autostacking  Seems to bring a shit heap of problems
+?Falldamage DONE
++No hunger DONE, configureable
++Chat MatchInfo DONE
++Resupply DONE, all configureable
++Spawning DONE, based on average height of flags/radioStations
++Player domination WIP
++MEDIC DONE
++PYRO DONE
++SQUADS! WIP
++Finish langfiles DONE

@@ -1,0 +1,27 @@
+name: MineFight
+version: 0.3.2
+description:
+author: Tobias Schramm 'Toble_Miner'
+website:
+softdepend: [Vault,PermissionsEx,ProtocolLib]
+
+main: TobleMiner.MineFight.Main
+
+commands:
+   newFlight:
+      description: ~LOL~ 
+      usage: /newFlight <name> <StartPosX,StartPosY,StartPosZ> <TargetPosX,TargetPosY,TargetPosZ> <maxHeight> <maxSpeed> <acceleration>
+      
+   newMissile:
+      description: ~LOL~ 
+      usage: /newMissile <Flightname> <StartPosX,StartPosY,StartPosZ> <maxSpeed> <acceleration> [type]
+
+   spawnSwarm:
+      description: ~LOL~ 
+      usage: /spawnSwarm <speradX <spreadY> <spreadZ> [size]
+
+   mpvp:
+      description: Controlcommand for MineFight
+      usage: /mpvp [additional arguments]
+
+permissions:
