@@ -83,7 +83,7 @@ public class Main extends JavaPlugin
 		{
 			String noPermMsg =  ChatColor.DARK_RED+Main.gameEngine.dict.get("nopermmsg");
 			String cmdname = cmd.getName();
-			if(cmdname.equalsIgnoreCase("mpvp"))
+			if(cmdname.equalsIgnoreCase("mpvp") && (args.length == 1) && (args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v")))
 			{
 				PluginDescriptionFile pdf = this.getDescription();
 				sender.sendMessage(String.format("%s v%s Copyright by %s 2014",pdf.getName(),pdf.getVersion(),StringUtils.join(pdf.getAuthors(),",")));

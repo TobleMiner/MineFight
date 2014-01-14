@@ -45,13 +45,14 @@ public class Config
 				World world = worlds.get(i);
 				String name = world.getName();
 				Location spawn = world.getSpawnLocation();
-				config.set("Worlds."+name+".mpvp",false);
-				config.set("Worlds."+name+".classSelection.X",spawn.getBlockX());
-				config.set("Worlds."+name+".classSelection.Y",spawn.getBlockY());
-				config.set("Worlds."+name+".classSelection.Z",spawn.getBlockZ());
-				config.set("Worlds."+name+".battleSpawn.X",spawn.getBlockX());
-				config.set("Worlds."+name+".battleSpawn.Y",spawn.getBlockY());
-				config.set("Worlds."+name+".battleSpawn.Z",spawn.getBlockZ());
+				String wpref = "Worlds."+name;
+				config.set(wpref+".mpvp",false);
+				config.set(wpref+".classSelection.X",spawn.getBlockX());
+				config.set(wpref+".classSelection.Y",spawn.getBlockY());
+				config.set(wpref+".classSelection.Z",spawn.getBlockZ());
+				config.set(wpref+".battleSpawn.X",spawn.getBlockX());
+				config.set(wpref+".battleSpawn.Y",spawn.getBlockY());
+				config.set(wpref+".battleSpawn.Z",spawn.getBlockZ());
 				ConfigurationSection cs = config.createSection("Worlds."+name+".protections");
 				String s = Integer.toString(spawn.getBlockX())+","+Integer.toString(spawn.getBlockY())+","+Integer.toString(spawn.getBlockZ());
 				cs.set(s+".pos1.X",spawn.getBlockX());
@@ -63,40 +64,41 @@ public class Config
 				cs.set(s+".enabled",true);
 				for(Gamemode gmode : Gamemode.values())
 				{
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".points",500);
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".enabled",true);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".autobalance",true);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".player.preventItemDropOnDeath",true);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".player.preventItemDrop",true);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".player.enableFallDamage",true);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".player.enableHunger",false);					
-					config.createSection("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".infoSigns");
+					String wgmpref = wpref+".gamemodes."+gmode.toString().toLowerCase();
+					config.set(wgmpref+".points",500);
+					config.set(wgmpref+".enabled",true);					
+					config.set(wgmpref+".autobalance",true);					
+					config.set(wgmpref+".player.preventItemDropOnDeath",true);					
+					config.set(wgmpref+".player.preventItemDrop",true);					
+					config.set(wgmpref+".player.enableFallDamage",true);					
+					config.set(wgmpref+".player.enableHunger",false);					
+					config.createSection(wgmpref+".infoSigns");
 					if(gmode.equals(Gamemode.Conquest))
 					{
-						config.createSection("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".flags");
-						config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".flagCaptureDistance",10);
-						config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".flagCaptureSpeed",10);
-						config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".flagCaptureAccelerationPerPerson",1.2d);
-						config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".pointlossPerFlagPerSecond",1.0d);
-						config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".losePointsWhenEnemyHasLessThanHalfFlags",false);
+						config.createSection(wgmpref+".flags");
+						config.set(wgmpref+".flagCaptureDistance",10);
+						config.set(wgmpref+".flagCaptureSpeed",10);
+						config.set(wgmpref+".flagCaptureAccelerationPerPerson",1.2d);
+						config.set(wgmpref+".pointlossPerFlagPerSecond",1.0d);
+						config.set(wgmpref+".losePointsWhenEnemyHasLessThanHalfFlags",false);
 					}
 					else if(gmode.equals(Gamemode.Rush))
 					{						
-						config.createSection("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".radioStations");
-						config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".destructTime",10d);
-						config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".defenderOuterSpawnRadius",20d);
-						config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".defenderInnerSpawnRadius",5d);
-						config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".attackerOuterSpawnRadius",70d);
-						config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".attackerInnerSpawnRadius",30d);
+						config.createSection(wgmpref+".radioStations");
+						config.set(wgmpref+".destructTime",10d);
+						config.set(wgmpref+".defenderOuterSpawnRadius",20d);
+						config.set(wgmpref+".defenderInnerSpawnRadius",5d);
+						config.set(wgmpref+".attackerOuterSpawnRadius",70d);
+						config.set(wgmpref+".attackerInnerSpawnRadius",30d);
 					}
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".weapon.sniperDamage",10d);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".weapon.generalDamage",5d);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".weapon.headshotMultiplier",2d);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".weapon.legshotMultiplier",0.5d);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".weapon.critProbability",0.02d);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".weapon.critMultiplier",2d);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".environment.canBeDamaged",true);					
-					config.set("Worlds."+name+".gamemodes."+gmode.toString().toLowerCase()+".environment.doExplosionsDamageEnvironment",true);					
+					config.set(wgmpref+".weapon.sniperDamage",10d);					
+					config.set(wgmpref+".weapon.generalDamage",5d);					
+					config.set(wgmpref+".weapon.headshotMultiplier",2d);					
+					config.set(wgmpref+".weapon.legshotMultiplier",0.5d);					
+					config.set(wgmpref+".weapon.critProbability",0.02d);					
+					config.set(wgmpref+".weapon.critMultiplier",2d);					
+					config.set(wgmpref+".environment.canBeDamaged",true);					
+					config.set(wgmpref+".environment.doExplosionsDamageEnvironment",true);					
 				}
 				config.set("Worlds."+name+".environment.canBeDamaged",true);
 				config.set("Worlds."+name+".environment.doExplosionsDamageEnvironment",true);
