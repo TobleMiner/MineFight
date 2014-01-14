@@ -29,7 +29,7 @@ public class Langfile
 			if(!langDir.isDirectory() || !langDir.exists())
 			{
 				langDir.mkdir();
-				String[] files = {"DE_de.lang","EN_uk.lang","EN_us.lang"}; //Fuck conventions, use ponies instead!
+				String[] files = {"DE_de.lang","EN_uk.lang","EN_us.lang"}; //Buck conventions, use ponies instead!
 				for(String s : files)
 				{
 					File langFile = new File(this.langDir+File.separator+s);

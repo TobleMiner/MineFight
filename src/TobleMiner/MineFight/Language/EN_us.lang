@@ -1,6 +1,7 @@
 #The English languagefile
 onEnable="Enabled MineFight."
 onDisable="Disabled MineFight."
+cmdNoCli="This command must be run by a player."
 mpvpNotEnabled="MPVP is not enabled in world '%s'."
 duplicateName="Duplicate name detected! There is already a match named '%s'."
 worldOccupied="There is already a match running in the world '%s'."

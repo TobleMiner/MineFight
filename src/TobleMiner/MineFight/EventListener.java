@@ -5,7 +5,6 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
@@ -36,9 +35,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
 
-import TobleMiner.MineFight.Air.Missiles.Stinger.Stinger;
 import TobleMiner.MineFight.Protection.ProtectedArea;
 
 public class EventListener implements Listener
@@ -59,17 +56,7 @@ public class EventListener implements Listener
 			ItemStack is = p.getInventory().getItemInHand();
 			if(is != null)
 			{
-				if(event.getAction() == Action.RIGHT_CLICK_AIR && p.getName().equalsIgnoreCase("Toble_Miner"))
-				{
-					if(is.getType() == Material.STICK)
-					{
-						World world = p.getWorld();
-						Vector dir = p.getLocation().getDirection();
-						Arrow arr = world.spawnArrow(p.getLocation().clone().add(dir.clone().toLocation(world)),dir.clone().multiply(10d),3.0f,3.0f);
-						new Stinger(arr, p.getLocation().clone().add(dir.clone().toLocation(world)),1.5d,0.1d,mane);
-					}
-				}
-				else if(event.getAction() == Action.RIGHT_CLICK_BLOCK && p.getName().equalsIgnoreCase("Toble_Miner"))
+				if(event.getAction() == Action.RIGHT_CLICK_BLOCK && p.getName().equalsIgnoreCase("Toble_Miner"))
 				{
 					if(is.getType() == Material.SULPHUR)
 					{

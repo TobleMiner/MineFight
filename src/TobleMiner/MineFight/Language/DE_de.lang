@@ -1,7 +1,8 @@
 #Das deutsche Languagefile
 onEnable="MineFight gestartet."
 onDisable="MineFight beendet."
-mpvpNotEnabled="MPVP ist für die Welt \"%s\" nicht aktiviert!."
+cmdNoCli="Dieses Kommando kann nur durch einen Spieler verwendet werden."
+mpvpNotEnabled="MPVP ist für die Welt \"%s\" nicht aktiviert!"
 duplicateName="Ein Spiel mit dem Namen \"%s\" läuft schon. Bitte wähle einen anderen Namen."
 worldOccupied="In der Welt \"%s\" läuft schon ein Spiel."
 newMatchSucess="Spiel mit dem Namen \"%s\" in Welt \"%s\" gestartet! Hardcore: %s"
