@@ -9,15 +9,15 @@ main: TobleMiner.MineFight.Main
 
 commands:
    newFlight:
-      description: ~LOL~ 
+      description: debug 
       usage: /newFlight <name> <StartPosX,StartPosY,StartPosZ> <TargetPosX,TargetPosY,TargetPosZ> <maxHeight> <maxSpeed> <acceleration>
       
    newMissile:
-      description: ~LOL~ 
+      description: debug
       usage: /newMissile <Flightname> <StartPosX,StartPosY,StartPosZ> <maxSpeed> <acceleration> [type]
 
    spawnSwarm:
-      description: ~LOL~ 
+      description: debug
       usage: /spawnSwarm <speradX <spreadY> <spreadZ> [size]
 
    mpvp:

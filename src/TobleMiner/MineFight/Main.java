@@ -101,150 +101,153 @@ public class Main extends JavaPlugin
 			String noPermMsg =  ChatColor.DARK_RED+Main.gameEngine.dict.get("nopermmsg");
 			String cmdname = cmd.getName();
 			Player p = (Player)sender;
-			if(cmdname.equalsIgnoreCase("newFlight"))
+			if(Main.gameEngine.configuration.isDebuging())
 			{
-				if(p.isOp())
+				if(cmdname.equalsIgnoreCase("newFlight"))
 				{
-					if(args.length != 6)
+					if(p.isOp())
 					{
-						return false;
-					}
-					//String flightname = args[0];
-					
-					String[] startLocale = args[1].split(",");
-					int xStart = Integer.parseInt(startLocale[0]);
-					int yStart = Integer.parseInt(startLocale[1]);
-					int zStart = Integer.parseInt(startLocale[2]);
-					Location start = new Location(p.getWorld(),xStart, yStart, zStart);
-					
-					String[] targetLocale = args[2].split(",");
-					int xTarget = Integer.parseInt(targetLocale[0]);
-					int yTarget = Integer.parseInt(targetLocale[1]);
-					int zTarget = Integer.parseInt(targetLocale[2]);
-					Location target = new Location(p.getWorld(),xTarget, yTarget, zTarget);
-					
-					int maxHeight = Integer.parseInt(args[3]);
-					double maxSpeed = Double.parseDouble(args[4]);
-					double acceleration = Double.parseDouble(args[5]);
-					Vector v = new Vector(0.1d,0.1d,0.1d);
-					Arrow arrow = p.getWorld().spawnArrow(start,v,1.0f,1.0f);
-					if(this.flight != null)
-					{
-						flight.doCancel();
-					}
-					flight = new Flight(arrow, start, target, maxHeight, maxSpeed, acceleration);
-				}
-				else
-				{
-					p.sendMessage(noPermMsg);
-				}
-				return true;
-			}
-			else if(cmdname.equalsIgnoreCase("newMissile"))
-			{
-				if(p.isOp())
-				{
-					if(flight == null)
-					{
-						return true;
-					}
-					if(args.length < 4)
-					{
-						return false;
-					}
-					boolean SM3 = false;
-					boolean Tomahawk = false;
-					TomahawkMode mode = TomahawkMode.GroundProfile;
-					if(args.length >= 5)
-					{
-						if(args[4].toLowerCase().contains("sm") && args[4].toLowerCase().contains("3"))
+						if(args.length != 6)
 						{
-							SM3 = true;
+							return false;
 						}
-						else if(args[4].toLowerCase().contains("tomahawk"))
+						//String flightname = args[0];
+						
+						String[] startLocale = args[1].split(",");
+						int xStart = Integer.parseInt(startLocale[0]);
+						int yStart = Integer.parseInt(startLocale[1]);
+						int zStart = Integer.parseInt(startLocale[2]);
+						Location start = new Location(p.getWorld(),xStart, yStart, zStart);
+						
+						String[] targetLocale = args[2].split(",");
+						int xTarget = Integer.parseInt(targetLocale[0]);
+						int yTarget = Integer.parseInt(targetLocale[1]);
+						int zTarget = Integer.parseInt(targetLocale[2]);
+						Location target = new Location(p.getWorld(),xTarget, yTarget, zTarget);
+						
+						int maxHeight = Integer.parseInt(args[3]);
+						double maxSpeed = Double.parseDouble(args[4]);
+						double acceleration = Double.parseDouble(args[5]);
+						Vector v = new Vector(0.1d,0.1d,0.1d);
+						Arrow arrow = p.getWorld().spawnArrow(start,v,1.0f,1.0f);
+						if(this.flight != null)
 						{
-							Tomahawk = true;
+							flight.doCancel();
 						}
-						if(args.length >= 6)
-						{
-							for(TomahawkMode m : TomahawkMode.values())
-							{
-								if(m.toString().toLowerCase().equalsIgnoreCase(args[5].toLowerCase()))
-								{
-									mode = m;
-									break;
-								}
-							}
-						}
-					}
-					//String flightname = args[0];
-					
-					String[] startLocale = args[1].split(",");
-					int xStart = Integer.parseInt(startLocale[0]);
-					int yStart = Integer.parseInt(startLocale[1]);
-					int zStart = Integer.parseInt(startLocale[2]);
-					Location start = new Location(p.getWorld(),xStart, yStart, zStart);
-									
-					int maxHeight = (int)Math.round((double)flight.maxHeight*Math.sqrt(2d));
-					double maxSpeed = Double.parseDouble(args[2]);
-					double acceleration = Double.parseDouble(args[3]);
-					Vector v = new Vector(0.1d,0.1d,0.1d);
-					Arrow arrow = p.getWorld().spawnArrow(start,v,1.0f,1.0f);
-					if(SM3)
-					{
-						new SM_3(arrow, start, maxHeight, maxSpeed, acceleration, flight,this);
-						return true;
+						flight = new Flight(arrow, start, target, maxHeight, maxSpeed, acceleration);
 					}
 					else
 					{
-						if(Tomahawk)
+						p.sendMessage(noPermMsg);
+					}
+					return true;
+				}
+				else if(cmdname.equalsIgnoreCase("newMissile"))
+				{
+					if(p.isOp())
+					{
+						if(flight == null)
 						{
-							new Tomahawk(arrow, start, maxSpeed, acceleration, flight, mode);
+							return true;
+						}
+						if(args.length < 4)
+						{
+							return false;
+						}
+						boolean SM3 = false;
+						boolean Tomahawk = false;
+						TomahawkMode mode = TomahawkMode.GroundProfile;
+						if(args.length >= 5)
+						{
+							if(args[4].toLowerCase().contains("sm") && args[4].toLowerCase().contains("3"))
+							{
+								SM3 = true;
+							}
+							else if(args[4].toLowerCase().contains("tomahawk"))
+							{
+								Tomahawk = true;
+							}
+							if(args.length >= 6)
+							{
+								for(TomahawkMode m : TomahawkMode.values())
+								{
+									if(m.toString().toLowerCase().equalsIgnoreCase(args[5].toLowerCase()))
+									{
+										mode = m;
+										break;
+									}
+								}
+							}
+						}
+						//String flightname = args[0];
+						
+						String[] startLocale = args[1].split(",");
+						int xStart = Integer.parseInt(startLocale[0]);
+						int yStart = Integer.parseInt(startLocale[1]);
+						int zStart = Integer.parseInt(startLocale[2]);
+						Location start = new Location(p.getWorld(),xStart, yStart, zStart);
+										
+						int maxHeight = (int)Math.round((double)flight.maxHeight*Math.sqrt(2d));
+						double maxSpeed = Double.parseDouble(args[2]);
+						double acceleration = Double.parseDouble(args[3]);
+						Vector v = new Vector(0.1d,0.1d,0.1d);
+						Arrow arrow = p.getWorld().spawnArrow(start,v,1.0f,1.0f);
+						if(SM3)
+						{
+							new SM_3(arrow, start, maxHeight, maxSpeed, acceleration, flight,this);
 							return true;
 						}
 						else
 						{
-							new Missile(arrow, start, maxHeight, maxSpeed, acceleration,flight);
-							return true;
+							if(Tomahawk)
+							{
+								new Tomahawk(arrow, start, maxSpeed, acceleration, flight, mode);
+								return true;
+							}
+							else
+							{
+								new Missile(arrow, start, maxHeight, maxSpeed, acceleration,flight);
+								return true;
+							}
 						}
 					}
-				}
-				else
-				{
-					p.sendMessage(noPermMsg);
-					return true;
-				}
-			}
-			else if(cmdname.equalsIgnoreCase("spawnSwarm"))
-			{
-				if(p.isOp())
-				{
-					if(args.length > 2)
+					else
 					{
-						int size = 10;
-						if(args.length > 3)
-						{
-							size = Integer.parseInt(args[3]);
-						}
-						double spreadX = Double.parseDouble(args[0]);
-						double spreadY = Double.parseDouble(args[1]);
-						double spreadZ = Double.parseDouble(args[2]);
-						if(swarm != null) swarm.kill();
-						Swarm swarm = new Swarm(this, size,"Welcome to the herd",this.waypoints);
-						this.swarm = swarm;
-						System.out.println("Swarm created!");
-						swarm.spawn(p.getWorld(),spreadX, spreadY, spreadZ);
-						System.out.println("Swarm spawned!");
+						p.sendMessage(noPermMsg);
 						return true;
 					}
 				}
-				else
+				else if(cmdname.equalsIgnoreCase("spawnSwarm"))
 				{
-					p.sendMessage(noPermMsg);
-					return true;
+					if(p.isOp())
+					{
+						if(args.length > 2)
+						{
+							int size = 10;
+							if(args.length > 3)
+							{
+								size = Integer.parseInt(args[3]);
+							}
+							double spreadX = Double.parseDouble(args[0]);
+							double spreadY = Double.parseDouble(args[1]);
+							double spreadZ = Double.parseDouble(args[2]);
+							if(swarm != null) swarm.kill();
+							Swarm swarm = new Swarm(this, size,"Welcome to the herd",this.waypoints);
+							this.swarm = swarm;
+							System.out.println("Swarm created!");
+							swarm.spawn(p.getWorld(),spreadX, spreadY, spreadZ);
+							System.out.println("Swarm spawned!");
+							return true;
+						}
+					}
+					else
+					{
+						p.sendMessage(noPermMsg);
+						return true;
+					}
 				}
 			}
-			else if(cmdname.equalsIgnoreCase("mpvp"))
+			if(cmdname.equalsIgnoreCase("mpvp"))
 			{
 				if(args.length == 4 || args.length == 5)
 				{
