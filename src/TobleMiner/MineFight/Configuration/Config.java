@@ -4,17 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
@@ -23,88 +20,31 @@ import TobleMiner.MineFight.Protection.ProtectedArea;
 
 public class Config
 {
-	public final HashMap<World,List<ProtectedArea>> protectionRegions = new HashMap<World,List<ProtectedArea>>();
+	public final HashMap<String,WorldConfig> configByWorldName = new HashMap<String,WorldConfig>();
 	public final FileConfiguration config;
+	private final Main mane;
 	
-	private final String flname = "plugins"+File.separator+"MineFight"+File.separator+"mineFight.conf";
+	private final File file;
 	
-	public Config(FileConfiguration config)
+	public Config(Main mane,FileConfiguration config)
 	{
+		this.file = new File(mane.getPluginDir(),"mineFight.conf");
 		this.config = config;
+		this.mane = mane;
 	}
 	
 	public void read()
 	{
 		this.load();
+		List<World> worlds = Bukkit.getServer().getWorlds();
+		this.configByWorldName.clear();
+		for(World world : worlds)
+		{
+			this.configByWorldName.put(world.getName(), new WorldConfig(this.mane, world));
+		}
 		boolean makeConfig = config.getBoolean("config.reset",true);
 		if(makeConfig)
 		{
-			List<World> worlds = Bukkit.getServer().getWorlds();
-			for(int i=0;i<worlds.size();i++)
-			{
-				World world = worlds.get(i);
-				String name = world.getName();
-				Location spawn = world.getSpawnLocation();
-				String wpref = "Worlds."+name;
-				config.set(wpref+".mpvp",false);
-				config.set(wpref+".classSelection.X",spawn.getBlockX());
-				config.set(wpref+".classSelection.Y",spawn.getBlockY());
-				config.set(wpref+".classSelection.Z",spawn.getBlockZ());
-				config.set(wpref+".battleSpawn.X",spawn.getBlockX());
-				config.set(wpref+".battleSpawn.Y",spawn.getBlockY());
-				config.set(wpref+".battleSpawn.Z",spawn.getBlockZ());
-				ConfigurationSection cs = config.createSection("Worlds."+name+".protections");
-				String s = Integer.toString(spawn.getBlockX())+","+Integer.toString(spawn.getBlockY())+","+Integer.toString(spawn.getBlockZ());
-				cs.set(s+".pos1.X",spawn.getBlockX());
-				cs.set(s+".pos1.Y",spawn.getBlockY());
-				cs.set(s+".pos1.Z",spawn.getBlockZ());
-				cs.set(s+".pos2.X",spawn.getBlockX());
-				cs.set(s+".pos2.Y",spawn.getBlockY());
-				cs.set(s+".pos2.Z",spawn.getBlockZ());
-				cs.set(s+".enabled",true);
-				for(Gamemode gmode : Gamemode.values())
-				{
-					String wgmpref = wpref+".gamemodes."+gmode.toString().toLowerCase();
-					config.set(wgmpref+".points",500);
-					config.set(wgmpref+".enabled",true);					
-					config.set(wgmpref+".autobalance",true);					
-					config.set(wgmpref+".player.preventItemDropOnDeath",true);					
-					config.set(wgmpref+".player.preventItemDrop",true);					
-					config.set(wgmpref+".player.enableFallDamage",true);					
-					config.set(wgmpref+".player.enableHunger",false);					
-					config.createSection(wgmpref+".infoSigns");
-					if(gmode.equals(Gamemode.Conquest))
-					{
-						config.createSection(wgmpref+".flags");
-						config.set(wgmpref+".flagCaptureDistance",10);
-						config.set(wgmpref+".flagCaptureSpeed",10);
-						config.set(wgmpref+".flagCaptureAccelerationPerPerson",1.2d);
-						config.set(wgmpref+".pointlossPerFlagPerSecond",1.0d);
-						config.set(wgmpref+".losePointsWhenEnemyHasLessThanHalfFlags",false);
-					}
-					else if(gmode.equals(Gamemode.Rush))
-					{						
-						config.createSection(wgmpref+".radioStations");
-						config.set(wgmpref+".destructTime",10d);
-						config.set(wgmpref+".defenderOuterSpawnRadius",20d);
-						config.set(wgmpref+".defenderInnerSpawnRadius",5d);
-						config.set(wgmpref+".attackerOuterSpawnRadius",70d);
-						config.set(wgmpref+".attackerInnerSpawnRadius",30d);
-					}
-					config.set(wgmpref+".weapon.sniperDamage",10d);					
-					config.set(wgmpref+".weapon.generalDamage",5d);					
-					config.set(wgmpref+".weapon.headshotMultiplier",2d);					
-					config.set(wgmpref+".weapon.legshotMultiplier",0.5d);					
-					config.set(wgmpref+".weapon.critProbability",0.02d);					
-					config.set(wgmpref+".weapon.critMultiplier",2d);					
-					config.set(wgmpref+".environment.canBeDamaged",true);					
-					config.set(wgmpref+".environment.doExplosionsDamageEnvironment",true);					
-				}
-				config.set(wpref+".environment.canBeDamaged",true);
-				config.set(wpref+".environment.doExplosionsDamageEnvironment",true);
-				config.set(wpref+".leaveWorld","world");
-				config.set(wpref+".minimapEnabled",true);
-			}
 			config.set("CombatClass.Sniper.Kit","261:0,1;262:0,64;337:0,4;268:0,1");
 			config.set("CombatClass.Sniper.Armor","298,299,300,301");
 			config.set("CombatClass.Heavy.Kit","267:0,1;264:0,1;351:4,5");
@@ -158,36 +98,13 @@ public class Config
 			config.set("debug",false);
 			this.save();
 		}
-		this.protectionRegions.clear();
-		List<World> worlds = Bukkit.getServer().getWorlds();
-		for(int i=0;i<worlds.size();i++)
-		{
-			World world = worlds.get(i);
-			ConfigurationSection cs = config.getConfigurationSection("Worlds."+world.getName()+".protections");
-			List<ProtectedArea> lpa = new ArrayList<ProtectedArea>();
-			Set<String> keys = cs.getValues(false).keySet();
-			for(String key : keys)
-			{
-				double x1 = cs.getDouble(key+".pos1.X");
-				double y1 = cs.getDouble(key+".pos1.Y");
-				double z1 = cs.getDouble(key+".pos1.Z");
-				double x2 = cs.getDouble(key+".pos2.X");
-				double y2 = cs.getDouble(key+".pos2.Y");
-				double z2 = cs.getDouble(key+".pos2.Z");
-				if(this.isProtectionEnabled(cs,key))
-				{
-					lpa.add(new ProtectedArea(new Location(world, x1, y1, z1), new Location(world, x2, y2, z2)));
-				}
-			}
-			this.protectionRegions.put(world, lpa);
-		}
 	}
 	
 	public void load()
 	{
 		try
 		{
-			config.load(flname);
+			config.load(file.getAbsoluteFile());
 		}
 		catch(Exception ex)
 		{
@@ -200,7 +117,11 @@ public class Config
 	{
 		try
 		{
-			config.save(flname);
+			config.save(file.getAbsoluteFile());
+			for(WorldConfig wcfg : this.configByWorldName.values())
+			{
+				wcfg.save();
+			}
 		}
 		catch(Exception ex)
 		{
@@ -210,39 +131,52 @@ public class Config
 		
 	}
 	
-	public Location getRoundEndSpawnForWorld(World w)
+	public List<ProtectedArea> getProtectedAreasByWorld(World w)
 	{
-		String worldStr = config.getString("Worlds."+w.getName()+".leaveWorld");
-		if(worldStr != null)
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
 		{
-			World world = Bukkit.getServer().getWorld(worldStr);
-			if(world != null)
-			{
-				return world.getSpawnLocation();
-			}
+			return wcfg.protectedRegions;
 		}
+		Error err = new Error("Tried to get protected regions for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
 		return null;
 	}
-
-	public boolean isProtectionEnabled(ConfigurationSection cs,String key)
+	
+	public Location getRoundEndSpawnForWorld(World w)
 	{
-		return 	cs.getBoolean(key+".enabled",true);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getRoundEndSpawn();
+		}
+		Error err = new Error("Tried to fetch leave world for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return null;
 	}
 	
 	public Location getRespawnForWorld(World w)
-	{
-		Double x = config.getDouble("Worlds."+w.getName()+".classSelection.X");
-		Double y = config.getDouble("Worlds."+w.getName()+".classSelection.Y");
-		Double z = config.getDouble("Worlds."+w.getName()+".classSelection.Z");
-		return new Location(w, x, y, z);
+	{	
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getRespawnLoc();
+		}
+		Error err = new Error("Tried to fetch respawn point for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return null;
 	}
 	
 	public Location getSpawnForWorld(World w)
 	{
-		Double x = config.getDouble("Worlds."+w.getName()+".battleSpawn.X");
-		Double y = config.getDouble("Worlds."+w.getName()+".battleSpawn.Y");
-		Double z = config.getDouble("Worlds."+w.getName()+".battleSpawn.Z");
-		return new Location(w, x, y, z);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getSpawnLoc();
+		}
+		Error err = new Error("Tried to fetch spawn point for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return null;		
 	}
 	
 	public float getC4ExploStr()
@@ -297,158 +231,194 @@ public class Config
 	
 	public boolean isGamemodeEnabledInWorld(World w, Gamemode gmode)
 	{
-		return config.getBoolean("Worlds."+w.getName()+".gamemodes."+gmode.toString().toLowerCase()+".enabled",false);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.isGamemodeEnabled(gmode);
+		}
+		Error err = new Error("Tried to get gmode enabled for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;		
 	}
 	
 	public int getPointsForGamemodeInWorld(World w, Gamemode gmode)
 	{
-		return config.getInt("Worlds."+w.getName()+".gamemodes."+gmode.toString().toLowerCase()+".points");
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getTickets(gmode);
+		}
+		Error err = new Error("Tried to get max tickets for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 500;		
 	}
 	
 	public void addInfoSign(Sign sign,Gamemode gm)
 	{
-		ConfigurationSection cs = config.getConfigurationSection("Worlds."+sign.getWorld().getName()+".gamemodes."+gm.toString().toLowerCase()+".infoSigns");
-		if(cs != null)
+		WorldConfig wcfg = this.configByWorldName.get(sign.getWorld().getName());
+		if(wcfg != null)
 		{
-			String signName = Integer.toString(sign.getLocation().getBlockX())+","+Integer.toString(sign.getLocation().getBlockY())+","+Integer.toString(sign.getLocation().getBlockZ());
-			cs.set(signName+".X",sign.getLocation().getX());
-			cs.set(signName+".Y",sign.getLocation().getY());
-			cs.set(signName+".Z",sign.getLocation().getZ());
-			this.save();
+			wcfg.addInfoSign(gm,sign);
+			return;
 		}
+		Error err = new Error("Tried to add info sign to unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
 	}
 	
 	public void removeInfoSign(Sign sign,Gamemode gm)
 	{
-		ConfigurationSection cs = config.getConfigurationSection("Worlds."+sign.getWorld().getName()+".gamemodes."+gm.toString().toLowerCase()+".infoSigns");
-		if(cs != null)
+		WorldConfig wcfg = this.configByWorldName.get(sign.getWorld().getName());
+		if(wcfg != null)
 		{
-			String signName = Integer.toString(sign.getLocation().getBlockX())+","+Integer.toString(sign.getLocation().getBlockY())+","+Integer.toString(sign.getLocation().getBlockZ());
-			cs.set(signName+".X",null);
-			cs.set(signName+".Y",null);
-			cs.set(signName+".Z",null);
-			cs.set(signName,null);
-			this.save();
-		}		
+			wcfg.removeInfoSign(gm,sign);
+			return;
+		}
+		Error err = new Error("Tried to remove info sign from unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
 	}
 	
 	public List<Sign> getInfoSigns(World world,Gamemode gm)
 	{
-		List<Sign> signs = new ArrayList<Sign>();
-		try
+		WorldConfig wcfg = this.configByWorldName.get(world.getName());
+		if(wcfg != null)
 		{
-			ConfigurationSection cs = config.getConfigurationSection("Worlds."+world.getName()+".gamemodes."+gm.toString().toLowerCase()+".infoSigns");
-			if(cs != null)
-			{
-				for(String s : cs.getValues(false).keySet())
-				{
-					Location loc = new Location(world,cs.getDouble(s+".X"),cs.getDouble(s+".Y"),cs.getDouble(s+".Z"));
-					Block b = world.getBlockAt(loc);
-					if(b.getType().equals(Material.WALL_SIGN) || b.getType().equals(Material.SIGN_POST))
-					{
-						signs.add((Sign)b.getState());
-					}
-				}
-			}
+			return wcfg.getInfoSigns(gm);
 		}
-		catch(Exception ex)
-		{
-			
-		}
-		return signs;
+		Error err = new Error("Tried to get info signs for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return new ArrayList<Sign>();
 	}
 	
 	public boolean getPreventItemDropOnDeath(World world,Gamemode gm)
 	{
-		return config.getBoolean("Worlds."+world.getName()+".gamemodes."+gm.toString().toLowerCase()+".player.preventItemDropOnDeath",true);
+		WorldConfig wcfg = this.configByWorldName.get(world.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getPreventItemDropOnDeath(gm);
+		}
+		Error err = new Error("Tried to get prevent item drop on death for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 
 	public boolean getPreventItemDrop(World world,Gamemode gm)
 	{
-		return config.getBoolean("Worlds."+world.getName()+".gamemodes."+gm.toString().toLowerCase()+".player.preventItemDrop",true);
+		WorldConfig wcfg = this.configByWorldName.get(world.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getPreventItemDrop(gm);
+		}
+		Error err = new Error("Tried to get prevent item drop for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 	
 	public void addFlag(Sign sign)
 	{
-		ConfigurationSection cs = config.getConfigurationSection("Worlds."+sign.getWorld().getName()+".gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".flags");
-		if(cs != null)
+		WorldConfig wcfg = this.configByWorldName.get(sign.getWorld().getName());
+		if(wcfg != null)
 		{
-			String flagName = Integer.toString(sign.getLocation().getBlockX())+","+Integer.toString(sign.getLocation().getBlockY())+","+Integer.toString(sign.getLocation().getBlockZ());
-			cs.set(flagName+".X",sign.getLocation().getX());
-			cs.set(flagName+".Y",sign.getLocation().getY());
-			cs.set(flagName+".Z",sign.getLocation().getZ());
-			this.save();
+			wcfg.addFlag(sign);
+			return;
 		}
+		Error err = new Error("Tried to add flag to unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
 	}
 	
 	public void removeFlag(Sign sign)
 	{
-		ConfigurationSection cs = config.getConfigurationSection("Worlds."+sign.getWorld().getName()+".gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".flags");
-		if(cs != null)
+		WorldConfig wcfg = this.configByWorldName.get(sign.getWorld().getName());
+		if(wcfg != null)
 		{
-			String flagName = Integer.toString(sign.getLocation().getBlockX())+","+Integer.toString(sign.getLocation().getBlockY())+","+Integer.toString(sign.getLocation().getBlockZ());
-			cs.set(flagName+".X",null);
-			cs.set(flagName+".Y",null);
-			cs.set(flagName+".Z",null);
-			cs.set(flagName,null);
-			this.save();
-		}		
+			wcfg.removeFlag(sign);
+			return;
+		}
+		Error err = new Error("Tried to remove flag from unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
 	}
 	
 	public List<Sign> getFlags(World world)
 	{
-		List<Sign> signs = new ArrayList<Sign>();
-		try
+		WorldConfig wcfg = this.configByWorldName.get(world.getName());
+		if(wcfg != null)
 		{
-			ConfigurationSection cs = config.getConfigurationSection("Worlds."+world.getName()+".gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".flags");
-			if(cs != null)
-			{
-				for(String s : cs.getValues(false).keySet())
-				{
-					Location loc = new Location(world,cs.getDouble(s+".X"),cs.getDouble(s+".Y"),cs.getDouble(s+".Z"));
-					Block b = world.getBlockAt(loc);
-					if(b.getType().equals(Material.WALL_SIGN))
-					{
-						signs.add((Sign)b.getState());
-					}
-				}
-			}
+			return wcfg.getFlags();
 		}
-		catch(Exception ex)
-		{
-			
-		}
-		return signs;
+		Error err = new Error("Tried to get flags for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return new ArrayList<Sign>();
 	}
 	
 	public double getFlagCaptureDistance(World w)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".flagCaptureDistance",10d);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getFlagCaptureDistance();
+		}
+		Error err = new Error("Tried to remove flag from unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 10d;
 	}
 	
 	public double getFlagCaptureSpeed(World w) //% per second
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".flagCaptureSpeed",10d);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getFlagCaptureSpeed();
+		}
+		Error err = new Error("Tried to get flag capture speed for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 10d;
 	}
 
 	public double getFlagCaptureAcceleration(World w)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".flagCaptureAccelerationPerPerson",1.2d);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getFlagCaptureAcceleration();
+		}
+		Error err = new Error("Tried to get flag capture acceleration for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 1.2d;
 	}
 	
 	public double getPointlossPerFlagPerSecond(World w)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".pointlossPerFlagPerSecond",1.0d);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getPointlossPerFlagPerSecond();
+		}
+		Error err = new Error("Tried to get flag pointloss for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 1.0d;
 	}
 	
 	public boolean getLosePointsWhenEnemyHasLessThanHalfFlags(World w)
 	{
-		return config.getBoolean("Worlds."+w.getName()+".gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".losePointsWhenEnemyHasLessThanHalfFlags",false);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getLosePointsWhenEnemyHasLessThanHalfFlags();
+		}
+		Error err = new Error("Tried to get lose points when enemy has less than half flags for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 	
 	public boolean getAutobalance(World w,Gamemode gm)
 	{
-		return config.getBoolean("Worlds."+w.getName()+".gamemodes."+gm.toString().toLowerCase()+".autobalance",true);		
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getAutobalance(gm);
+		}
+		Error err = new Error("Tried to get autobalance for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 	
 	public double getRPGMaxSpeed()
@@ -508,84 +478,96 @@ public class Config
 	
 	public List<Sign> getRadioStations(World world)
 	{
-		List<Sign> signs = new ArrayList<Sign>();
-		try
+		WorldConfig wcfg = this.configByWorldName.get(world.getName());
+		if(wcfg != null)
 		{
-			ConfigurationSection cs = config.getConfigurationSection("Worlds."+world.getName()+".gamemodes."+Gamemode.Rush.toString().toLowerCase()+".radioStations");
-			if(cs != null)
-			{
-				for(String s : cs.getValues(false).keySet())
-				{
-					Location loc = new Location(world,cs.getDouble(s+".X"),cs.getDouble(s+".Y"),cs.getDouble(s+".Z"));
-					Block b = world.getBlockAt(loc);
-					if(b.getType().equals(Material.WALL_SIGN))
-					{
-						signs.add((Sign)b.getState());
-					}
-				}
-			}
+			return wcfg.getRadioStations();
 		}
-		catch(Exception ex)
-		{
-			
-		}
-		return signs;
+		Error err = new Error("Tried to get radio stations for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return new ArrayList<Sign>();
 	}
 	
 	public void addRadioStation(Sign sign)
 	{
-		ConfigurationSection cs = config.getConfigurationSection("Worlds."+sign.getWorld().getName()+".gamemodes."+Gamemode.Rush.toString().toLowerCase()+".radioStations");
-		if(cs != null)
+		WorldConfig wcfg = this.configByWorldName.get(sign.getWorld().getName());
+		if(wcfg != null)
 		{
-			String rsName = Integer.toString(sign.getLocation().getBlockX())+","+Integer.toString(sign.getLocation().getBlockY())+","+Integer.toString(sign.getLocation().getBlockZ());
-			cs.set(rsName+".X",sign.getLocation().getX());
-			cs.set(rsName+".Y",sign.getLocation().getY());
-			cs.set(rsName+".Z",sign.getLocation().getZ());
-			this.save();
+			wcfg.addRadioStation(sign);
 		}
+		Error err = new Error("Tried to add radio station to unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
 	}
 	
 	public void removeRadioStation(Sign sign)
 	{
-		ConfigurationSection cs = config.getConfigurationSection("Worlds."+sign.getWorld().getName()+".gamemodes."+Gamemode.Rush.toString().toLowerCase()+".radioStations");
-		if(cs != null)
+		WorldConfig wcfg = this.configByWorldName.get(sign.getWorld().getName());
+		if(wcfg != null)
 		{
-			String rsName = Integer.toString(sign.getLocation().getBlockX())+","+Integer.toString(sign.getLocation().getBlockY())+","+Integer.toString(sign.getLocation().getBlockZ());
-			cs.set(rsName+".X",null);
-			cs.set(rsName+".Y",null);
-			cs.set(rsName+".Z",null);
-			cs.set(rsName,null);
-			this.save();
-		}		
+			wcfg.removeRadioStation(sign);
+		}
+		Error err = new Error("Tried to remove radio station from unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
 	}
 	
 	public double getRadioStationDestructTime(World w)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+Gamemode.Rush.toString().toLowerCase()+".destructTime",10d);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getRadioStationDestructTime();
+		}
+		Error err = new Error("Tried to get radio station detonation time for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 15.0d;
 	}
 	
 	public double getDefenderInnerSpawnRadius(World w)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+Gamemode.Rush.toString().toLowerCase()+".defenderInnerSpawnRadius",5d);
-		
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getDefenderInnerSpawnRadius();
+		}
+		Error err = new Error("Tried to get inner defender spawn radius for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 3.0d;
 	}
 	
 	public double getDefenderOuterSpawnRadius(World w)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+Gamemode.Rush.toString().toLowerCase()+".defenderOuterSpawnRadius",10d);
-		
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getDefenderOuterSpawnRadius();
+		}
+		Error err = new Error("Tried to get outer defender spawn radius for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 15.0d;
 	}
 	
 	public double getAttackerInnerSpawnRadius(World w)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+Gamemode.Rush.toString().toLowerCase()+".attackerInnerSpawnRadius",30d);
-		
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getAttackerInnerSpawnRadius();
+		}
+		Error err = new Error("Tried to get inner attacker spawn radius for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 30.0d;
 	}
 	
 	public double getAttackerOuterSpawnRadius(World w)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+Gamemode.Rush.toString().toLowerCase()+".attackerOuterSpawnRadius",70d);
-		
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getAttackerOuterSpawnRadius();
+		}
+		Error err = new Error("Tried to get outer attacker spawn radius for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 50.0d;
 	}
 	
 	public double getSentryMissileSpeed()
@@ -610,32 +592,16 @@ public class Config
 	
 	public void addNewProtectedRegion(Location pos1, Location pos2)
 	{
-		ConfigurationSection cs = config.getConfigurationSection("Worlds."+pos1.getWorld().getName()+".protections");
-		String prefix = Integer.toString(pos1.getBlockX())+","+Integer.toString(pos1.getBlockY())+","+Integer.toString(pos1.getBlockZ());
-		cs.set(prefix+".pos1.X", pos1.getX());
-		cs.set(prefix+".pos1.Y", pos1.getY());
-		cs.set(prefix+".pos1.Z", pos1.getZ());
-		cs.set(prefix+".pos2.X", pos2.getX());
-		cs.set(prefix+".pos2.Y", pos2.getY());
-		cs.set(prefix+".pos2.Z", pos2.getZ());
-		cs.set(prefix+".enabled",true);
-		this.save();
-		List<ProtectedArea> lpa = new ArrayList<ProtectedArea>();
-		Set<String> keys = cs.getValues(false).keySet();
-		for(String key : keys)
+		WorldConfig wcfg = this.configByWorldName.get(pos1.getWorld().getName());
+		if(wcfg != null)
 		{
-			double x1 = cs.getDouble(key+".pos1.X");
-			double y1 = cs.getDouble(key+".pos1.Y");
-			double z1 = cs.getDouble(key+".pos1.Z");
-			double x2 = cs.getDouble(key+".pos2.X");
-			double y2 = cs.getDouble(key+".pos2.Y");
-			double z2 = cs.getDouble(key+".pos2.Z");
-			if(this.isProtectionEnabled(cs,key))
-			{
-				lpa.add(new ProtectedArea(new Location(pos1.getWorld(), x1, y1, z1), new Location(pos1.getWorld(), x2, y2, z2)));
-			}
+			wcfg.addProtectedRegion(pos1,pos2);
 		}
-		this.protectionRegions.put(pos1.getWorld(), lpa);
+		else
+		{
+			Error err = new Error("Tried to register protection for unknown world.",String.format("World: %s", pos1.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+			ErrorReporter.reportError(err);
+		}
 	}
 	
 	public boolean getC4allowedInsideProtection()
@@ -660,12 +626,26 @@ public class Config
 	
 	public boolean isFalldamageActive(World w, Gamemode gm)
 	{
-		return config.getBoolean("Worlds."+w.getName()+".gamemodes."+gm.toString().toLowerCase()+".player.enableFallDamage",true);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.isFalldamageActive(gm);
+		}
+		Error err = new Error("Tried to get falldamage active for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 	
 	public boolean isHungerActive(World w, Gamemode gm)
 	{
-		return config.getBoolean("Worlds."+w.getName()+".gamemodes."+gm.toString().toLowerCase()+".player.enableHunger",false);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.isHungerActive(gm);
+		}
+		Error err = new Error("Tried to get hunger active for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 	
 	public double getAmmoResupplyRange()
@@ -705,7 +685,14 @@ public class Config
 	
 	public boolean isMpvpEnabled(World w)
 	{
-		return config.getBoolean("Worlds."+w.getName()+".mpvp",false);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.isMpvpEnabled();
+		}
+		Error err = new Error("Tried to get mpvp enabled for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 	
 	public String getLangFile()
@@ -725,51 +712,121 @@ public class Config
 	
 	public boolean isMinimapEnabled(World w)
 	{
-		return config.getBoolean("Worlds."+w.getName()+".minimapEnabled",true);	
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.isMinimapEnabled();
+		}
+		Error err = new Error("Tried to get minimap enabled for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 	
 	public double getSniperDamage(World w, Gamemode g)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+g.toString().toLowerCase()+".weapon.sniperDamage",10d);					
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getSniperDamage(g);
+		}
+		Error err = new Error("Tried to get sniper damage for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 10.0d;
 	}
 	
 	public double getGeneralDamage(World w, Gamemode g)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+g.toString().toLowerCase()+".weapon.generalDamage",5d);						
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getGeneralDamage(g);
+		}
+		Error err = new Error("Tried to get general damage for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 5.0d;
 	}
 	
 	public double getHeadshotDamageMultiplier(World w, Gamemode g)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+g.toString().toLowerCase()+".weapon.headshotMultiplier",2d);					
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getHeadshotDamageMultiplier(g);
+		}
+		Error err = new Error("Tried to get headshot multiplier for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 2.0d;
 	}
 	
 	public double getLegshotDamageMultiplier(World w, Gamemode g)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+g.toString().toLowerCase()+".weapon.legshotMultiplier",0.5d);					
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getLegshotDamageMultiplier(g);
+		}
+		Error err = new Error("Tried to get legshot multiplier for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 0.5d;
 	}
 	
 	public double getCritProbability(World w, Gamemode g)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+g.toString().toLowerCase()+".weapon.critProbability",0.02d);					
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getCritProbability(g);
+		}
+		Error err = new Error("Tried to get crit probability for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 0.02d;
 	}
 
 	public double getCritMultiplier(World w, Gamemode g)
 	{
-		return config.getDouble("Worlds."+w.getName()+".gamemodes."+g.toString().toLowerCase()+".weapon.critMultiplier",2.0d);					
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getCritMultiplier(g);
+		}
+		Error err = new Error("Tried to get crit multiplier for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 2.0d;
 	}
 	
 	public boolean canEvironmentBeDamaged(Gamemode gmode, World w)
 	{
-		return config.getBoolean("Worlds."+w.getName()+".gamemodes."+gmode.toString().toLowerCase()+".environment.canBeDamaged",true) && config.getBoolean("Worlds."+w.getName()+".environment.canBeDamaged",true);					
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.canEvironmentBeDamaged(gmode);
+		}
+		Error err = new Error("Tried to get can environment be damaged for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 	
 	public boolean canExlosionsDamageEnvironment(Gamemode gmode, World w)
 	{
-		return config.getBoolean("Worlds."+w.getName()+".gamemodes."+gmode.toString().toLowerCase()+".environment.doExplosionsDamageEnvironment",true) && config.getBoolean("Worlds."+w.getName()+".environment.doExplosionsDamageEnvironment",true);					
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.canExplosionDamageEvironment(gmode);
+		}
+		Error err = new Error("Tried to get can explosions damage environment for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 
 	public boolean canEvironmentBeDamaged(World w) 
 	{
-		return config.getBoolean("Worlds."+w.getName()+".environment.canBeDamaged",true);
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.canEvironmentBeDamaged();
+		}
+		Error err = new Error("Tried to get can environment be damaged for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return false;
 	}
 }

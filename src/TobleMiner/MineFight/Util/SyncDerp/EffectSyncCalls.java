@@ -1,14 +1,11 @@
 package TobleMiner.MineFight.Util.SyncDerp;
 
-import java.util.List;
-
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
 
 import TobleMiner.MineFight.Main;
-import TobleMiner.MineFight.Protection.ProtectedArea;
+import TobleMiner.MineFight.Util.Util;
 
 public class EffectSyncCalls
 {
@@ -30,23 +27,9 @@ public class EffectSyncCalls
 		{		
 			public void run()
 			{
-				World world = loc.getWorld();
-				List<ProtectedArea> lpa = Main.gameEngine.configuration.protectionRegions.get(loc.getWorld());
-				boolean isProtected = false;
-				if(lpa != null)
+				if(!Util.protect.isLocProtected(loc))
 				{
-					for(ProtectedArea pa : lpa)
-					{
-						isProtected = pa.isCoordInsideRegion(loc);
-						if(isProtected)
-						{
-							break;
-						}
-					}
-				}
-				if(!isProtected)
-				{
-					world.createExplosion(loc, exploStrength);
+					loc.getWorld().createExplosion(loc, exploStrength);
 				}
 			}
 		});

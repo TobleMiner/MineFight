@@ -41,7 +41,7 @@ public class GameEngine
 	public GameEngine(Main mane)
 	{
 		this.config = mane.getConfig();
-		this.configuration = new Config(config);
+		this.configuration = new Config(mane, config);
 		this.dict = new Langfile(mane.getPluginDir());
 		init();
 	}
@@ -337,7 +337,7 @@ public class GameEngine
 	{
 		Match m = this.getMatch(p.getWorld());
 		int veto = 1;
-		List<ProtectedArea> lpa = Main.gameEngine.configuration.protectionRegions.get(b.getWorld());
+		List<ProtectedArea> lpa = Main.gameEngine.configuration.getProtectedAreasByWorld(p.getWorld());
 		boolean isBlockProtected = false;
 		if(lpa != null)
 		{
@@ -453,7 +453,7 @@ public class GameEngine
 		{
 			Match m = this.getMatch(p.getWorld());
 			int veto = 1;
-			List<ProtectedArea> lpa = Main.gameEngine.configuration.protectionRegions.get(b.getWorld());
+			List<ProtectedArea> lpa = Main.gameEngine.configuration.getProtectedAreasByWorld(p.getWorld());
 			boolean isBlockProtected = false;
 			if(lpa != null)
 			{

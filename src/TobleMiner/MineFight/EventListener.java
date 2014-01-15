@@ -1,7 +1,5 @@
 package TobleMiner.MineFight;
 
-import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
@@ -36,7 +33,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
-import TobleMiner.MineFight.Protection.ProtectedArea;
+import TobleMiner.MineFight.Util.Util;
 
 public class EventListener implements Listener
 {
@@ -141,19 +138,6 @@ public class EventListener implements Listener
 		if(Main.gameEngine.configuration.isMpvpEnabled(event.getPlayer().getWorld()))
 		{
 			Location l = event.getItemDrop().getLocation();
-			List<ProtectedArea> lpa = Main.gameEngine.configuration.protectionRegions.get(l.getWorld());
-			boolean isProtected = false;
-			if(lpa != null)
-			{
-				for(ProtectedArea pa : lpa)
-				{
-					isProtected = pa.isCoordInsideRegion(l);
-					if(isProtected)
-					{
-						break;
-					}
-				}
-			}
 			boolean isItemAllowed = false;
 			if(event.getItemDrop().getItemStack().getType().equals(Material.IRON_INGOT))
 			{
@@ -171,7 +155,7 @@ public class EventListener implements Listener
 			{
 				isItemAllowed = Main.gameEngine.configuration.getM18allowedInsideProtection();
 			}
-			if(isProtected && (!isItemAllowed))
+			if(Util.protect.isLocProtected(l) && (!isItemAllowed))
 			{
 				event.setCancelled(true);
 			}
@@ -322,47 +306,13 @@ public class EventListener implements Listener
 			}
 		}*/
 	}
-	
-	@EventHandler
-	public void onBlockPhysics(BlockPhysicsEvent event)
-	{
-		Block b = event.getBlock();
-		List<ProtectedArea> lpa = Main.gameEngine.configuration.protectionRegions.get(b.getWorld());
-		if(lpa != null)
-		{
-			for(ProtectedArea pa : lpa)
-			{
-				event.setCancelled(pa.isBlockInsideRegion(b));
-				if(pa.isBlockInsideRegion(b))
-				{
-					break;
-				}
-			}
-		}
-	}
-	
+		
 	@EventHandler
 	public void onEntityChangeBlock(EntityChangeBlockEvent event)
 	{
 		if(event.getEntity() instanceof Player)
 		{
 			event.setCancelled(Main.gameEngine.blockBreak((Player)event.getEntity(),event.getBlock()));
-		}
-		else
-		{
-			Block b = event.getBlock();
-			List<ProtectedArea> lpa = Main.gameEngine.configuration.protectionRegions.get(b.getWorld());
-			if(lpa != null)
-			{
-				for(ProtectedArea pa : lpa)
-				{
-					event.setCancelled(pa.isBlockInsideRegion(b));
-					if(pa.isBlockInsideRegion(b))
-					{
-						break;
-					}
-				}
-			}
 		}
 	}
 	

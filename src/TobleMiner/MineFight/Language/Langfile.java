@@ -16,23 +16,22 @@ import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 
 public class Langfile 
 {
-	private final String langDir;
+	private final File langDir;
 	private final HashMap<String,List<String>> dictionary = new HashMap<String,List<String>>();
 	
 	public Langfile(File file)
 	{
-		String basePath = file.getAbsolutePath();
-		this.langDir = basePath+File.separator+"lang";
+		this.langDir = new File(file,"lang");
 		try
 		{
-			File langDir = new File(this.langDir);
-			if(!langDir.isDirectory() || !langDir.exists())
+			if(!langDir.exists())
 			{
-				langDir.mkdir();
+				langDir.mkdirs();
 				String[] files = {"DE_de.lang","EN_uk.lang","EN_us.lang"}; //Buck conventions, use ponies instead!
 				for(String s : files)
 				{
-					File langFile = new File(this.langDir+File.separator+s);
+					File langFile = new File(this.langDir,s);
+					langFile.createNewFile();
 					InputStream is = this.getClass().getResourceAsStream(s);
 					FileWriter fw = new FileWriter(langFile);
 					while(is.available() > 0)
@@ -48,12 +47,13 @@ public class Langfile
 		{
 			Error error = new Error("Failed handling languagefiles!","An error occured while checking the languagefiles: "+ex.getMessage(),"Most messages will be missing until this problem is fixed!",this.getClass().getCanonicalName(),ErrorSeverity.ETERNALCHAOS);
 			ErrorReporter.reportError(error);
+			ex.printStackTrace();
 		}
 	}
 	
 	public void loadLanguageFile(String name)
 	{
-		File langFile = new File(this.langDir+File.separator+name);
+		File langFile = new File(this.langDir,name);
 		if(langFile.exists() && langFile.isFile())
 		{
 			this.dictionary.clear();

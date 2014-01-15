@@ -976,7 +976,7 @@ public class Match
 
 	public void rightClickBlockWithLapis(Player p, Block clickedBlock,PlayerInventory playerInventory)
 	{
-		List<ProtectedArea> lpa = Main.gameEngine.configuration.protectionRegions.get(clickedBlock.getWorld());
+		List<ProtectedArea> lpa = Main.gameEngine.configuration.getProtectedAreasByWorld(clickedBlock.getWorld());
 		boolean isProtected = false;
 		if(lpa != null)
 		{
@@ -1637,7 +1637,7 @@ public class Match
 		boolean isProtected = false;
 		if(this.canExplosionsDamageEnvironment())
 		{
-			List<ProtectedArea> lpa = Main.gameEngine.configuration.protectionRegions.get(loc.getWorld());
+			List<ProtectedArea> lpa = Main.gameEngine.configuration.getProtectedAreasByWorld(loc.getWorld());
 			if(lpa != null)
 			{
 				for(ProtectedArea pa : lpa)
