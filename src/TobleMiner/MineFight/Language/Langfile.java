@@ -1,10 +1,13 @@
 package TobleMiner.MineFight.Language;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,13 +36,16 @@ public class Langfile
 					File langFile = new File(this.langDir,s);
 					langFile.createNewFile();
 					InputStream is = this.getClass().getResourceAsStream(s);
-					FileWriter fw = new FileWriter(langFile);
-					while(is.available() > 0)
+					BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF8"));
+					BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(langFile),"UTF8"));
+					while(true)
 					{
-						fw.write(is.read());
+						int i = br.read();
+						if(i < 0) break;
+						bw.write(i);
 					}
-					is.close();
-					fw.close();
+					br.close();
+					bw.close();
 				}
 			}
 		}
