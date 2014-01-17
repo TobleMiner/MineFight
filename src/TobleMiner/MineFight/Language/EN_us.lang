@@ -1,4 +1,5 @@
 #The English languagefile
+preEnable="Enableing MineFight..."
 onEnable="Enabled MineFight."
 onDisable="Disabled MineFight."
 cmdNoCli="This command must be run by a player."

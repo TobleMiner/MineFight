@@ -1,4 +1,5 @@
 #Das deutsche Languagefile
+preEnable="Starte MineFight..."
 onEnable="MineFight gestartet."
 onDisable="MineFight beendet."
 cmdNoCli="Dieses Kommando kann nur durch einen Spieler verwendet werden."

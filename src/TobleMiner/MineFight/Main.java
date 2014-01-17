@@ -20,12 +20,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import TobleMiner.MineFight.ErrorHandling.Error;
+import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
+import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.ErrorHandling.Logger;
 import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Conquest.Flag;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Rush.RadioStation;
+import TobleMiner.MineFight.LegalFu.LicenseHandler;
 import TobleMiner.MineFight.PacketModification.ProtocolLibSafeLoader;
 import TobleMiner.MineFight.Permissions.Permission;
 import TobleMiner.MineFight.Permissions.PermissionManager;
@@ -56,12 +60,19 @@ public class Main extends JavaPlugin
 	
 	public void init()
 	{
-		Main.util = new Util();
 		Main.logger = new Logger(this);
+		Main.util = new Util();
 		Main.gameEngine = new GameEngine(this);
+		logger.log(Level.INFO,gameEngine.dict.get("preEnable"));
+		Bukkit.getPluginManager().registerEvents(eventListener, this);
+		if(!(new LicenseHandler().init(this)))
+		{
+			Error err = new Error("License check failed!","The plugins license could not be copied into the plugin's folder!", "The plugin won't start until the license is copied.", this.getClass().getName(), ErrorSeverity.DOUBLERAINBOOM);
+			ErrorReporter.reportError(err);
+			return;
+		}
 		Main.pm = new PermissionManager();
 		Main.plsl = new ProtocolLibSafeLoader(this);
-		Bukkit.getPluginManager().registerEvents(eventListener, this);
 		Timer timer = new Timer();
 		GlobalTimer gtimer = new GlobalTimer();
 		timer.schedule(gtimer,10,10);
