@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import net.minecraft.server.v1_5_R3.Packet60Explosion;
-import net.minecraft.server.v1_5_R3.Vec3D;
+import net.minecraft.server.v1_6_R3.Packet60Explosion;
+import net.minecraft.server.v1_6_R3.Vec3D;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -15,7 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -27,6 +27,7 @@ import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
+import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Match.Team.Team;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
@@ -46,12 +47,12 @@ public class PVPPlayer
 	public int kills;
 	public int deaths;
 	public int killstreak;
-	public int points;
+	public double points;
 	private final HashMap<PVPPlayer,Killhelper> killHelpers = new HashMap<PVPPlayer,Killhelper>();
 	public boolean normalDeathBlocked = false;
 	public int timer = 1;
 	private final double flamethrowerIgniDist;
-	private final int flamethrowerDmg;
+	private final double flamethrowerDmg;
 	private final double medigunHealingDist;
 	private final double medigunHealingRate;
 	private final MapView mv;
@@ -63,7 +64,7 @@ public class PVPPlayer
 	private ItemStack bootBackup; //hehe
 	public boolean hasMap;
 	
-	public PVPPlayer(Player thePlayer,Team team,Match match,double flamethrowerIgnDist,int flamethrowerDmg, double medigunHealingDist, double medigunHealingRate, MapView mv)
+	public PVPPlayer(Player thePlayer,Team team,Match match,double flamethrowerIgnDist,double flamethrowerDmg, double medigunHealingDist, double medigunHealingRate, MapView mv)
 	{
 		this.thePlayer = thePlayer;
 		this.team = team;
@@ -77,15 +78,15 @@ public class PVPPlayer
 		mv.addRenderer(this.mir = new MapInfoRenderer(match));
 	}
 	
-	public void addKillhelper(PVPPlayer damager, int damage)
+	public void addKillhelper(PVPPlayer damager, double d)
 	{
 		Killhelper kh = this.killHelpers.get(damager);
 		if(kh == null)
 		{
 			kh = new Killhelper(damager);
 		}
-		int maxHealth = this.thePlayer.getMaxHealth();
-		kh.addDamage(100d*(((double)damage)/((double)maxHealth)));
+		double maxHealth = this.thePlayer.getMaxHealth();
+		kh.addDamage(d/maxHealth);
 		this.killHelpers.put(damager, kh);
 	}
 	
@@ -202,23 +203,23 @@ public class PVPPlayer
 		{
 			if(kh.damager != killer && kh.damager != null)
 			{
-				kh.damager.killAsist((int)Math.round(kh.getDamage()));
+				kh.damager.killAsist(kh.getDamage()*Main.gameEngine.configuration.getScore(kh.damager.thePlayer.getWorld(),Score.KILL));
 			}
 		}
 		this.killHelpers.clear();
 	}
 	
-	public void killAsist(int points)
+	public void killAsist(double d)
 	{
-		this.points += points;
-		this.thePlayer.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("killassist"),Integer.toString(points)));
+		this.points += d;
+		this.thePlayer.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("killassist"),d));
 	}
 	
 	public void killed()
 	{
 		this.kills++;
 		this.killstreak++;
-		points += 100;
+		points += Main.gameEngine.configuration.getScore(this.thePlayer.getWorld(),Score.KILL);
 	}
 
 	public void teleport(Location loc)
@@ -269,7 +270,7 @@ public class PVPPlayer
 							if(target != null)
 							{
 								target.normalDeathBlocked = true;
-								target.thePlayer.damage(flamethrowerDmg);
+								target.thePlayer.damage(flamethrowerDmg/1000d*target.thePlayer.getMaxHealth());
 								if(target.thePlayer.getHealth() <= 0)
 								{
 									this.match.kill(this, target,"FLAMETHROWER", target.thePlayer.getHealth() > 0);
@@ -319,12 +320,12 @@ public class PVPPlayer
 										this.thePlayer.getWorld().playEffect(this.thePlayer.getLocation().clone().add(0d,1d,0d).add(dir.clone().multiply(((double)i)/((double)len))),Effect.ENDER_SIGNAL,0);
 									}
 								}
-								int health = target.thePlayer.getHealth()+(int)this.medigunHealingRate;
-								if(health > 20)
+								double health = target.thePlayer.getHealth()+this.medigunHealingRate/1000d*target.thePlayer.getMaxHealth();
+								if(health > target.thePlayer.getMaxHealth())
 								{
-									health = 20;
+									health = target.thePlayer.getMaxHealth();
 								}
-								target.thePlayer.setHealth(health);
+								target.thePlayer.setHealth((float)health);
 							}
 						}
 					}

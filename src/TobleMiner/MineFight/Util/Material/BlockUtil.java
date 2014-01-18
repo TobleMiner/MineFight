@@ -30,7 +30,7 @@ public class BlockUtil
 			{
 				if(loc.getBlock().getType().equals(Material.AIR))
 				{
-					loc.getBlock().setTypeIdAndData(Material.FIRE.getId(),(byte)0, true);
+					loc.getBlock().setType(Material.FIRE);
 					return true;
 				}
 			}

@@ -12,11 +12,15 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
+import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.Protection.ProtectedArea;
+import TobleMiner.MineFight.Weapon.WeaponType;
+import TobleMiner.MineFight.Weapon.Projectile.ProjectileType;
 
 public class Config
 {
@@ -45,16 +49,16 @@ public class Config
 		boolean makeConfig = config.getBoolean("config.reset",true);
 		if(makeConfig)
 		{
-			config.set("CombatClass.Sniper.Kit","261:0,1;262:0,64;337:0,4;268:0,1");
-			config.set("CombatClass.Sniper.Armor","298,299,300,301");
-			config.set("CombatClass.Heavy.Kit","267:0,1;264:0,1;351:4,5");
-			config.set("CombatClass.Heavy.Armor","310,311,312,313");
-			config.set("CombatClass.Engineer.Kit","267:0,1;268:0,1;23:0,1;262:0,64");
-			config.set("CombatClass.Engineer.Armor","306,307,308,309");
-			config.set("CombatClass.Medic.Kit","267:0,1;268:0,1;23:0,1;262:0,64");
-			config.set("CombatClass.Medic.Armor","306,307,308,309");
-			config.set("CombatClass.Pyro.Kit","267:0,1;268:0,1;23:0,1;262:0,64");
-			config.set("CombatClass.Pyro.Armor","306,307,308,309");
+			config.set("CombatClass.Sniper.Kit","BOW:0,1;ARROW:0,64;CLAY_BALL:0,4;WOOD_SWORD:0,1");
+			config.set("CombatClass.Sniper.Armor","LEATHER_HELMET,LEATHER_CHESTPLATE,LEATHER_LEGGINGS,LEATHER_BOOTS");
+			config.set("CombatClass.Heavy.Kit","IRON_SWORD:0,1;DIAMOND:0,1;INK_SACK:4,5");
+			config.set("CombatClass.Heavy.Armor","DIAMOND_HELMET,DIAMOND_CHESTPLATE,DIAMOND_LEGGINGS,DIAMOND_BOOTS");
+			config.set("CombatClass.Engineer.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,64");
+			config.set("CombatClass.Engineer.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
+			config.set("CombatClass.Medic.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,64");
+			config.set("CombatClass.Medic.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
+			config.set("CombatClass.Pyro.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,6");
+			config.set("CombatClass.Pyro.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
 			config.set("GameControl.Sign.joinCmd","Join game");
 			config.set("GameProps.C4.exploStr",4.0d);
 			config.set("GameProps.C4.throwSpeed",0.5d);
@@ -89,9 +93,9 @@ public class Config
 			config.set("GameProps.ammoResupply.speed", 4.0d);
 			config.set("GameProps.ammoResupply.amount", 20);
 			config.set("GameProps.flamethrower.ignitionDist", 4.0d);
-			config.set("GameProps.flamethrower.directDamage", 1);
+			config.set("GameProps.flamethrower.directDamage", 10d);
 			config.set("GameProps.medigun.healingDist", 4.0d);
-			config.set("GameProps.medigun.healingRate", 1);
+			config.set("GameProps.medigun.healingRate", 10d);
 			config.set("GameProps.killassist.pointsPerPercent", 1d);
 			config.set("GameProps.lang","EN_us.lang");
 			config.set("config.reset",false);
@@ -313,15 +317,15 @@ public class Config
 		return false;
 	}
 	
-	public void addFlag(Sign sign)
+	public void addFlag(FlagContainer fc)
 	{
-		WorldConfig wcfg = this.configByWorldName.get(sign.getWorld().getName());
+		WorldConfig wcfg = this.configByWorldName.get(fc.sign.getWorld().getName());
 		if(wcfg != null)
 		{
-			wcfg.addFlag(sign);
+			wcfg.addFlag(fc);
 			return;
 		}
-		Error err = new Error("Tried to add flag to unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to add flag to unknown world.",String.format("World: %s", fc.sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 	}
 	
@@ -337,7 +341,7 @@ public class Config
 		ErrorReporter.reportError(err);
 	}
 	
-	public List<Sign> getFlags(World world)
+	public List<FlagContainer> getFlags(World world)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(world.getName());
 		if(wcfg != null)
@@ -346,7 +350,7 @@ public class Config
 		}
 		Error err = new Error("Tried to get flags for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
-		return new ArrayList<Sign>();
+		return new ArrayList<FlagContainer>();
 	}
 	
 	public double getFlagCaptureDistance(World w)
@@ -722,30 +726,18 @@ public class Config
 		return false;
 	}
 	
-	public double getSniperDamage(World w, Gamemode g)
+	public double getProjectileDamage(World w, Gamemode g, ProjectileType pt)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
 		if(wcfg != null)
 		{
-			return wcfg.getSniperDamage(g);
+			return wcfg.getProjectileDamage(g, pt);
 		}
-		Error err = new Error("Tried to get sniper damage for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get projectile damage for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 10.0d;
 	}
-	
-	public double getGeneralDamage(World w, Gamemode g)
-	{
-		WorldConfig wcfg = this.configByWorldName.get(w.getName());
-		if(wcfg != null)
-		{
-			return wcfg.getGeneralDamage(g);
-		}
-		Error err = new Error("Tried to get general damage for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
-		ErrorReporter.reportError(err);
-		return 5.0d;
-	}
-	
+		
 	public double getHeadshotDamageMultiplier(World w, Gamemode g)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
@@ -828,5 +820,17 @@ public class Config
 		Error err = new Error("Tried to get can environment be damaged for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
+	}
+	
+	public double getScore(World w, Score s)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getScoreForAction(s);
+		}
+		Error err = new Error(String.format("Tried to get score for action \"%s\" for unknown world.",s.name()),String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 0d;
 	}
 }

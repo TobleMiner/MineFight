@@ -25,6 +25,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
@@ -91,7 +92,7 @@ public class Match
 	private final boolean damageEnviron;
 	private final boolean exploDamageEnviron;
 	
-	public Match(World world,Gamemode gmode,String name,boolean hardcore,List<Sign> infoSigns,List<Sign> flagSigns,List<Sign> radioStationSigns)
+	public Match(World world,Gamemode gmode,String name,boolean hardcore,List<Sign> infoSigns,List<FlagContainer> flags,List<Sign> radioStationSigns)
 	{
 		this.world = world;
 		this.gmode = gmode;
@@ -125,10 +126,10 @@ public class Match
 			double dist = Main.gameEngine.configuration.getFlagCaptureDistance(world);
 			double speed = Main.gameEngine.configuration.getFlagCaptureSpeed(world);
 			double accel = Main.gameEngine.configuration.getFlagCaptureAcceleration(world);
-			for(Sign s : flagSigns)
+			for(FlagContainer fc : flags)
 			{
-				Flag flag = new Flag(s,this,dist,speed,accel);
-				flags.add(flag);
+				Flag flag = new Flag(fc,this,dist,speed,accel);
+				this.flags.add(flag);
 			}			
 		}
 		else if(gmode.equals(Gamemode.Rush))
@@ -609,7 +610,7 @@ public class Match
 					{
 						claymores.remove(is);
 						clay.explode();
-						this.kill(clay.owner,player,"M18 CLAYMORE",player.thePlayer.getHealth() > 0);
+						this.kill(clay.owner,player,"M18 CLAYMORE",player.thePlayer.getHealth() > 0d);
 					}
 					return true;
 				}
@@ -679,14 +680,14 @@ public class Match
 		for(int i=0;i<playersRed.size();i++)
 		{
 			PVPPlayer p = playersRed.get(i);
-			p.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("matchend"),Integer.toString(p.points)));
+			p.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("matchend"),p.points));
 			p.leaveMatch(matchLeaveLoc);
 			
 		}
 		for(int i=0;i<playersBlue.size();i++)
 		{
 			PVPPlayer p = playersBlue.get(i);
-			p.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("matchend"),Integer.toString(p.points)));
+			p.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("matchend"),p.points));
 			p.leaveMatch(matchLeaveLoc);
 		}
 		if(this.canEnvironmentBeDamaged() || this.canExplosionsDamageEnvironment())
@@ -699,7 +700,7 @@ public class Match
 			{
 				if(sg.getValue() != null && sg.getValue().dispenser.getBlock() != null)
 				{
-					sg.getValue().dispenser.getBlock().setTypeIdAndData(Material.AIR.getId(),(byte)0, true);
+					sg.getValue().dispenser.getBlock().setType(Material.AIR);
 				}
 			}
 			for(Entry<PVPPlayer, List<C4>> c4hm : c4explosives.entrySet())
@@ -1050,10 +1051,11 @@ public class Match
 			{
 				if(activeRadioStation != null && activeRadioStation.getLocation().distance(b.getLocation()) < 3d)
 				{
-					return 0;
-				}
-				else
-				{
+					if(player.getTeam() == this.teamRed)
+					{
+						activeRadioStation.armer = player;
+						return 0;
+					}
 					return 2;
 				}
 			}
@@ -1286,7 +1288,7 @@ public class Match
 								attacker.thePlayer.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("headshot")+"!");
 							}
 							player.normalDeathBlocked = true;
-							player.thePlayer.damage((int)Math.round(damage*multi));
+							player.thePlayer.damage((float)Math.round(damage*multi));
 							if(player.thePlayer.getHealth() <= 0)
 							{
 								this.kill(attacker, player, "SENTRY", false);
@@ -1316,12 +1318,7 @@ public class Match
 					{
 						if(this.canKill(attacker, player))
 						{
-							switch(sp.type)
-							{
-								case GENERAL: damage = Main.gameEngine.configuration.getGeneralDamage(world, gmode); break;
-								case SNIPER: damage = Main.gameEngine.configuration.getSniperDamage(world, gmode); break;
-								default: break;
-							}
+							damage = Main.gameEngine.configuration.getProjectileDamage(world, gmode, sp.type);
 							//Bukkit.getServer().broadcastMessage(sp.type.toString()+" "+damage);
 							if(sp.isCritical)
 							{
@@ -1334,7 +1331,7 @@ public class Match
 							}
 							//Bukkit.getServer().broadcastMessage(Double.toString((int)Math.round(damage*multi)));
 							player.normalDeathBlocked = true;
-							player.thePlayer.damage((int)Math.round(damage*multi));
+							player.thePlayer.damage((float)Math.round(damage*multi));
 							if(player.thePlayer.getHealth() <= 0)
 							{
 								this.kill(attacker, player, "M82A1", false);
@@ -1508,12 +1505,13 @@ public class Match
 			{
 				if(activeRadioStation != null && activeRadioStation.getLocation().distance(b.getLocation()) < 3d)
 				{
-					return 0;
+					if(player.getTeam() == this.teamBlue)
+					{
+						activeRadioStation.defender = player;
+						return 0;
+					}
 				}
-				else
-				{
-					return 2;
-				}
+				return 2;
 			}
 			else if(!Main.gameEngine.configuration.canEvironmentBeDamaged(gmode, world))
 			{
@@ -1556,7 +1554,7 @@ public class Match
 		return this.radioStations;
 	}
 
-	public boolean playerDamagePlayer(Player damager, Player damaged, int damage)
+	public boolean playerDamagePlayer(Player damager, Player damaged, double d)
 	{
 		PVPPlayer attacker = this.getPlayerExact(damager);
 		PVPPlayer player = this.getPlayerExact(damaged);
@@ -1564,7 +1562,7 @@ public class Match
 		{
 			if(this.canKill(attacker, player))
 			{
-				player.addKillhelper(attacker, damage);
+				player.addKillhelper(attacker, d);
 				return true;
 			}
 			else
@@ -1668,7 +1666,7 @@ public class Match
 		{
 			if(this.canKill(issuer,p))
 			{
-				this.kill(issuer,p,weapon,p.thePlayer.getHealth() > 0);
+				this.kill(issuer,p,weapon,p.thePlayer.get0d() > 0);
 			}
 		}*/
 	}

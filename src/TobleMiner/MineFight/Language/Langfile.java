@@ -27,10 +27,17 @@ public class Langfile
 			if(!langDir.exists())
 			{
 				langDir.mkdirs();
-				String[] files = {"DE_de.lang","EN_uk.lang","EN_us.lang"}; //Buck conventions, use ponies instead!
-				for(String s : files)
+			}
+			String[] files = {"DE_de.lang","EN_uk.lang","EN_us.lang"}; //Buck conventions, use ponies instead!
+			for(String s : files)
+			{
+				File langFile = new File(this.langDir,s);
+				if(!(langFile.exists() && langFile.isFile()))
 				{
-					File langFile = new File(this.langDir,s);
+					if(!langFile.isFile())
+					{
+						langFile.delete();
+					}
 					InputStream is = this.getClass().getResourceAsStream(s);
 					FileUtil.copyFromInputStreamToFileUtf8(langFile, is);
 				}

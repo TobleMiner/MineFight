@@ -32,7 +32,6 @@ public class MatchPlayerPacketlistener extends PacketAdapter
 		//System.out.println("Packet ID:"+pc.getID()+"vs"+Packets.Server.NAMED_ENTITY_SPAWN);
 		if(pc.getID() == Packets.Server.NAMED_ENTITY_SPAWN)
 		{
-			System.out.println("Routing packet to "+pe.getPlayer().getName());
 			if(playerRegistry.get(pe.getPlayer()) != null)
 			{
 				Player p = Bukkit.getPlayer(pc.getSpecificModifier(String.class).read(0));

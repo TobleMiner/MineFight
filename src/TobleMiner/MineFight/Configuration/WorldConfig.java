@@ -16,11 +16,15 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
+import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.Protection.ProtectedArea;
+import TobleMiner.MineFight.Weapon.WeaponType;
+import TobleMiner.MineFight.Weapon.Projectile.ProjectileType;
 
 public class WorldConfig
 {
@@ -126,8 +130,8 @@ public class WorldConfig
 					config.set(gmpref+".attackerOuterSpawnRadius",70d);
 					config.set(gmpref+".attackerInnerSpawnRadius",30d);
 				}
-				config.set(gmpref+".weapon.sniperDamage",10d);					
-				config.set(gmpref+".weapon.generalDamage",5d);					
+				config.set(gmpref+".projectile.damage."+ProjectileType.SNIPER.toString(),10d);					
+				config.set(gmpref+".projectile.damage."+ProjectileType.GENERAL.toString(),5d);					
 				config.set(gmpref+".weapon.headshotMultiplier",2d);					
 				config.set(gmpref+".weapon.legshotMultiplier",0.5d);					
 				config.set(gmpref+".weapon.critProbability",0.02d);					
@@ -135,6 +139,11 @@ public class WorldConfig
 				config.set(gmpref+".environment.canBeDamaged",true);					
 				config.set(gmpref+".environment.doExplosionsDamageEnvironment",true);					
 			}
+			config.set("gameProps.score.flagCapture",100d);
+			config.set("gameProps.score.kill", 100d);
+			config.set("gameProps.score.radioArm", 200d);
+			config.set("gameProps.score.radioDest", 400d);
+			config.set("gameProps.score.radioDisarm", 250d);
 			config.set("environment.canBeDamaged",true);
 			config.set("environment.doExplosionsDamageEnvironment",true);
 			config.set("leaveWorld",this.world.getName());
@@ -301,19 +310,20 @@ public class WorldConfig
 		return config.getBoolean("gamemodes."+gm.toString().toLowerCase()+".player.preventItemDrop",true);
 	}
 
-	public void addFlag(Sign sign) 
+	public void addFlag(FlagContainer fc) 
 	{
 		ConfigurationSection cs = config.getConfigurationSection("gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".flags");
 		if(cs != null)
 		{
-			String flagName = Integer.toString(sign.getLocation().getBlockX())+","+Integer.toString(sign.getLocation().getBlockY())+","+Integer.toString(sign.getLocation().getBlockZ());
-			cs.set(flagName+".X",sign.getLocation().getX());
-			cs.set(flagName+".Y",sign.getLocation().getY());
-			cs.set(flagName+".Z",sign.getLocation().getZ());
+			String flagName = Integer.toString(fc.sign.getLocation().getBlockX())+","+Integer.toString(fc.sign.getLocation().getBlockY())+","+Integer.toString(fc.sign.getLocation().getBlockZ());
+			cs.set(flagName+".X",fc.sign.getLocation().getX());
+			cs.set(flagName+".Y",fc.sign.getLocation().getY());
+			cs.set(flagName+".Z",fc.sign.getLocation().getZ());
+			cs.set(flagName+".name",fc.name);
 			this.save();
 		}
 	}
-
+	
 	public void removeFlag(Sign sign)
 	{
 		ConfigurationSection cs = config.getConfigurationSection("gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".flags");
@@ -328,9 +338,9 @@ public class WorldConfig
 		}		
 	}
 
-	public List<Sign> getFlags()
+	public List<FlagContainer> getFlags()
 	{
-		List<Sign> signs = new ArrayList<Sign>();
+		List<FlagContainer> signs = new ArrayList<FlagContainer>();
 		try
 		{
 			ConfigurationSection cs = config.getConfigurationSection("gamemodes."+Gamemode.Conquest.toString().toLowerCase()+".flags");
@@ -339,10 +349,11 @@ public class WorldConfig
 				for(String s : cs.getValues(false).keySet())
 				{
 					Location loc = new Location(world,cs.getDouble(s+".X"),cs.getDouble(s+".Y"),cs.getDouble(s+".Z"));
+					String name = cs.getString(s+".name");
 					Block b = world.getBlockAt(loc);
 					if(b.getType().equals(Material.WALL_SIGN))
 					{
-						signs.add((Sign)b.getState());
+						signs.add(new FlagContainer((Sign)b.getState(),name));
 					}
 				}
 			}
@@ -482,14 +493,9 @@ public class WorldConfig
 		return config.getBoolean("minimapEnabled",true);	
 	}
 
-	public double getSniperDamage(Gamemode g) 
+	public double getProjectileDamage(Gamemode g, ProjectileType pt) 
 	{
-		return config.getDouble("gamemodes."+g.toString().toLowerCase()+".weapon.sniperDamage",10d);					
-	}
-
-	public double getGeneralDamage(Gamemode g) 
-	{
-		return config.getDouble("gamemodes."+g.toString().toLowerCase()+".weapon.generalDamage",5d);						
+		return config.getDouble("gamemodes."+g.toString().toLowerCase()+".projectile.damage."+pt.toString(),10d);					
 	}
 
 	public double getHeadshotDamageMultiplier(Gamemode g) 
@@ -525,5 +531,10 @@ public class WorldConfig
 	public boolean canEvironmentBeDamaged() 
 	{
 		return config.getBoolean("environment.canBeDamaged",true);
+	}
+	
+	public double getScoreForAction(Score s)
+	{
+		return config.getDouble("gameProps.score."+s.name);
 	}
 }

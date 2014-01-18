@@ -3,6 +3,7 @@ package TobleMiner.MineFight.Weapon.RC;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
+import org.bukkit.material.MaterialData;
 
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
@@ -16,8 +17,8 @@ public class C4
 	public final PVPPlayer owner;
 	private final Match match;
 	private final float killRangeMod;
-	private int blockIdStore = 0;
-	private byte blockDataStore = 0;
+	private Material blockIdStore;
+	private MaterialData blockDataStore;
 	private final boolean damageEnviron;
 	
 	public C4(Block b,Item i,float f,PVPPlayer owner,Match match,float killRangeMod)
@@ -27,9 +28,9 @@ public class C4
 		this.owner = owner;
 		if(this.block != null)
 		{
-			this.blockIdStore = this.block.getTypeId();
-			this.blockDataStore = this.block.getData();
-			this.block.setTypeIdAndData(Material.LAPIS_ORE.getId(),(byte)0,true);
+			this.blockIdStore = this.block.getType();
+			this.blockDataStore = this.block.getState().getData();
+			this.block.setType(Material.LAPIS_ORE);
 		}
 		this.match = match;
 		this.killRangeMod = killRangeMod;
@@ -46,11 +47,12 @@ public class C4
 				match.createExplosion(owner, this.block.getLocation(), exploStr, exploStr*killRangeMod,"C4");
 				if(damageEnviron)
 				{
-					this.block.setTypeIdAndData(Material.AIR.getId(),(byte)0,true);
+					this.block.setType(Material.AIR);
 				}
 				else
 				{
-					this.block.setTypeIdAndData(blockIdStore, blockDataStore, true);
+					this.block.setType(blockIdStore);
+					this.block.getState().setData(blockDataStore);
 				}
 			}
 		}

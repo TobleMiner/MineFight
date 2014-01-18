@@ -4,15 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.material.MaterialData;
+import org.bukkit.material.Wool;
 import org.bukkit.util.Vector;
 
+import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Match;
+import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.Util.Location.FacingUtil;
 
 public class RadioStation 
@@ -25,6 +30,9 @@ public class RadioStation
 	private final double destructTime;
 	private boolean armed = false;
 	private final Match match;
+	public PVPPlayer armer;
+	private PVPPlayer attacker;
+	public PVPPlayer defender;
 		
 	public RadioStation(Sign sign, double destructTime, Match match)
 	{
@@ -35,7 +43,7 @@ public class RadioStation
 		{
 			if(!b.getType().equals(Material.WALL_SIGN))
 			{
-				b.setTypeIdAndData(Material.AIR.getId(),(byte)0, true);
+				b.setType(Material.AIR);
 			}
 		}
 		this.destructTime = destructTime;
@@ -60,10 +68,23 @@ public class RadioStation
 				if(torches > 6)
 				{
 					armed = true;
+					if(this.armer != null)
+					{
+						this.armer.points += Main.gameEngine.configuration.getScore(this.armer.thePlayer.getWorld(),Score.RSARM);
+						this.attacker = this.armer;
+						this.armer = null;
+					}
 				}
 				else if(torches == 0)
 				{
 					armed = false;
+					if(this.defender != null)
+					{
+						this.defender.points += Main.gameEngine.configuration.getScore(this.defender.thePlayer.getWorld(),Score.RSDISARM);
+						this.defender = null;
+						this.attacker = null;
+						this.armer = null;
+					}
 				}
 				if(armed)
 				{
@@ -71,6 +92,11 @@ public class RadioStation
 					if(destructTimer >= destructTime)
 					{
 						this.destroy();
+						if(this.attacker != null)
+						{
+							this.attacker.points += Main.gameEngine.configuration.getScore(this.attacker.thePlayer.getWorld(),Score.RSDEST);
+							this.attacker = null;
+						}
 						match.radioStationDestroyed(this);
 					}
 				}
@@ -115,7 +141,7 @@ public class RadioStation
 				case  0: mat = Material.LAPIS_BLOCK; break;
 				case  1: mat = Material.GLOWSTONE; break;				
 			}
-			loc.getBlock().setTypeIdAndData(mat.getId(), (byte)0, true);
+			loc.getBlock().setType(mat);
 		}
 	}
 	
@@ -134,7 +160,7 @@ public class RadioStation
 				case  0: mat = Material.NETHERRACK; break;
 				case  1: mat = Material.FIRE; break;				
 			}
-			loc.getBlock().setTypeIdAndData(mat.getId(), (byte)0, true);
+			loc.getBlock().setType(mat);
 		}		
 	}
 	

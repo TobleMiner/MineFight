@@ -4,15 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.material.MaterialData;
+import org.bukkit.material.Wool;
 
+import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
+import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Match.Team.Team;
 import TobleMiner.MineFight.GameEngine.Match.Team.TeamBlue;
@@ -23,6 +28,7 @@ public class Flag
 {
 	private final List<Block> flagArea;
 	private final Sign sign;
+	private final String name;
 	private final Match match;
 	private final double flagCapDist;
 	private final double flagCapSpeed;
@@ -33,13 +39,15 @@ public class Flag
 	private int timer = 0;
 	private List<PVPPlayer> helpers= new ArrayList<PVPPlayer>();
 	
-	public Flag(Sign sign,Match match,double flagCaptureDist,double flagCapSpeed,double flagCapAccel)
+	public Flag(FlagContainer fc,Match match,double flagCaptureDist,double flagCapSpeed,double flagCapAccel)
 	{
-		this.sign = sign;
-		flagArea = getFlagBlocks(sign, getFacing(sign));
+		this.sign = fc.sign;
+		this.flagArea = getFlagBlocks(sign, getFacing(sign));
+		this.name = fc.name;
 		for(Block b : flagArea)
 		{
-			b.setTypeIdAndData(Material.WOOL.getId(),(byte)0, true);			
+			b.setType(Material.WOOL);
+			b.getState().setData(new Wool(DyeColor.WHITE));
 		}
 		this.match = match;
 		this.flagCapDist = flagCaptureDist;
@@ -101,9 +109,10 @@ public class Flag
 									this.owner = teamRed;
 									for(Block b : flagArea)
 									{
-										b.setTypeIdAndData(Material.WOOL.getId(),(byte)14, true);
+										b.setType(Material.WOOL);
+										b.getState().setData(new Wool(DyeColor.RED));
 									}
-									this.match.sendTeamMessage(teamRed,ChatColor.GOLD+"We have captured the flag!");
+									this.match.sendTeamMessage(teamRed,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagcap"),this.name));
 								}
 							}
 							else if(percBlue > 0d)
@@ -113,11 +122,12 @@ public class Flag
 								{
 									this.percBlue = 0d;
 									this.owner = null;
-									this.match.sendTeamMessage(teamRed,ChatColor.GOLD+"We have neutralized the flag!");
-									this.match.sendTeamMessage(teamBlue,ChatColor.GOLD+"We have lost a flag!");
+									this.match.sendTeamMessage(teamRed,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagneut"),this.name));
+									this.match.sendTeamMessage(teamBlue,ChatColor.RED+String.format(Main.gameEngine.dict.get("flaglost"),this.name));
 									for(Block b : flagArea)
 									{
-										b.setTypeIdAndData(Material.WOOL.getId(),(byte)0, true);
+										b.setType(Material.WOOL);
+										b.getState().setData(new Wool(DyeColor.WHITE));
 									}
 								}
 							}
@@ -134,10 +144,11 @@ public class Flag
 								if(percBlue == 100d)
 								{
 									this.owner = teamBlue;
-									this.match.sendTeamMessage(teamBlue,ChatColor.GOLD+"We have captured the flag!");
+									this.match.sendTeamMessage(teamBlue,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagcap"),this.name));
 									for(Block b : flagArea)
 									{
-										b.setTypeIdAndData(Material.WOOL.getId(),(byte)11, true);
+										b.setType(Material.WOOL);
+										b.getState().setData(new Wool(DyeColor.BLUE));
 									}
 								}
 							}
@@ -148,11 +159,12 @@ public class Flag
 								{
 									this.percRed = 0d;
 									this.owner = null;
-									this.match.sendTeamMessage(teamRed,ChatColor.GOLD+"We have lost a flag!");
-									this.match.sendTeamMessage(teamBlue,ChatColor.GOLD+"We have neutralized the flag!");
+									this.match.sendTeamMessage(teamRed,ChatColor.RED+String.format(Main.gameEngine.dict.get("flagneut"),this.name));
+									this.match.sendTeamMessage(teamBlue,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flaglost"),this.name));
 									for(Block b : flagArea)
 									{
-										b.setTypeIdAndData(Material.WOOL.getId(),(byte)0, true);
+										b.setType(Material.WOOL);
+										b.getState().setData(new Wool(DyeColor.WHITE));
 									}
 								}
 							}
@@ -167,8 +179,9 @@ public class Flag
 							{
 								if(helper.getTeam() == ownerNow)
 								{
-									helper.thePlayer.sendMessage(ChatColor.DARK_GREEN+"+100 points for Flag capture");
-									helper.points += 100;
+									double points = Main.gameEngine.configuration.getScore(this.sign.getWorld(), Score.FLAGCAP);
+									helper.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("flagcappoints"),points));
+									helper.points += points;
 								}
 							}
 						}
@@ -214,12 +227,14 @@ public class Flag
 		for(int i=-1;i<=4;i++)
 		{
 			Location fenceLoc = sign.getLocation().clone().add(0,i,0).add(facing);
-			sign.getBlock().getWorld().getBlockAt(fenceLoc).setTypeIdAndData(Material.FENCE.getId(),(byte)0,true);
+			Block b = sign.getBlock().getWorld().getBlockAt(fenceLoc);
+			b.setType(Material.FENCE);
 		}
 		List<Block> blocks = Flag.getFlagBlocks(sign, facing);
 		for(Block b : blocks)
 		{
-			b.setTypeIdAndData(Material.WOOL.getId(), (byte)0, true);
+			b.setType(Material.WOOL);
+			b.getState().setData(new Wool(DyeColor.WHITE));
 		}
 	}
 	

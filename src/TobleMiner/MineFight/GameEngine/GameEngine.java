@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -19,6 +20,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Config;
+import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
@@ -97,9 +99,9 @@ public class GameEngine
 				String[] kitItemParts = kitItem.split(",");
 				int amount = Integer.parseInt(kitItemParts[1]);
 				String[] itemWithSubId = kitItemParts[0].split(":");
-				int id = Integer.parseInt(itemWithSubId[0]);
+				String matname = itemWithSubId[0];
 				short subId = Short.parseShort(itemWithSubId[1]);
-				ItemStack is = new ItemStack(id,amount,subId);
+				ItemStack is = new ItemStack(Material.getMaterial(matname),amount,subId);
 				kitItems.add(is);
 			}
 			catch(Exception ex)
@@ -122,7 +124,7 @@ public class GameEngine
 			{
 				break;
 			}
-			armor[i] = ((Integer.parseInt(id) == 0)? null : new ItemStack(Integer.parseInt(id),1));
+			armor[i] = new ItemStack(Material.getMaterial(id),1);
 			i++;
 		}
 		return armor;
@@ -140,7 +142,7 @@ public class GameEngine
 	public void startNewMatch(World w,Gamemode g,String name,boolean hardcore)
 	{
 		List<Sign> signs = configuration.getInfoSigns(w, g);
-		List<Sign> flags = configuration.getFlags(w);
+		List<FlagContainer> flags = configuration.getFlags(w);
 		List<Sign> radioStations = configuration.getRadioStations(w);
 		Match match = new Match(w,g,name,hardcore,signs,flags,radioStations);
 		matches.add(match);
@@ -386,12 +388,12 @@ public class GameEngine
 		return false;
 	}
 
-	public boolean arrowHitPlayer(Arrow a, Player p, int damage)
+	public boolean arrowHitPlayer(Arrow a, Player p, double d)
 	{
 		Match m = this.getMatch(p.getWorld());
 		if(m != null)
 		{
-			return m.arrowHitPlayer(p,a,damage);
+			return m.arrowHitPlayer(p,a,d);
 		}		
 		return false;
 	}
@@ -475,12 +477,12 @@ public class GameEngine
 		return false;
 	}
 
-	public boolean playerDamagePlayer(Player damager, Player damaged, int damage)
+	public boolean playerDamagePlayer(Player damager, Player damaged, double d)
 	{
 		Match m = this.getMatch(damager.getWorld());
 		if(m != null)
 		{
-			return m.playerDamagePlayer(damager,damaged,damage);
+			return m.playerDamagePlayer(damager,damaged,d);
 		}
 		return false;
 	}

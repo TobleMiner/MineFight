@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
@@ -345,7 +346,7 @@ public class Main extends JavaPlugin
 						}
 					}
 				}
-				else if(args.length == 1)
+				if(args.length >= 1)
 				{
 					if(args[0].equalsIgnoreCase("leave"))
 					{
@@ -414,9 +415,14 @@ public class Main extends JavaPlugin
 							Block tb = p.getTargetBlock(null,10);
 							if(tb != null && (tb.getType().equals(Material.WALL_SIGN)))
 							{
+								String name = "";
+								if(args.length > 1)
+								{
+									name = args[1];
+								}
 								Sign sign = (Sign)tb.getState();
 								Flag.buildFlag(sign);
-								Main.gameEngine.configuration.addFlag(sign);
+								Main.gameEngine.configuration.addFlag(new FlagContainer(sign, name));
 								Main.gameEngine.configuration.addNewProtectedRegion(sign.getLocation().clone().subtract(11d, 11d, 11d), sign.getLocation().clone().add(11d, 11d, 11d));
 								sender.sendMessage(ChatColor.DARK_GREEN+Main.gameEngine.dict.get("addFlag"));
 							}
