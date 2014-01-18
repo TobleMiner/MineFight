@@ -26,6 +26,7 @@ import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
+import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
@@ -92,7 +93,7 @@ public class Match
 	private final boolean damageEnviron;
 	private final boolean exploDamageEnviron;
 	
-	public Match(World world,Gamemode gmode,String name,boolean hardcore,List<Sign> infoSigns,List<FlagContainer> flags,List<Sign> radioStationSigns)
+	public Match(World world,Gamemode gmode,String name,boolean hardcore,List<Sign> infoSigns,List<FlagContainer> flags,List<RadioStationContainer> radioStations)
 	{
 		this.world = world;
 		this.gmode = gmode;
@@ -109,7 +110,7 @@ public class Match
 		else if(gmode.equals(Gamemode.Rush))
 		{
 			this.teamRed.setPoints(Main.gameEngine.configuration.getPointsForGamemodeInWorld(world,gmode));
-			this.teamBlue.setPoints(radioStationSigns.size());
+			this.teamBlue.setPoints(radioStations.size());
 		}
 		else
 		{
@@ -135,12 +136,12 @@ public class Match
 		else if(gmode.equals(Gamemode.Rush))
 		{
 			double radioStationExploTime = Main.gameEngine.configuration.getRadioStationDestructTime(world);
-			for(Sign s : radioStationSigns)
+			for(RadioStationContainer s : radioStations)
 			{
 				RadioStation rs = new RadioStation(s, radioStationExploTime, this);
-				radioStations.add(rs);
+				this.radioStations.add(rs);
 			}
-			radioStationIterator = radioStations.iterator();
+			radioStationIterator = this.radioStations.iterator();
 			if(radioStationIterator.hasNext())
 			{
 				activeRadioStation = radioStationIterator.next();
@@ -1456,8 +1457,8 @@ public class Match
 
 	public void radioStationDestroyed(RadioStation radioStation)
 	{
-		this.sendTeamMessage(teamRed,ChatColor.GOLD+Main.gameEngine.dict.get("rsDestroyed"));
-		this.sendTeamMessage(teamBlue,ChatColor.GOLD+Main.gameEngine.dict.get("rsLost"));
+		this.sendTeamMessage(teamRed,ChatColor.GREEN+Main.gameEngine.dict.get("rsDestroyed"));
+		this.sendTeamMessage(teamBlue,ChatColor.RED+Main.gameEngine.dict.get("rsLost"));
 		this.teamBlue.subPoints(1.0d);
 		if(radioStationIterator.hasNext())
 		{

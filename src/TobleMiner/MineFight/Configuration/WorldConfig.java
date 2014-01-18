@@ -17,13 +17,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
+import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.Protection.ProtectedArea;
-import TobleMiner.MineFight.Weapon.WeaponType;
 import TobleMiner.MineFight.Weapon.Projectile.ProjectileType;
 
 public class WorldConfig
@@ -395,9 +395,9 @@ public class WorldConfig
 		return config.getBoolean("gamemodes."+gm.toString().toLowerCase()+".autobalance",true);		
 	}
 
-	public List<Sign> getRadioStations() 
+	public List<RadioStationContainer> getRadioStations() 
 	{
-		List<Sign> signs = new ArrayList<Sign>();
+		List<RadioStationContainer> signs = new ArrayList<RadioStationContainer>();
 		try
 		{
 			ConfigurationSection cs = config.getConfigurationSection("gamemodes."+Gamemode.Rush.toString().toLowerCase()+".radioStations");
@@ -406,10 +406,11 @@ public class WorldConfig
 				for(String s : cs.getValues(false).keySet())
 				{
 					Location loc = new Location(world,cs.getDouble(s+".X"),cs.getDouble(s+".Y"),cs.getDouble(s+".Z"));
+					String name = cs.getString(s+".name");
 					Block b = world.getBlockAt(loc);
 					if(b.getType().equals(Material.WALL_SIGN))
 					{
-						signs.add((Sign)b.getState());
+						signs.add(new RadioStationContainer((Sign)b.getState(),name));
 					}
 				}
 			}
@@ -421,15 +422,17 @@ public class WorldConfig
 		return signs;
 	}
 
-	public void addRadioStation(Sign sign)
+	public void addRadioStation(RadioStationContainer rsc)
 	{
 		ConfigurationSection cs = config.getConfigurationSection("gamemodes."+Gamemode.Rush.toString().toLowerCase()+".radioStations");
 		if(cs != null)
 		{
+			Sign sign = rsc.sign;
 			String rsName = Integer.toString(sign.getLocation().getBlockX())+","+Integer.toString(sign.getLocation().getBlockY())+","+Integer.toString(sign.getLocation().getBlockZ());
 			cs.set(rsName+".X",sign.getLocation().getX());
 			cs.set(rsName+".Y",sign.getLocation().getY());
 			cs.set(rsName+".Z",sign.getLocation().getZ());
+			cs.set(rsName+".name",rsc.name);
 			this.save();
 		}
 	}

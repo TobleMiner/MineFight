@@ -4,17 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Wool;
 import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
@@ -30,15 +29,17 @@ public class RadioStation
 	private final double destructTime;
 	private boolean armed = false;
 	private final Match match;
+	public final String name;
 	public PVPPlayer armer;
 	private PVPPlayer attacker;
 	public PVPPlayer defender;
 		
-	public RadioStation(Sign sign, double destructTime, Match match)
+	public RadioStation(RadioStationContainer rsc, double destructTime, Match match)
 	{
-		this.sign = sign;
-		RadioStation.buildRadioStation(sign,RadioStation.getFacing(sign));
-		this.torchBlocks = RadioStation.getTorchBlocks(sign, RadioStation.getFacing(sign));
+		this.sign = rsc.sign;
+		this.name = rsc.name;
+		RadioStation.buildRadioStation(this.sign,RadioStation.getFacing(this.sign));
+		this.torchBlocks = RadioStation.getTorchBlocks(this.sign, RadioStation.getFacing(this.sign));
 		for(Block b : torchBlocks)
 		{
 			if(!b.getType().equals(Material.WALL_SIGN))
@@ -70,7 +71,9 @@ public class RadioStation
 					armed = true;
 					if(this.armer != null)
 					{
-						this.armer.points += Main.gameEngine.configuration.getScore(this.armer.thePlayer.getWorld(),Score.RSARM);
+						double pArm = Main.gameEngine.configuration.getScore(this.armer.thePlayer.getWorld(),Score.RSARM);
+						this.armer.points += pArm;
+						this.armer.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsarmpoints"),pArm));
 						this.attacker = this.armer;
 						this.armer = null;
 					}
@@ -80,7 +83,9 @@ public class RadioStation
 					armed = false;
 					if(this.defender != null)
 					{
-						this.defender.points += Main.gameEngine.configuration.getScore(this.defender.thePlayer.getWorld(),Score.RSDISARM);
+						double pDisarm = Main.gameEngine.configuration.getScore(this.defender.thePlayer.getWorld(),Score.RSDISARM);
+						this.defender.points += pDisarm;
+						this.defender.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsdisarmpoints"),pDisarm));
 						this.defender = null;
 						this.attacker = null;
 						this.armer = null;
@@ -94,7 +99,9 @@ public class RadioStation
 						this.destroy();
 						if(this.attacker != null)
 						{
-							this.attacker.points += Main.gameEngine.configuration.getScore(this.attacker.thePlayer.getWorld(),Score.RSDEST);
+							double pDest = Main.gameEngine.configuration.getScore(this.attacker.thePlayer.getWorld(),Score.RSDEST);
+							this.attacker.points += pDest;
+							this.attacker.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsdestpoints"),pDest));
 							this.attacker = null;
 						}
 						match.radioStationDestroyed(this);

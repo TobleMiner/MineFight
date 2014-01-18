@@ -13,13 +13,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
+import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.Protection.ProtectedArea;
-import TobleMiner.MineFight.Weapon.WeaponType;
 import TobleMiner.MineFight.Weapon.Projectile.ProjectileType;
 
 public class Config
@@ -480,7 +480,7 @@ public class Config
 		return (float)config.getDouble("GameProps.ims.grenade.exploStr",4.0d);
 	}
 	
-	public List<Sign> getRadioStations(World world)
+	public List<RadioStationContainer> getRadioStations(World world)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(world.getName());
 		if(wcfg != null)
@@ -489,17 +489,17 @@ public class Config
 		}
 		Error err = new Error("Tried to get radio stations for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
-		return new ArrayList<Sign>();
+		return new ArrayList<RadioStationContainer>();
 	}
 	
-	public void addRadioStation(Sign sign)
+	public void addRadioStation(RadioStationContainer rsc)
 	{
-		WorldConfig wcfg = this.configByWorldName.get(sign.getWorld().getName());
+		WorldConfig wcfg = this.configByWorldName.get(rsc.sign.getWorld().getName());
 		if(wcfg != null)
 		{
-			wcfg.addRadioStation(sign);
+			wcfg.addRadioStation(rsc);
 		}
-		Error err = new Error("Tried to add radio station to unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to add radio station to unknown world.",String.format("World: %s", rsc.sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 	}
 	

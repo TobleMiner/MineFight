@@ -21,6 +21,7 @@ import org.bukkit.inventory.PlayerInventory;
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Config;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
+import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
@@ -143,7 +144,7 @@ public class GameEngine
 	{
 		List<Sign> signs = configuration.getInfoSigns(w, g);
 		List<FlagContainer> flags = configuration.getFlags(w);
-		List<Sign> radioStations = configuration.getRadioStations(w);
+		List<RadioStationContainer> radioStations = configuration.getRadioStations(w);
 		Match match = new Match(w,g,name,hardcore,signs,flags,radioStations);
 		matches.add(match);
 	}
