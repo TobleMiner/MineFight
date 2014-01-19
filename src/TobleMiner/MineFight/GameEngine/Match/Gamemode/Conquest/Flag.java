@@ -8,6 +8,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
@@ -110,7 +111,9 @@ public class Flag
 									for(Block b : flagArea)
 									{
 										b.setType(Material.WOOL);
-										b.getState().setData(new Wool(DyeColor.RED));
+										BlockState bs = b.getState();
+										bs.setData(new Wool(DyeColor.RED));
+										bs.update();
 									}
 									this.match.sendTeamMessage(teamRed,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagcap"),this.name));
 								}
@@ -127,7 +130,9 @@ public class Flag
 									for(Block b : flagArea)
 									{
 										b.setType(Material.WOOL);
-										b.getState().setData(new Wool(DyeColor.WHITE));
+										BlockState bs = b.getState();
+										bs.setData(new Wool(DyeColor.WHITE));
+										bs.update();
 									}
 								}
 							}
@@ -148,7 +153,9 @@ public class Flag
 									for(Block b : flagArea)
 									{
 										b.setType(Material.WOOL);
-										b.getState().setData(new Wool(DyeColor.BLUE));
+										BlockState bs = b.getState();
+										bs.setData(new Wool(DyeColor.BLUE));
+										bs.update();
 									}
 								}
 							}
@@ -164,7 +171,9 @@ public class Flag
 									for(Block b : flagArea)
 									{
 										b.setType(Material.WOOL);
-										b.getState().setData(new Wool(DyeColor.WHITE));
+										BlockState bs = b.getState();
+										bs.setData(new Wool(DyeColor.WHITE));
+										bs.update();
 									}
 								}
 							}
