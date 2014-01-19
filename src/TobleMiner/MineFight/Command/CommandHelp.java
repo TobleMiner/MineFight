@@ -24,26 +24,47 @@ public class CommandHelp extends CommandHandler
 				this.sender.sendMessage((i % 2 == 0 ? ChatColor.RED : ChatColor.GREEN)+"   "+cm.name);
 				i++;
 			}
-			this.sender.sendMessage(Main.gameEngine.dict.get("helpModulesAfter"));
+			this.sender.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("helpModulesAfter"));
 			return true;
 		}
-		if(args.length == 1)
+		CommandModule cm = null;
+		if(args.length >= 1)
 		{
 			String modname = args[0];
-			this.sender.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("helpModulePre"),modname));
-			CommandModule cm = CommandModule.getModule(modname);
+			cm = CommandModule.getModule(modname);
 			if(cm == null)
 			{
 				this.sender.sendMessage(ChatColor.DARK_RED+String.format(Main.gameEngine.dict.get("noSuchModule"),modname));
 				return true;
 			}
+		}
+		if(args.length == 1)
+		{
+			this.sender.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("helpModulePre"),cm.name));
 			int i = 0;
 			for(Command cmd : Command.getCommandsByModule(cm))
 			{
 				this.sender.sendMessage((i % 2 == 0 ? ChatColor.RED : ChatColor.GREEN)+"   "+cmd.cmd);
 				i++;
 			}
-			this.sender.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("helpModuleAfter"),modname));
+			this.sender.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("helpModuleAfter"),cm.name));
+			return true;
+		}
+		if(args.length > 1)
+		{
+			String cmdname = args[1];
+			Command cmd = Command.getCommand(cm, cmdname);
+			if(cmd == null)
+			{
+				this.sender.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("moduleNoSuchCmd"),cmdname,cm.name));
+				return true;
+			}
+			int i = 0;
+			for(String s : cmd.getInformation())
+			{
+				this.sender.sendMessage((i % 2 == 0 ? ChatColor.RED : ChatColor.GREEN)+s);
+				i++;
+			}
 			return true;
 		}
 		return false;
