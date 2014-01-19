@@ -1,6 +1,5 @@
 package TobleMiner.MineFight;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -51,40 +50,6 @@ public class EventListener implements Listener
 		{
 			Player p = event.getPlayer();
 			ItemStack is = p.getInventory().getItemInHand();
-			if(is != null)
-			{
-				if(event.getAction() == Action.RIGHT_CLICK_BLOCK && p.getName().equalsIgnoreCase("Toble_Miner"))
-				{
-					if(is.getType() == Material.SULPHUR)
-					{
-						Block clicked = event.getClickedBlock();
-						if(clicked == null)
-						{
-							p.sendMessage(ChatColor.RED+"Please click a block!");
-							return;
-						}
-						Location loc = clicked.getLocation().clone().add(new Location(p.getWorld(),0,20,0));
-						mane.waypoints.clear();
-						mane.waypoints.add(loc);
-						p.sendMessage(ChatColor.DARK_BLUE+"Swarm spawn loc set!");
-						p.sendMessage(ChatColor.DARK_BLUE+"Waypoints cleared!");
-					}
-					if(is.getType() == Material.ARROW)
-					{
-						{
-							Block clicked = event.getClickedBlock();
-							if(clicked == null)
-							{
-								p.sendMessage(ChatColor.RED+"Please click a block!");
-								return;
-							}
-							Location loc = clicked.getLocation().clone();
-							mane.waypoints.add(loc);
-							p.sendMessage(ChatColor.DARK_BLUE+"Waypoint added!");
-						}
-					}
-				}
-			}
 			if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 			{
 				Material material = event.getClickedBlock().getType();
