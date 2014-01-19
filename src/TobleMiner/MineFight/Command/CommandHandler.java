@@ -47,6 +47,10 @@ public abstract class CommandHandler
 			{
 				return new CommandFlag(sender).handle(argsShort);
 			}
+			else if(args[0].equalsIgnoreCase("is"))
+			{
+				return new CommandInfosign(sender).handle(argsShort);
+			}
 			else if(args[0].equalsIgnoreCase("match"))
 			{
 				return new CommandMatch(sender).handle(argsShort);

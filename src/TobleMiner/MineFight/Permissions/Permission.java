@@ -16,7 +16,8 @@ public enum Permission
 	MPVP_INFOSIGN_ADD("MineFight.admin.addInfosign"),
 	MPVP_INFOSIGN_DEL("MineFight.admin.removeInfosign"),
 	MPVP_INFOSIGN_LIST("MineFight.admin.listInfosigns"),
-	MPVP_RELOAD("MineFight.admin.reloadConfig");
+	MPVP_RELOAD("MineFight.admin.reloadConfig"),
+	MPVP_NONE("NONE");
 	
 	
 	private final String perm;

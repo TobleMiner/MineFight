@@ -32,7 +32,7 @@ public class CommandInfosign extends CommandHandler
 				{
 					if(this.p != null)
 					{
-						if(!this.pm.hasPlayerPermission(this.p, Permission.MPVP_MATCH_END))
+						if(!this.pm.hasPlayerPermission(this.p, Permission.MPVP_INFOSIGN_LIST))
 						{
 							p.sendMessage(this.noPermMsg);
 							return true;

@@ -37,7 +37,7 @@ public class CommandMatch extends CommandHandler
 				String gmName = args[2];
 				String mName = args[3];
 				boolean hardcore = false;
-				if(args.length > 4) try {hardcore = Boolean.parseBoolean(args[4]);} catch(Exception ex){}
+				if(args.length > 4) try {hardcore = Boolean.parseBoolean(args[4]);} catch(Exception ex){ if(args[5].equalsIgnoreCase("hardcore")) hardcore = true;}
 				World w = Bukkit.getServer().getWorld(wName);
 				if(w == null)
 				{
