@@ -41,6 +41,8 @@ public class GameEngine
 	private final List<Match> matches = new ArrayList<Match>();
 	public final Langfile dict;
 	
+	public static double tps = 20.0d;
+	
 	public GameEngine(Main mane)
 	{
 		this.config = mane.getConfig();

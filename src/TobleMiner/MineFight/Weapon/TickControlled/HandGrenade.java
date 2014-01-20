@@ -3,6 +3,7 @@ package TobleMiner.MineFight.Weapon.TickControlled;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
 
+import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.Util.SyncDerp.EntitySyncCalls;
@@ -34,7 +35,7 @@ public class HandGrenade extends TickControlledWeapon
 	public void doUpdate()
 	{
 		timer++;
-		if(timer > (this.fuse*100f))
+		if(timer > (this.fuse*GameEngine.tps))
 		{
 			Location loc = item.getLocation();
 			EntitySyncCalls.removeEntity(item);

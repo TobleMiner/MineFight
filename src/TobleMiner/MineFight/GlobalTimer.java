@@ -1,8 +1,8 @@
 package TobleMiner.MineFight;
 
-import java.util.TimerTask;
+import org.bukkit.scheduler.BukkitRunnable;
 
-public class GlobalTimer extends TimerTask
+public class GlobalTimer extends BukkitRunnable
 {
 	public void run()
 	{

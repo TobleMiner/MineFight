@@ -11,6 +11,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
@@ -46,7 +47,7 @@ public class IMS extends TickControlledWeapon
 	@Override
 	public void doUpdate() 
 	{
-		if(timer > 10)
+		if(timer > GameEngine.tps/10d)
 		{
 			timer = 0;
 			time += 0.1d;

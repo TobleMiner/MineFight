@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.util.Vector;
 
+import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
 import TobleMiner.MineFight.Util.SyncDerp.EntitySyncCalls;
@@ -36,7 +37,7 @@ public class SentryMissile extends TickControlledWeapon
 	@Override
 	public void doUpdate()
 	{
-		if(timer >= 10)
+		if(timer >= GameEngine.tps/10d)
 		{
 			time += 0.1d;
 			timer = 0;

@@ -1227,14 +1227,14 @@ public class Match
 	{
 		if(team != teamBlue)
 		{
-			for(PVPPlayer p : playersRed)
+			for(PVPPlayer p : new ArrayList<>(playersRed))
 			{
 				p.thePlayer.sendMessage(message);
 			}			
 		}
 		else if(team != teamRed)
 		{
-			for(PVPPlayer p : playersBlue)
+			for(PVPPlayer p : new ArrayList<>(playersBlue))
 			{
 				p.thePlayer.sendMessage(message);
 			}			

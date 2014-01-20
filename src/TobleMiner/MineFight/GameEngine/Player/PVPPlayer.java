@@ -27,6 +27,7 @@ import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
+import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Match.Team.Team;
@@ -238,7 +239,7 @@ public class PVPPlayer
 		CombatClass cc = this.getCombatClass();
 		if(this.thePlayer.isBlocking() && this.isSpawned() && this.combatClass != null)
 		{
-			if(timer > 10)
+			if(timer > GameEngine.tps/10d)
 			{
 				timer = 0;
 				PlayerInventory pi = this.thePlayer.getInventory();

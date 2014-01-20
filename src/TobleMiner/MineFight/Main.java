@@ -1,39 +1,21 @@
 package TobleMiner.MineFight;
 
 import java.io.File;
-import java.util.List;
-import java.util.Timer;
 import java.util.logging.Level;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import TobleMiner.MineFight.Command.CommandHandler;
-import TobleMiner.MineFight.Configuration.Container.FlagContainer;
-import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.ErrorHandling.Logger;
 import TobleMiner.MineFight.GameEngine.GameEngine;
-import TobleMiner.MineFight.GameEngine.Match.Match;
-import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
-import TobleMiner.MineFight.GameEngine.Match.Gamemode.Conquest.Flag;
-import TobleMiner.MineFight.GameEngine.Match.Gamemode.Rush.RadioStation;
 import TobleMiner.MineFight.LegalFu.LicenseHandler;
 import TobleMiner.MineFight.PacketModification.ProtocolLibSafeLoader;
-import TobleMiner.MineFight.Permissions.Permission;
 import TobleMiner.MineFight.Permissions.PermissionManager;
 import TobleMiner.MineFight.Util.Util;
 
@@ -75,9 +57,8 @@ public class Main extends JavaPlugin
 		}
 		Main.pm = new PermissionManager();
 		Main.plsl = new ProtocolLibSafeLoader(this);
-		Timer timer = new Timer();
 		GlobalTimer gtimer = new GlobalTimer();
-		timer.schedule(gtimer,10,10);
+		gtimer.runTaskTimer(this,1,1);
 	}
 	
 	@Override

@@ -13,9 +13,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.MaterialData;
 
+import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
+import TobleMiner.MineFight.Util.SyncDerp.BlockSyncCalls;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
 
 public class ResupplyStation 
@@ -53,7 +55,7 @@ public class ResupplyStation
 	
 	public void doUpdate()
 	{
-		if(timer > 50) //Update each 0.5s
+		if(timer > GameEngine.tps/2d) //Update each 0.5s
 		{
 			try
 			{
@@ -151,7 +153,7 @@ public class ResupplyStation
 						}
 					}
 					this.sign.setLine(0,Integer.toString(fill));
-					this.sign.update();
+					BlockSyncCalls.updateBlockstate(this.sign);
 				}
 				time += 0.5d;
 			}
