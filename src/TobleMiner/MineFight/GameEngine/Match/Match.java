@@ -610,8 +610,8 @@ public class Match
 					if(this.canKill(clay.owner,player))
 					{
 						claymores.remove(is);
-						clay.explode();
 						this.kill(clay.owner,player,"M18 CLAYMORE",player.thePlayer.getHealth() > 0d);
+						clay.explode();
 					}
 					return true;
 				}
@@ -812,7 +812,7 @@ public class Match
 			else
 			{
 				CombatClass cc = Main.gameEngine.combatClasses.get(cmd.toLowerCase().trim());
-				if(cc != null)
+				if(cc != null && player.getCombatClass() != cc)
 				{
 					this.setCombatClass(cc,player);
 				}
@@ -1182,13 +1182,13 @@ public class Match
 	public List<PVPPlayer> getPlayers()
 	{
 		List<PVPPlayer> players = new ArrayList<PVPPlayer>();
-		for(int i=0;i<playersRed.size();i++)
+		for(PVPPlayer p : new ArrayList<>(playersRed))
 		{
-			players.add(playersRed.get(i));
+			players.add(p);
 		}
-		for(int i=0;i<playersBlue.size();i++)
+		for(PVPPlayer p : new ArrayList<>(playersBlue))
 		{
-			players.add(playersBlue.get(i));
+			players.add(p);
 		}
 		return players;
 	}
@@ -1227,32 +1227,16 @@ public class Match
 	{
 		if(team != teamBlue)
 		{
-			for(int i=0;i<playersRed.size();i++)
+			for(PVPPlayer p : playersRed)
 			{
-				try
-				{
-					PVPPlayer p = playersRed.get(i);
-					p.thePlayer.sendMessage(message);
-				}
-				catch(Exception ex)
-				{
-					
-				}
-			}
+				p.thePlayer.sendMessage(message);
+			}			
 		}
 		else if(team != teamRed)
 		{
-			for(int i=0;i<playersBlue.size();i++)
+			for(PVPPlayer p : playersBlue)
 			{
-				try
-				{
-					PVPPlayer p = playersBlue.get(i);
-					p.thePlayer.sendMessage(message);
-				}
-				catch(Exception ex)
-				{
-					
-				}
+				p.thePlayer.sendMessage(message);
 			}			
 		}
 	}

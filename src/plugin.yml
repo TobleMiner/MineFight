@@ -3,7 +3,7 @@ version: 0.4.6
 description:
 author: Tobias Schramm 'Toble_Miner'
 website:
-softdepend: [Vault,PermissionsEx,ProtocolLib]
+softdepend: [Vault,PermissionsEx,ProtocolLib,Multiverse-Core]
 
 main: TobleMiner.MineFight.Main
 

@@ -32,7 +32,6 @@ public class FileUtil
 	{
 		try
 		{
-			System.out.println("YOLO");
 			BufferedReader br = new BufferedReader( new InputStreamReader(new FileInputStream(f),"UTF8"));
 			String s = StreamUtil.getDataAsUTF8(br);
 			br.close();

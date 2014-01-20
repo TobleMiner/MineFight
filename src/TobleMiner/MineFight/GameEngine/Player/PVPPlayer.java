@@ -207,6 +207,7 @@ public class PVPPlayer
 			}
 		}
 		this.killHelpers.clear();
+		this.setCombatClass(null);
 	}
 	
 	public void killAsist(double d)
