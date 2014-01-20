@@ -28,6 +28,8 @@ public class Main extends JavaPlugin
 	public static Logger logger;
 	public static Util util;
 	
+	private final GlobalTimer gtimer = new GlobalTimer();
+	
 	public Main()
 	{
 		Main.main = this;
@@ -57,8 +59,7 @@ public class Main extends JavaPlugin
 		}
 		Main.pm = new PermissionManager();
 		Main.plsl = new ProtocolLibSafeLoader(this);
-		GlobalTimer gtimer = new GlobalTimer();
-		gtimer.runTaskTimer(this,1,1);
+		this.gtimer.runTaskTimer(this,1,1);
 	}
 	
 	@Override
@@ -66,6 +67,7 @@ public class Main extends JavaPlugin
 	{
 		logger.log(Level.INFO,gameEngine.dict.get("onDisable"));
 		Main.gameEngine.endAllMatches();
+		this.gtimer.cancel();
 	}
 		
 	@Override
