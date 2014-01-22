@@ -1,17 +1,16 @@
 package TobleMiner.MineFight.GameEngine.Match.Statistics;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
-import java.sql.Connection;
+import TobleMiner.MineFight.GameEngine.Match.Statistics.Database.Database;
 
 public class Stats 
 {
 	private StatConfig sc;
+	private final Database db;
 	
 	public Stats(StatConfig sc)
 	{
 		this.sc = sc;
+		this.db = new Database();
 	}
 	
 	public boolean init()
@@ -24,37 +23,7 @@ public class Stats
 		catch(Exception ex){}
 		return false;
 	}
-	
-	public Connection openConnection()
-	{
-		try 
-		{
-			return DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s",this.sc.host,this.sc.port), this.sc.user, this.sc.passwd);
-		} 
-		catch (SQLException ex){}
-		return null;
-	}
-	
-	public void closeConnection(Connection conn)
-	{
-		try
-		{
-			conn.close();
-		}
-		catch(SQLException ex){}
-	}
-	
-	public boolean test()
-	{
-		Connection conn = this.openConnection();
-		if(conn != null)
-		{
-			this.closeConnection(conn);
-			return true;
-		}
-		return false;
-	}
-	
+		
 	public void updateConfig(StatConfig sc) //TODO
 	{
 		this.sc = sc;
