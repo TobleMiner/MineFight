@@ -19,6 +19,7 @@ import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
+import TobleMiner.MineFight.GameEngine.Match.Statistics.StatConfig;
 import TobleMiner.MineFight.Protection.ProtectedArea;
 import TobleMiner.MineFight.Weapon.Projectile.ProjectileType;
 
@@ -98,6 +99,12 @@ public class Config
 			config.set("GameProps.medigun.healingRate", 10d);
 			config.set("GameProps.killassist.pointsPerPercent", 1d);
 			config.set("GameProps.lang","EN_us.lang");
+			config.set("StatisticDb.enabled",false);
+			config.set("StatisticDb.host","localhost");
+			config.set("StatisticDb.port","3306");
+			config.set("StatisticDb.user","MineFight");
+			config.set("StatisticDb.password","password");
+			config.set("StatisticDb.db","MineFight");
 			config.set("config.reset",false);
 			config.set("debug",false);
 			this.save();
@@ -832,5 +839,17 @@ public class Config
 		Error err = new Error(String.format("Tried to get score for action \"%s\" for unknown world.",s.name()),String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 0d;
+	}
+	
+	public StatConfig getStatisticConfig()
+	{
+		StatConfig scfg = new StatConfig();
+		scfg.enabled = config.getBoolean("StatisticDb.enabled",false);
+		scfg.host = config.getString("StatisticDb.host");
+		scfg.port = config.getString("StatisticDb.port");
+		scfg.user = config.getString("StatisticDb.user");
+		scfg.passwd = config.getString("StatisticDb.password");
+		scfg.db = config.getString("StatisticDb.db");
+		return scfg;
 	}
 }
