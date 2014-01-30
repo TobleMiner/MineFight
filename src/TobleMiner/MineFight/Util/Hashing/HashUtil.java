@@ -16,7 +16,10 @@ public class HashUtil
 		{
 			return getSHA256(s.getBytes("UTF8"));
 		}
-		catch(Exception ex){};
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return null;
 	}
 	
@@ -28,7 +31,10 @@ public class HashUtil
 			md.update(b);
 			return md.digest();
 		}
-		catch(Exception ex){};
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return null;
 	}
 	
