@@ -1,0 +1,15 @@
+name: MineFight
+version: 0.4.6
+description:
+author: Tobias Schramm 'Toble_Miner'
+website:
+softdepend: [Vault,PermissionsEx,ProtocolLib,Multiverse-Core]
+
+main: TobleMiner.MineFight.Main
+
+commands:
+   mpvp:
+      description: Controlcommand for MineFight
+      usage: Type '/mpvp help' for further information
+
+permissions:

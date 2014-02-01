@@ -4,10 +4,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.CLI.CliOutput;
 import TobleMiner.MineFight.Command.Command.CommandModule;
 
 public class CommandHelp extends CommandHandler
 {
+	private CliOutput clio = new CliOutput();
+	
 	public CommandHelp(CommandSender sender) 
 	{
 		super(sender);
@@ -18,11 +21,9 @@ public class CommandHelp extends CommandHandler
 		if(args.length == 0)
 		{
 			this.sender.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("helpModulesPre"));
-			int i = 0;
 			for(CommandModule cm : CommandModule.values())
 			{
-				this.sender.sendMessage((i % 2 == 0 ? ChatColor.RED : ChatColor.GREEN)+"   "+cm.name);
-				i++;
+				this.clio.sendMsgHC("   "+cm.name, this.sender);
 			}
 			this.sender.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("helpModulesAfter"));
 			return true;
@@ -41,11 +42,9 @@ public class CommandHelp extends CommandHandler
 		if(args.length == 1)
 		{
 			this.sender.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("helpModulePre"),cm.name));
-			int i = 0;
 			for(Command cmd : Command.getCommandsByModule(cm))
 			{
-				this.sender.sendMessage((i % 2 == 0 ? ChatColor.RED : ChatColor.GREEN)+"   "+cmd.cmd);
-				i++;
+				this.clio.sendMsgHC("   "+cmd.cmd, this.sender);
 			}
 			this.sender.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("helpModuleAfter"),cm.name));
 			return true;
@@ -59,12 +58,7 @@ public class CommandHelp extends CommandHandler
 				this.sender.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("moduleNoSuchCmd"),cmdname,cm.name));
 				return true;
 			}
-			int i = 0;
-			for(String s : cmd.getInformation())
-			{
-				this.sender.sendMessage((i % 2 == 0 ? ChatColor.RED : ChatColor.GREEN)+s);
-				i++;
-			}
+			this.clio.sendMsgHC((String[])cmd.getInformation().toArray(), this.sender);
 			return true;
 		}
 		return false;
