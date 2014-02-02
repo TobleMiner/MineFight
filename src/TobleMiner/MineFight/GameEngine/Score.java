@@ -6,7 +6,8 @@ public enum Score
 	KILL("kill"),
 	RSARM("radioArm"),
 	RSDEST("radioDest"),
-	RSDISARM("radioDisarm");
+	RSDISARM("radioDisarm"),
+	RESUPPLY("resupply");
 	
 	public final String name;
 	

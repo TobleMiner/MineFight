@@ -33,6 +33,7 @@ import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Conquest.Flag;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Rush.RadioStation;
+import TobleMiner.MineFight.GameEngine.Match.Statistics.StatHandler;
 import TobleMiner.MineFight.GameEngine.Match.Team.Team;
 import TobleMiner.MineFight.GameEngine.Match.Team.TeamBlue;
 import TobleMiner.MineFight.GameEngine.Match.Team.TeamRed;
@@ -78,6 +79,7 @@ public class Match
 	private Iterator<RadioStation> radioStationIterator;
 	private RadioStation activeRadioStation;
 	private int timer = 1;
+	public final StatHandler sh;
 	
 	private final HashMap<Item,Claymore> claymores = new HashMap<Item,Claymore>();
 	private final HashMap<PVPPlayer,List<C4>> c4explosives = new HashMap<PVPPlayer,List<C4>>();
@@ -93,8 +95,9 @@ public class Match
 	private final boolean damageEnviron;
 	private final boolean exploDamageEnviron;
 	
-	public Match(World world,Gamemode gmode,String name,boolean hardcore,List<Sign> infoSigns,List<FlagContainer> flags,List<RadioStationContainer> radioStations)
+	public Match(World world,Gamemode gmode,String name,boolean hardcore,List<Sign> infoSigns,List<FlagContainer> flags,List<RadioStationContainer> radioStations, StatHandler sh)
 	{
+		this.sh = sh;
 		this.world = world;
 		this.gmode = gmode;
 		this.name = name;
@@ -681,14 +684,14 @@ public class Match
 		for(int i=0;i<playersRed.size();i++)
 		{
 			PVPPlayer p = playersRed.get(i);
-			p.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("matchend"),p.points));
+			p.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("matchend"),p.getPoints()));
 			p.leaveMatch(matchLeaveLoc);
 			
 		}
 		for(int i=0;i<playersBlue.size();i++)
 		{
 			PVPPlayer p = playersBlue.get(i);
-			p.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("matchend"),p.points));
+			p.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("matchend"),p.getPoints()));
 			p.leaveMatch(matchLeaveLoc);
 		}
 		if(this.canEnvironmentBeDamaged() || this.canExplosionsDamageEnvironment())

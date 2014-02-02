@@ -19,7 +19,6 @@ import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
-import TobleMiner.MineFight.GameEngine.Match.Statistics.StatConfig;
 import TobleMiner.MineFight.Protection.ProtectedArea;
 import TobleMiner.MineFight.Weapon.Projectile.ProjectileType;
 
@@ -99,12 +98,10 @@ public class Config
 			config.set("GameProps.medigun.healingRate", 10d);
 			config.set("GameProps.killassist.pointsPerPercent", 1d);
 			config.set("GameProps.lang","EN_us.lang");
-			config.set("StatisticDb.enabled",false);
-			config.set("StatisticDb.host","localhost");
-			config.set("StatisticDb.port","3306");
-			config.set("StatisticDb.user","MineFight");
-			config.set("StatisticDb.password","password");
-			config.set("StatisticDb.db","MineFight");
+			config.set("GameProps.statistics.local.enabled",false);
+			config.set("GameProps.statistics.local.instantUpdate.enabled",false);
+			config.set("GameProps.statistics.global.enabled",false);
+			config.set("GameProps.statistics.global.instantUpdate.enabled",false);
 			config.set("config.reset",false);
 			config.set("debug",false);
 			this.save();
@@ -841,15 +838,23 @@ public class Config
 		return 0d;
 	}
 	
-	public StatConfig getStatisticConfig()
+	public boolean lStatisticsEnabled()
 	{
-		StatConfig scfg = new StatConfig();
-		scfg.enabled = config.getBoolean("StatisticDb.enabled",false);
-		scfg.host = config.getString("StatisticDb.host");
-		scfg.port = config.getString("StatisticDb.port");
-		scfg.user = config.getString("StatisticDb.user");
-		scfg.passwd = config.getString("StatisticDb.password");
-		scfg.db = config.getString("StatisticDb.db");
-		return scfg;
+		return config.getBoolean("GameProps.statistics.local.enabled",false);
+	}
+	
+	public boolean gStatisticsEnabled()
+	{
+		return config.getBoolean("GameProps.statistics.global.enabled",false);
+	}
+	
+	public boolean lStatInstantUpdateEnabled()
+	{
+		return config.getBoolean("GameProps.statistics.local.instantUpdate.enabled",false);
+	}
+	
+	public boolean gStatInstantUpdateEnabled()
+	{
+		return config.getBoolean("GameProps.statistics.global.instantUpdate.enabled",false);
 	}
 }

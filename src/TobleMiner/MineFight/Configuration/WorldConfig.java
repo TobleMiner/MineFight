@@ -144,6 +144,7 @@ public class WorldConfig
 			config.set("gameProps.score.radioArm", 200d);
 			config.set("gameProps.score.radioDest", 400d);
 			config.set("gameProps.score.radioDisarm", 250d);
+			config.set("gameProps.score.resupply", 20d);
 			config.set("environment.canBeDamaged",true);
 			config.set("environment.doExplosionsDamageEnvironment",true);
 			config.set("leaveWorld",this.world.getName());

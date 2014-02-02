@@ -30,6 +30,8 @@ import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Match;
+import TobleMiner.MineFight.GameEngine.Match.Statistics.StatType;
+import TobleMiner.MineFight.GameEngine.Match.Statistics.StatUpdateType;
 import TobleMiner.MineFight.GameEngine.Match.Team.Team;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.GameEngine.Player.Info.MapInfoRenderer;
@@ -48,7 +50,7 @@ public class PVPPlayer
 	public int kills;
 	public int deaths;
 	public int killstreak;
-	public double points;
+	private double points;
 	private final HashMap<PVPPlayer,Killhelper> killHelpers = new HashMap<PVPPlayer,Killhelper>();
 	public boolean normalDeathBlocked = false;
 	public int timer = 1;
@@ -209,11 +211,12 @@ public class PVPPlayer
 		}
 		this.killHelpers.clear();
 		this.setCombatClass(null);
+		this.match.sh.updatePlayer(this, StatType.DEATHS, StatUpdateType.ADD, new Long(1L));
 	}
 	
 	public void killAsist(double d)
 	{
-		this.points += d;
+		this.addPoints(d);
 		this.thePlayer.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("killassist"),d));
 	}
 	
@@ -221,7 +224,17 @@ public class PVPPlayer
 	{
 		this.kills++;
 		this.killstreak++;
-		points += Main.gameEngine.configuration.getScore(this.thePlayer.getWorld(),Score.KILL);
+		double p = Main.gameEngine.configuration.getScore(this.thePlayer.getWorld(),Score.KILL);
+		this.addPoints(p);
+		this.match.sh.updatePlayer(this, StatType.KILLS, StatUpdateType.ADD, new Long(1L));
+	}
+	
+	public void flagCaptured()
+	{
+		double points = Main.gameEngine.configuration.getScore(this.match.getWorld(), Score.FLAGCAP);
+		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("flagcappoints"),points));
+		this.addPoints(points);
+		this.match.sh.updatePlayer(this, StatType.FLAGCAP, StatUpdateType.ADD, new Long(1L));
 	}
 
 	public void teleport(Location loc)
@@ -340,5 +353,47 @@ public class PVPPlayer
 	public MapView getMapView()
 	{
 		return this.mv;
+	}
+	
+	private void addPoints(double points)
+	{
+		this.points += points;
+		this.match.sh.updatePlayer(this, StatType.POINTS, StatUpdateType.ADD, new Double(points));
+	}
+
+	public void radioDestroyed()
+	{
+		double pDest = Main.gameEngine.configuration.getScore(this.match.getWorld(),Score.RSDEST);
+		this.addPoints(pDest);
+		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsdestpoints"),pDest));
+		this.match.sh.updatePlayer(this, StatType.RSDESTROY, StatUpdateType.ADD, new Long(1L));
+	}
+	
+	public double getPoints()
+	{
+		return this.points;
+	}
+
+	public void resupplyGiven() 
+	{
+		double p = Main.gameEngine.configuration.getScore(this.match.getWorld(),Score.RESUPPLY);
+		this.addPoints(p);
+		this.thePlayer.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("pointsResupply"), p));
+	}
+
+	public void radioArmed()
+	{
+		double pArm = Main.gameEngine.configuration.getScore(this.match.getWorld(),Score.RSARM);
+		this.addPoints(pArm);
+		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsarmpoints"),pArm));
+		this.match.sh.updatePlayer(this, StatType.RSARM, StatUpdateType.ADD, new Long(1L));
+	}
+
+	public void radioDisarmed()
+	{
+		double pDisarm = Main.gameEngine.configuration.getScore(this.match.getWorld(),Score.RSDISARM);
+		this.addPoints(pDisarm);
+		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsdisarmpoints"),pDisarm));
+		this.match.sh.updatePlayer(this, StatType.RSDISARM, StatUpdateType.ADD, new Long(1L));
 	}
 }

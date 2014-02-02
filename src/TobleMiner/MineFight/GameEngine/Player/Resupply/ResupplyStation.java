@@ -111,8 +111,7 @@ public class ResupplyStation
 											fill--;
 											if(player.getTeam() == owner.getTeam() && (!player.equals(owner)))
 											{
-												owner.points += 10;
-												owner.thePlayer.sendMessage(ChatColor.GOLD+"+10 Points for ammo resupply");
+												owner.resupplyGiven();
 											}
 											if(pi.contains(is.getType()))
 											{

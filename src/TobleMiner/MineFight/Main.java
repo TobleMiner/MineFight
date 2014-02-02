@@ -1,6 +1,8 @@
 package TobleMiner.MineFight;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -14,6 +16,7 @@ import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.ErrorHandling.Logger;
 import TobleMiner.MineFight.GameEngine.GameEngine;
+import TobleMiner.MineFight.GameEngine.Match.Statistics.Beans.PlayerStatBean;
 import TobleMiner.MineFight.LegalFu.LicenseHandler;
 import TobleMiner.MineFight.PacketModification.ProtocolLibSafeLoader;
 import TobleMiner.MineFight.Permissions.PermissionManager;
@@ -74,7 +77,21 @@ public class Main extends JavaPlugin
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String args[])
 	{
 		return CommandHandler.handleCommand(args, sender);
-	}	
+	}
+	
+	@Override
+	public List<Class<?>> getDatabaseClasses()
+	{
+		List<Class<?>> classes = new LinkedList<Class<?>>();
+		classes.add(PlayerStatBean.class);
+		return classes;
+	}
+	
+	@Override
+	public void installDDL()
+	{
+		super.installDDL();
+	}
 	
 	public File getPluginDir()
 	{

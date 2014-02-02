@@ -182,9 +182,7 @@ public class Flag
 							{
 								if(helper.getTeam() == ownerNow)
 								{
-									double points = Main.gameEngine.configuration.getScore(this.sign.getWorld(), Score.FLAGCAP);
-									helper.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("flagcappoints"),points));
-									helper.points += points;
+									helper.flagCaptured();
 								}
 							}
 						}

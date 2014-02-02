@@ -71,9 +71,7 @@ public class RadioStation
 					armed = true;
 					if(this.armer != null)
 					{
-						double pArm = Main.gameEngine.configuration.getScore(this.armer.thePlayer.getWorld(),Score.RSARM);
-						this.armer.points += pArm;
-						this.armer.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsarmpoints"),pArm));
+						this.armer.radioArmed();
 						this.attacker = this.armer;
 						this.armer = null;
 					}
@@ -83,9 +81,7 @@ public class RadioStation
 					armed = false;
 					if(this.defender != null)
 					{
-						double pDisarm = Main.gameEngine.configuration.getScore(this.defender.thePlayer.getWorld(),Score.RSDISARM);
-						this.defender.points += pDisarm;
-						this.defender.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsdisarmpoints"),pDisarm));
+						this.defender.radioDisarmed();
 						this.defender = null;
 						this.attacker = null;
 						this.armer = null;
@@ -99,9 +95,7 @@ public class RadioStation
 						this.destroy();
 						if(this.attacker != null)
 						{
-							double pDest = Main.gameEngine.configuration.getScore(this.attacker.thePlayer.getWorld(),Score.RSDEST);
-							this.attacker.points += pDest;
-							this.attacker.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsdestpoints"),pDest));
+							this.attacker.radioDestroyed();
 							this.attacker = null;
 						}
 						match.radioStationDestroyed(this);

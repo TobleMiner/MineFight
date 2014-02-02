@@ -27,6 +27,7 @@ import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
+import TobleMiner.MineFight.GameEngine.Match.Statistics.StatHandler;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.Language.Langfile;
@@ -40,6 +41,7 @@ public class GameEngine
 	public final FileConfiguration config;
 	private final List<Match> matches = new ArrayList<Match>();
 	public final Langfile dict;
+	public final StatHandler stathandler;
 	
 	public static double tps = 20.0d;
 	
@@ -48,6 +50,7 @@ public class GameEngine
 		this.config = mane.getConfig();
 		this.configuration = new Config(mane, config);
 		this.dict = new Langfile(mane.getPluginDir());
+		this.stathandler = new StatHandler(mane.getDatabase());
 		init();
 	}
 	
@@ -60,6 +63,8 @@ public class GameEngine
 	{
 		configuration.read();
 		dict.loadLanguageFile(configuration.getLangFile());
+		stathandler.reload(this);
+		
 		CombatClass sniper = new CombatClass("sniper",WeaponType.SNIPER);
 		String sniperKit = configuration.config.getString("CombatClass.Sniper.Kit");
 		sniper.kit = this.getKitFromString(sniperKit);
@@ -147,7 +152,7 @@ public class GameEngine
 		List<Sign> signs = configuration.getInfoSigns(w, g);
 		List<FlagContainer> flags = configuration.getFlags(w);
 		List<RadioStationContainer> radioStations = configuration.getRadioStations(w);
-		Match match = new Match(w,g,name,hardcore,signs,flags,radioStations);
+		Match match = new Match(w,g,name,hardcore,signs,flags,radioStations,this.stathandler);
 		matches.add(match);
 	}
 	

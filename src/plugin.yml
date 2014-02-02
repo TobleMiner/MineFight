@@ -4,6 +4,7 @@ description:
 author: Tobias Schramm 'Toble_Miner'
 website:
 softdepend: [Vault,PermissionsEx,ProtocolLib,Multiverse-Core]
+database: true
 
 main: TobleMiner.MineFight.Main
 

@@ -17,6 +17,7 @@ public enum Permission
 	MPVP_INFOSIGN_DEL("MineFight.admin.removeInfosign"),
 	MPVP_INFOSIGN_LIST("MineFight.admin.listInfosigns"),
 	MPVP_RELOAD("MineFight.admin.reloadConfig"),
+	MPVP_STATS("MineFight.player.stats"),
 	MPVP_NONE("NONE");
 	
 	

@@ -55,10 +55,10 @@ public class CommandHelp extends CommandHandler
 			Command cmd = Command.getCommand(cm, cmdname);
 			if(cmd == null)
 			{
-				this.sender.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("moduleNoSuchCmd"),cmdname,cm.name));
+				this.sender.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("moduleNoSuchCmd"),cm.name,cmdname));
 				return true;
 			}
-			this.clio.sendMsgHC((String[])cmd.getInformation().toArray(), this.sender);
+			this.clio.sendMsgHC(cmd.getInformation().toArray(new String[0]), this.sender);
 			return true;
 		}
 		return false;

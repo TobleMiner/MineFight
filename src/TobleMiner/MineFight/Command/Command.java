@@ -25,8 +25,10 @@ public enum Command
 	MPVP_INFOSIGN_LIST(CommandModule.INFOSIGN,"list",2,2,"cmdDescrIsList","/mpvp is list <world> <gmode>",Permission.MPVP_INFOSIGN_DEL),
 
 	MPVP_RADIOSTATION_ADD(CommandModule.RS,"add",0,0,"cmdDescrRsAdd","/mpvp rs add",Permission.MPVP_RS_ADD),
-	MPVP_RADIOSTATION_DEL(CommandModule.RS,"remove",0,0,"cmdDescrRsDel","/mpvp rs remove",Permission.MPVP_RS_DEL);
-		
+	MPVP_RADIOSTATION_DEL(CommandModule.RS,"remove",0,0,"cmdDescrRsDel","/mpvp rs remove",Permission.MPVP_RS_DEL),
+
+	MPVP_PLAYER_STATS(CommandModule.PL,"stats",0,2,"cmdDescrPlStat","/mpvp player [player] [global]", Permission.MPVP_STATS);
+	
 	public final CommandModule cm;
 	public final String cmd;
 	public final int argnumMin;
@@ -81,7 +83,8 @@ public enum Command
 		FLAG("flag"),
 		INFOSIGN("is"),
 		MATCH("match"),
-		RS("rs");
+		RS("rs"),
+		PL("player");
 		
 		public final String name;
 		
