@@ -87,13 +87,17 @@ public class CommandMatch extends CommandHandler
 				}
 				List<String> matchNames = Main.gameEngine.getMatchNames();
 				String matchNamesStr = "";
+				int i = 0;
 				for(String name : matchNames)
 				{
-					matchNamesStr += name+"     ";
+					matchNamesStr += ((((i % 2) == 0) ? ChatColor.RED : ChatColor.GREEN) + name + ChatColor.RESET + "    ");
+					i++;
 				}
 				if(matchNames.size() > 0)
 				{
-					sender.sendMessage(ChatColor.DARK_GREEN+Main.gameEngine.dict.get("listMatches_pre")+"\n"+matchNamesStr);				
+					sender.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("listMatches_pre"));				
+					sender.sendMessage(matchNamesStr);				
+					sender.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("listMatches_after"));				
 				}
 				else
 				{
@@ -113,12 +117,17 @@ public class CommandMatch extends CommandHandler
 				if(m != null)
 				{
 					sender.sendMessage(ChatColor.GOLD+"===========INFO===========");
-					sender.sendMessage(ChatColor.GOLD+"Gamemode: "+m.gmode.toString().toString());
-					sender.sendMessage(ChatColor.GOLD+"Players: "+ChatColor.BLUE+Integer.toString(m.getPlayerNumBlue())+ChatColor.RESET+" | "+ChatColor.RED+Integer.toString(m.getPlayerNumRed()));
-					sender.sendMessage(ChatColor.GOLD+"Tickets: "+ChatColor.BLUE+Integer.toString((int)Math.round(m.getTeamBlue().getPoints()))+ChatColor.RESET+" | "+ChatColor.RED+Integer.toString((int)Math.round(m.getTeamRed().getPoints())));
+					sender.sendMessage(ChatColor.GOLD+String.format("%s: %s",Main.gameEngine.dict.get("gamemode"),Main.gameEngine.dict.get(m.gmode.transname)));
+					sender.sendMessage(ChatColor.GOLD+String.format("%s: %s",Main.gameEngine.dict.get("players"),ChatColor.BLUE+Integer.toString(m.getPlayerNumBlue())+ChatColor.RESET+" | "+ChatColor.RED+Integer.toString(m.getPlayerNumRed())));
+					sender.sendMessage(ChatColor.GOLD+String.format("%s: %s",Main.gameEngine.dict.get("tickets"),ChatColor.BLUE+Integer.toString((int)Math.round(m.getTeamBlue().getPoints()))+ChatColor.RESET+" | "+ChatColor.RED+Integer.toString((int)Math.round(m.getTeamRed().getPoints()))));
+					String mode = Main.gameEngine.dict.get("mode");
 					if(m.isHardcore())
 					{
-						sender.sendMessage(ChatColor.DARK_RED+"HARDCORE");
+						sender.sendMessage(String.format(ChatColor.GOLD+"%s: %s",mode,ChatColor.DARK_RED+"HARDCORE"));
+					}
+					else
+					{
+						sender.sendMessage(String.format(ChatColor.GOLD+"%s: %s",mode,ChatColor.DARK_GREEN+"NORMAL"));
 					}
 				}
 				else
