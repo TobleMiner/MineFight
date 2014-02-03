@@ -1628,7 +1628,8 @@ public class Match
 						}
 						else
 						{
-							p.addKillhelper(issuer, (int)Math.floor(dmg));
+							if(issuer.getTeam() != p.getTeam())
+								p.addKillhelper(issuer, (int)Math.floor(dmg));
 						}
 						p.normalDeathBlocked = false;
 					}
