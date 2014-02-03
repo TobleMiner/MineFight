@@ -766,7 +766,7 @@ public class Match
 			deathMessage = deathMessage.toLowerCase();
 			if((deathMessage.contains("shot") || deathMessage.contains("bow")) && PVPkiller.getCombatClass().wt == WeaponType.SNIPER)
 			{
-				weapon = "SNIPER";
+				weapon = "M82A1";
 			}
 			if(this.canKill(PVPkiller, player))
 			{
@@ -794,7 +794,7 @@ public class Match
 				}
 				else
 				{
-					return false; //TODO
+					return false;
 				}
 			}
 		}
@@ -1611,7 +1611,7 @@ public class Match
 		{
 			if(issuer != null && doDamage)
 			{
-				if(this.canKill(issuer, p))
+				if(this.canKill(issuer, p) || issuer == p) //explosions always damage their creator
 				{
 					double dist = loc.distance(p.thePlayer.getLocation());
 					double radius = 1.24d*exploStr;
