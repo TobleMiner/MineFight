@@ -14,6 +14,7 @@ import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
+import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
@@ -53,7 +54,7 @@ public class RadioStation
 	
 	public void doUpdate()
 	{
-		if(timer > 10)
+		if(timer > 0.1d * GameEngine.tps)
 		{
 			timer = 0;
 			if(!destroyed)

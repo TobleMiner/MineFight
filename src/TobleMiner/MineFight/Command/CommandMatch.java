@@ -116,6 +116,10 @@ public class CommandMatch extends CommandHandler
 					sender.sendMessage(ChatColor.GOLD+"Gamemode: "+m.gmode.toString().toString());
 					sender.sendMessage(ChatColor.GOLD+"Players: "+ChatColor.BLUE+Integer.toString(m.getPlayerNumBlue())+ChatColor.RESET+" | "+ChatColor.RED+Integer.toString(m.getPlayerNumRed()));
 					sender.sendMessage(ChatColor.GOLD+"Tickets: "+ChatColor.BLUE+Integer.toString((int)Math.round(m.getTeamBlue().getPoints()))+ChatColor.RESET+" | "+ChatColor.RED+Integer.toString((int)Math.round(m.getTeamRed().getPoints())));
+					if(m.isHardcore())
+					{
+						sender.sendMessage(ChatColor.DARK_RED+"HARDCORE");
+					}
 				}
 				else
 				{

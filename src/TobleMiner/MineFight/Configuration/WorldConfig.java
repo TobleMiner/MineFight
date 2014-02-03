@@ -539,6 +539,6 @@ public class WorldConfig
 	
 	public double getScoreForAction(Score s)
 	{
-		return config.getDouble("gameProps.score."+s.name);
+		return config.getDouble("gameProps.score."+s.name,0d);
 	}
 }

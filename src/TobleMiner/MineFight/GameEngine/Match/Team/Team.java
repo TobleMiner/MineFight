@@ -7,7 +7,7 @@ public class Team
 	private double points;
 	
 	public ChatColor color = ChatColor.WHITE;
-	protected String name = "NONE";
+	public String name = "NONE";
 	
 	public void setPoints(double points)
 	{

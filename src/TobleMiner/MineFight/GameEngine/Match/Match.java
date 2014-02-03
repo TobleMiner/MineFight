@@ -27,6 +27,7 @@ import org.bukkit.util.Vector;
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
+import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
@@ -44,6 +45,7 @@ import TobleMiner.MineFight.GameEngine.Player.Resupply.ResupplyStation;
 import TobleMiner.MineFight.Protection.ProtectedArea;
 import TobleMiner.MineFight.Util.Location.TeleportUtil;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
+import TobleMiner.MineFight.Util.SyncDerp.EntitySyncCalls;
 import TobleMiner.MineFight.Util.SyncDerp.InventorySyncCalls;
 import TobleMiner.MineFight.Weapon.WeaponType;
 import TobleMiner.MineFight.Weapon.Projectile.ProjectileType;
@@ -323,8 +325,12 @@ public class Match
 	{
 		if(killer == null)
 		{
+			Debugger.writeDebugOut("canKill: killer is null");
 			return true;
 		}
+		Debugger.writeDebugOut(String.format("\"%s\" canKill \"%s\", teams: %s and %s",killer.getName(),victim.getName(),killer.getTeam().getName(),victim.getTeam().getName()));
+		Debugger.writeDebugOut(String.format("\"%s\" canKill \"%s\", teams: %s and %s",killer.getName(),victim.getName(),killer.getTeam().toString(),victim.getTeam().toString()));
+		Debugger.writeDebugOut(Boolean.toString(killer.getTeam() != victim.getTeam() || this.hardcore));
 		return (killer.getTeam() != victim.getTeam() || this.hardcore);
 	}
 	
@@ -740,6 +746,7 @@ public class Match
 		PVPPlayer player = this.getPlayerExact(entity);
 		if(player != null)
 		{
+			Debugger.writeDebugOut("Player "+player.getName()+" died.");
 			c4explosives.remove(player);
 			if(Main.gameEngine.configuration.getPreventItemDropOnDeath(world, gmode))
 			{
@@ -763,7 +770,7 @@ public class Match
 			}
 			if(this.canKill(PVPkiller, player))
 			{
-				kill(PVPkiller, player, weapon,false);
+				kill(PVPkiller, player, weapon, false);
 			}
 			return "";
 		}
@@ -787,7 +794,7 @@ public class Match
 				}
 				else
 				{
-					return false;
+					return false; //TODO
 				}
 			}
 		}
@@ -1240,12 +1247,13 @@ public class Match
 			for(PVPPlayer p : new ArrayList<>(playersBlue))
 			{
 				p.thePlayer.sendMessage(message);
-			}			
+			}
 		}
 	}
 
 	public boolean arrowHitPlayer(Player p, Arrow a,double damage)
 	{
+		Debugger.writeDebugOut("Player hit by arrow called!");
 		PVPPlayer player = this.getPlayerExact(p);
 		if(player != null)
 		{
@@ -1277,11 +1285,9 @@ public class Match
 							}
 							player.normalDeathBlocked = true;
 							player.thePlayer.damage((float)Math.round(damage*multi));
-							if(player.thePlayer.getHealth() <= 0)
+							if(player.thePlayer.getHealth() <= 0d)
 							{
 								this.kill(attacker, player, "SENTRY", false);
-								player.normalDeathBlocked = false;
-								return false;
 							}
 							else
 							{
@@ -1306,6 +1312,7 @@ public class Match
 					{
 						if(this.canKill(attacker, player))
 						{
+							Debugger.writeDebugOut(String.format("\"%s\" damaging \"%s\", teams: %s and %s",attacker.getName(),player.getName(),attacker.getTeam().getName(),player.getTeam().getName()));
 							damage = Main.gameEngine.configuration.getProjectileDamage(world, gmode, sp.type);
 							//Bukkit.getServer().broadcastMessage(sp.type.toString()+" "+damage);
 							if(sp.isCritical)
@@ -1320,11 +1327,10 @@ public class Match
 							//Bukkit.getServer().broadcastMessage(Double.toString((int)Math.round(damage*multi)));
 							player.normalDeathBlocked = true;
 							player.thePlayer.damage((float)Math.round(damage*multi));
-							if(player.thePlayer.getHealth() <= 0)
+							Debugger.writeDebugOut("Health: "+Double.toString(player.thePlayer.getHealth()));
+							if(player.thePlayer.getHealth() <= 0d)
 							{
 								this.kill(attacker, player, "M82A1", false);
-								player.normalDeathBlocked = false;
-								return false;
 							}
 							else
 							{
@@ -1334,7 +1340,12 @@ public class Match
 						}
 					}
 					this.projectiles.remove(a);
+					EntitySyncCalls.removeEntity(a);
 					return !this.canKill(attacker, player);
+				}
+				else
+				{
+					Debugger.writeDebugOut("Unregistered projectile hit "+p.getName());
 				}
 				return false;
 			}
@@ -1544,18 +1555,25 @@ public class Match
 
 	public boolean playerDamagePlayer(Player damager, Player damaged, double d)
 	{
+		Debugger.writeDebugOut("Player damage player called!");
 		PVPPlayer attacker = this.getPlayerExact(damager);
 		PVPPlayer player = this.getPlayerExact(damaged);
 		if(attacker != null && player != null)
 		{
 			if(this.canKill(attacker, player))
 			{
-				player.addKillhelper(attacker, d);
-				return true;
-			}
-			else
-			{
-				return false;
+				Debugger.writeDebugOut(String.format("\"%s\" damaging \"%s\", teams: %s and %s",attacker.getName(),player.getName(),attacker.getTeam().getName(),player.getTeam().getName()));
+				player.normalDeathBlocked = true;
+				player.thePlayer.damage(d);
+				if(player.thePlayer.getHealth() <= 0d)
+				{
+					this.kill(attacker, player, Main.gameEngine.dict.get("killed"), false);
+				}
+				else
+				{
+					player.addKillhelper(attacker, d);
+				}
+				player.normalDeathBlocked = false;
 			}
 		}
 		return true;
@@ -1591,7 +1609,6 @@ public class Match
 		List<PVPPlayer> players = new ArrayList<PVPPlayer>(this.getPlayers());
 		for(PVPPlayer p : players)
 		{
-			p.createFakeExplosion(loc, exploStr, b);
 			if(issuer != null && doDamage)
 			{
 				if(this.canKill(issuer, p))
@@ -1603,8 +1620,9 @@ public class Match
 						double expo = 0.8d; //TODO
 						double impact = (1d - dist/radius) * expo;
 						double dmg = (Math.pow(impact, 2) + impact) * 8d * exploStr + 1d;
+						p.normalDeathBlocked = true;
 						p.thePlayer.damage((int)Math.floor(dmg));
-						if(p.thePlayer.getHealth() <= 0)
+						if(p.thePlayer.getHealth() <= 0d)
 						{
 							this.kill(issuer, p, weapon, false);
 						}
@@ -1612,9 +1630,11 @@ public class Match
 						{
 							p.addKillhelper(issuer, (int)Math.floor(dmg));
 						}
+						p.normalDeathBlocked = false;
 					}
 				}
 			}
+			p.createFakeExplosion(loc, exploStr, b);
 		}
 	}
 
@@ -1642,8 +1662,8 @@ public class Match
 		}
 		if(!isProtected)
 		{
-			EffectSyncCalls.createExplosion(loc, exploStr);
 			this.createFakeExplosion(issuer,loc, exploStr, false, true, weapon);
+			EffectSyncCalls.createExplosion(loc, exploStr);
 		}
 		else
 		{

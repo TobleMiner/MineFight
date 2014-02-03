@@ -18,7 +18,7 @@ import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
-import TobleMiner.MineFight.GameEngine.Score;
+import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Match.Team.Team;
 import TobleMiner.MineFight.GameEngine.Match.Team.TeamBlue;
@@ -61,7 +61,7 @@ public class Flag
 	
 	public void doUpdate()
 	{
-		if(timer >= 50) //Update each 0.5s
+		if(timer >= 0.5d * GameEngine.tps) //Update each 0.5s
 		{
 			try
 			{
@@ -96,94 +96,77 @@ public class Flag
 							}
 						}
 					}
-					if(playersRed != playersBlue)
+				}
+				if(playersRed != playersBlue)
+				{
+					double change = ((double)this.flagCapSpeed)/2d*Math.pow(flagCapAccelPerPerson,Math.abs(playersRed-playersBlue));
+					if(playersRed > playersBlue)
 					{
-						double change = ((double)this.flagCapSpeed)/2d*Math.pow(flagCapAccelPerPerson,Math.abs(playersRed-playersBlue));
-						if(playersRed > playersBlue)
+						if(this.percBlue == 0d && percRed < 100d)
 						{
-							if(this.percBlue == 0d && percRed < 100d)
+							this.percRed += change;
+							if(percRed > 100d)
 							{
-								this.percRed += change;
-								if(percRed > 100d)
-								{
-									percRed = 100d;
-								}
-								if(percRed == 100d)
-								{
-									this.owner = teamRed;
-								}
+								percRed = 100d;
 							}
-							else if(percBlue > 0d)
+							if(percRed == 100d)
 							{
-								this.percBlue -= change;
-								if(this.percBlue < 0d)
-								{
-									this.percBlue = 0d;
-									this.owner = null;
-									this.match.sendTeamMessage(teamRed,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagneut"),this.name));
-									this.match.sendTeamMessage(teamBlue,ChatColor.RED+String.format(Main.gameEngine.dict.get("flaglost"),this.name));
-								}
+								this.owner = teamRed;
 							}
 						}
-						else
+						else if(percBlue > 0d)
 						{
-							if(this.percRed == 0d && this.percBlue < 100d)
+							this.percBlue -= change;
+							if(this.percBlue < 0d)
 							{
-								this.percBlue += change;
-								if(percBlue > 100d)
-								{
-									percBlue = 100d;
-								}
-								if(percBlue == 100d)
-								{
-									this.owner = teamBlue;
-								}
-							}
-							else if(percRed > 0d)
-							{
-								this.percRed -= change;
-								if(this.percRed < 0d)
-								{
-									this.percRed = 0d;
-									this.owner = null;
-									this.match.sendTeamMessage(teamRed,ChatColor.RED+String.format(Main.gameEngine.dict.get("flaglost"),this.name));
-									this.match.sendTeamMessage(teamBlue,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagneut"),this.name));
-								}
+								this.percBlue = 0d;
+								this.owner = null;
+								this.match.sendTeamMessage(teamRed,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagneut"),this.name));
+								this.match.sendTeamMessage(teamBlue,ChatColor.RED+String.format(Main.gameEngine.dict.get("flaglost"),this.name));
 							}
 						}
 					}
-					Team ownerNow = this.getOwner();
-					if(ownerNow != lastOwner)
+					else
 					{
-						if(ownerNow != null)
+						if(this.percRed == 0d && this.percBlue < 100d)
 						{
-							this.match.sendTeamMessage(ownerNow,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagcap"),this.name));
-							if(ownerNow == teamRed)
+							this.percBlue += change;
+							if(percBlue > 100d)
 							{
-								for(Block b : flagArea)
-								{
-									b.setType(Material.WOOL);
-									BlockState bs = b.getState();
-									bs.setData(new Wool(DyeColor.RED));
-									BlockSyncCalls.updateBlockstate(bs);
-								}
+								percBlue = 100d;
 							}
-							else
+							if(percBlue == 100d)
 							{
-								for(Block b : flagArea)
-								{
-									b.setType(Material.WOOL);
-									BlockState bs = b.getState();
-									bs.setData(new Wool(DyeColor.BLUE));
-									BlockSyncCalls.updateBlockstate(bs);
-								}
+								this.owner = teamBlue;
 							}
-							for(PVPPlayer helper : helpers)
+						}
+						else if(percRed > 0d)
+						{
+							this.percRed -= change;
+							if(this.percRed < 0d)
 							{
-								if(helper.getTeam() == ownerNow)
-								{
-									helper.flagCaptured();
-								}
+								this.percRed = 0d;
+								this.owner = null;
+								this.match.sendTeamMessage(teamRed,ChatColor.RED+String.format(Main.gameEngine.dict.get("flaglost"),this.name));
+								this.match.sendTeamMessage(teamBlue,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagneut"),this.name));
+							}
+						}
+					}
+				}
+				Team ownerNow = this.getOwner();
+				if(ownerNow != lastOwner)
+				{
+					if(ownerNow != null)
+					{
+						this.match.sendTeamMessage(ownerNow,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagcap"),this.name));
+						if(ownerNow == teamRed)
+						{
+							for(Block b : flagArea)
+							{
+								b.setType(Material.WOOL);
+								BlockState bs = b.getState();
+								bs.setData(new Wool(DyeColor.RED));
+								BlockSyncCalls.updateBlockstate(bs);
 							}
 						}
 						else
@@ -192,25 +175,42 @@ public class Flag
 							{
 								b.setType(Material.WOOL);
 								BlockState bs = b.getState();
-								bs.setData(new Wool(DyeColor.WHITE));
+								bs.setData(new Wool(DyeColor.BLUE));
 								BlockSyncCalls.updateBlockstate(bs);
 							}
 						}
-					}
-					//Flag info update
-					if(owner != null)
-					{
-						this.sign.setLine(0,owner.color+"Flag");
+						for(PVPPlayer helper : helpers)
+						{
+							if(helper.getTeam() == ownerNow)
+							{
+								helper.flagCaptured();
+							}
+						}
 					}
 					else
 					{
-						this.sign.setLine(0,"Flag");
+						for(Block b : flagArea)
+						{
+							b.setType(Material.WOOL);
+							BlockState bs = b.getState();
+							bs.setData(new Wool(DyeColor.WHITE));
+							BlockSyncCalls.updateBlockstate(bs);
+						}
 					}
-					this.sign.setLine(1,"RED | BLUE");
-					this.sign.setLine(2,Integer.toString((int)Math.floor(percRed))+" | "+Integer.toString((int)Math.floor(percBlue)));
-					this.sign.setLine(3, Integer.toString(match.getFlagsRed())+" | "+Integer.toString(match.getFlagsBlue()));
-					BlockSyncCalls.updateBlockstate(this.sign);
 				}
+				//Flag info update
+				if(owner != null)
+				{
+					this.sign.setLine(0,owner.color+"Flag");
+				}
+				else
+				{
+					this.sign.setLine(0,"Flag");
+				}
+				this.sign.setLine(1,"RED | BLUE");
+				this.sign.setLine(2,Integer.toString((int)Math.floor(percRed))+" | "+Integer.toString((int)Math.floor(percBlue)));
+				this.sign.setLine(3, Integer.toString(match.getFlagsRed())+" | "+Integer.toString(match.getFlagsBlue()));
+				BlockSyncCalls.updateBlockstate(this.sign);
 			}
 			catch(Exception ex)
 			{

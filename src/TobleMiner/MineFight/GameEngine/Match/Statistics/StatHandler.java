@@ -94,19 +94,12 @@ public class StatHandler
 	{
 		if(lStats)
 		{
-			Debugger.writeDebugOut("Updating stats for: "+p.thePlayer.getName());
 			PlayerStatBean bean = this.getBean(p.thePlayer.getName());
 			if(bean == null)
 			{
 				bean = this.db.createEntityBean(PlayerStatBean.class);
-				Debugger.writeDebugOut("New bean created: "+bean);
 				bean.setName(p.thePlayer.getName());
-				Debugger.writeDebugOut("Bean name set: "+bean.getName());
 				bean.setupDefaults();
-			}
-			else
-			{
-				Debugger.writeDebugOut(String.format("Bean for player %s found: ",p.thePlayer.getName())+bean);
 			}
 			switch(st)
 			{
@@ -167,9 +160,7 @@ public class StatHandler
 						case SET: bean.setRsDestruct((Long)val); break;
 					}break;					
 			}
-			Debugger.writeDebugOut("Saving bean...");
 			this.db.save(bean);
-			Debugger.writeDebugOut("Bean saved.");
 		}
 		if(gStats)
 		{
