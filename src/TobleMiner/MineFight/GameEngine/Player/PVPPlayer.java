@@ -83,14 +83,17 @@ public class PVPPlayer
 	
 	public void addKillhelper(PVPPlayer damager, double d)
 	{
-		Killhelper kh = this.killHelpers.get(damager);
-		if(kh == null)
+		if(damager != this && damager.getTeam() != this.getTeam())
 		{
-			kh = new Killhelper(damager);
+			Killhelper kh = this.killHelpers.get(damager);
+			if(kh == null)
+			{
+				kh = new Killhelper(damager);
+			}
+			double maxHealth = this.thePlayer.getMaxHealth();
+			kh.addDamage(d/maxHealth);
+			this.killHelpers.put(damager, kh);
 		}
-		double maxHealth = this.thePlayer.getMaxHealth();
-		kh.addDamage(d/maxHealth);
-		this.killHelpers.put(damager, kh);
 	}
 	
 	public void storeInventory()
@@ -316,7 +319,7 @@ public class PVPPlayer
 						PVPPlayer target = null;
 						for(PVPPlayer p : players)
 						{
-							if(match.canKill(this,p) && p != this)
+							if(p.getTeam() == this.getTeam())
 							{
 								target = p;
 								break;
@@ -324,7 +327,7 @@ public class PVPPlayer
 						}
 						if(target != null)
 						{
-							if(target.getTeam() == this.getTeam() && target != this && target.thePlayer.getHealth() < 20)
+							if(target.thePlayer.getHealth() < target.thePlayer.getMaxHealth())
 							{
 								Vector dir = target.thePlayer.getLocation().clone().subtract(this.thePlayer.getLocation().clone()).toVector();
 								int len = (int)Math.round(dir.length());

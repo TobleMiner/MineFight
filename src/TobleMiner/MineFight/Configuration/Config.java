@@ -49,15 +49,15 @@ public class Config
 		boolean makeConfig = config.getBoolean("config.reset",true);
 		if(makeConfig)
 		{
-			config.set("CombatClass.Sniper.Kit","BOW:0,1;ARROW:0,64;CLAY_BALL:0,4;WOOD_SWORD:0,1");
+			config.set("CombatClass.Sniper.Kit","BOW:0,1;ARROW:0,64;CLAY_BALL:0,4;WOOD_SWORD:0,1;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Sniper.Armor","LEATHER_HELMET,LEATHER_CHESTPLATE,LEATHER_LEGGINGS,LEATHER_BOOTS");
-			config.set("CombatClass.Heavy.Kit","IRON_SWORD:0,1;DIAMOND:0,1;INK_SACK:4,5");
+			config.set("CombatClass.Heavy.Kit","IRON_SWORD:0,1;DIAMOND:0,1;INK_SACK:4,5;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32;BONE:0,3");
 			config.set("CombatClass.Heavy.Armor","DIAMOND_HELMET,DIAMOND_CHESTPLATE,DIAMOND_LEGGINGS,DIAMOND_BOOTS");
-			config.set("CombatClass.Engineer.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,64");
+			config.set("CombatClass.Engineer.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,64;SULPHUR:0,64;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Engineer.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
-			config.set("CombatClass.Medic.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,64");
+			config.set("CombatClass.Medic.Kit","IRON_SWORD:0,1;GOLD_SWORD:0,1;ARROW:0,64;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Medic.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
-			config.set("CombatClass.Pyro.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,6");
+			config.set("CombatClass.Pyro.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,64;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;BLAZE_POWDER:0,64;BLAZE_POWDER:0,64;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Pyro.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
 			config.set("GameControl.Sign.joinCmd","Join game");
 			config.set("GameProps.C4.exploStr",4.0d);

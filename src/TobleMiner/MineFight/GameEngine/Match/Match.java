@@ -322,19 +322,28 @@ public class Match
 	}
 	
 	public boolean canKill(PVPPlayer killer,PVPPlayer victim)
-	{
+	{		
 		if(killer == null)
 		{
 			Debugger.writeDebugOut("canKill: killer is null");
 			return true;
 		}
-		Debugger.writeDebugOut(String.format("\"%s\" canKill \"%s\", teams: %s and %s",killer.getName(),victim.getName(),killer.getTeam().getName(),victim.getTeam().getName()));
-		Debugger.writeDebugOut(String.format("\"%s\" canKill \"%s\", teams: %s and %s",killer.getName(),victim.getName(),killer.getTeam().toString(),victim.getTeam().toString()));
-		Debugger.writeDebugOut(Boolean.toString(killer.getTeam() != victim.getTeam() || this.hardcore));
-		return (killer.getTeam() != victim.getTeam() || this.hardcore);
+		if(killer.isSpawned() && victim.isSpawned())
+		{
+			Debugger.writeDebugOut(String.format("\"%s\" canKill \"%s\", teams: %s and %s",killer.getName(),victim.getName(),killer.getTeam().getName(),victim.getTeam().getName()));
+			Debugger.writeDebugOut(String.format("\"%s\" canKill \"%s\", teams: %s and %s",killer.getName(),victim.getName(),killer.getTeam().toString(),victim.getTeam().toString()));
+			Debugger.writeDebugOut(Boolean.toString(killer.getTeam() != victim.getTeam() || this.hardcore));
+			return (killer.getTeam() != victim.getTeam() || this.hardcore);
+		}
+		return false;
 	}
 	
-	public void kill(PVPPlayer killer,PVPPlayer victim,String weapon,boolean doKill)
+	public void kill(PVPPlayer killer,PVPPlayer victim,String weapon, boolean doKill)
+	{
+		kill(killer, victim, weapon, doKill, false);
+	}
+	
+	public void kill(PVPPlayer killer,PVPPlayer victim,String weapon, boolean doKill, boolean headshot)
 	{
 		if(doKill)
 		{
@@ -351,6 +360,10 @@ public class Match
 				}
 				victim.onKill(killer);
 				victim.setSpawned(false);
+				if(headshot)
+				{
+					weapon += " - "+Main.gameEngine.dict.get("headshot");
+				}
 				if(killer == victim)
 				{
 					this.broadcastMessage(killer.getName()+" ["+weapon+"] "+Main.gameEngine.dict.get("suicide"));
@@ -1192,11 +1205,11 @@ public class Match
 	public List<PVPPlayer> getPlayers()
 	{
 		List<PVPPlayer> players = new ArrayList<PVPPlayer>();
-		for(PVPPlayer p : new ArrayList<>(playersRed))
+		for(PVPPlayer p : this.playersRed)
 		{
 			players.add(p);
 		}
-		for(PVPPlayer p : new ArrayList<>(playersBlue))
+		for(PVPPlayer p : this.playersBlue)
 		{
 			players.add(p);
 		}
@@ -1237,14 +1250,14 @@ public class Match
 	{
 		if(team != teamBlue)
 		{
-			for(PVPPlayer p : new ArrayList<>(playersRed))
+			for(PVPPlayer p : this.playersRed)
 			{
 				p.thePlayer.sendMessage(message);
 			}			
 		}
 		else if(team != teamRed)
 		{
-			for(PVPPlayer p : new ArrayList<>(playersBlue))
+			for(PVPPlayer p : this.playersBlue)
 			{
 				p.thePlayer.sendMessage(message);
 			}
@@ -1287,7 +1300,7 @@ public class Match
 							player.thePlayer.damage((float)Math.round(damage*multi));
 							if(player.thePlayer.getHealth() <= 0d)
 							{
-								this.kill(attacker, player, "SENTRY", false);
+								this.kill(attacker, player, "SENTRY", false, headshot);
 							}
 							else
 							{
@@ -1330,7 +1343,7 @@ public class Match
 							Debugger.writeDebugOut("Health: "+Double.toString(player.thePlayer.getHealth()));
 							if(player.thePlayer.getHealth() <= 0d)
 							{
-								this.kill(attacker, player, "M82A1", false);
+								this.kill(attacker, player, "M82A1", false, headshot);
 							}
 							else
 							{
@@ -1606,7 +1619,7 @@ public class Match
 	
 	private void createFakeExplosion(PVPPlayer issuer, Location loc, float exploStr, boolean b, boolean doDamage, String weapon)
 	{
-		List<PVPPlayer> players = new ArrayList<PVPPlayer>(this.getPlayers());
+		List<PVPPlayer> players = this.getPlayers();
 		for(PVPPlayer p : players)
 		{
 			if(issuer != null && doDamage)
@@ -1628,8 +1641,7 @@ public class Match
 						}
 						else
 						{
-							if(issuer.getTeam() != p.getTeam())
-								p.addKillhelper(issuer, (int)Math.floor(dmg));
+							p.addKillhelper(issuer, (int)Math.floor(dmg));
 						}
 						p.normalDeathBlocked = false;
 					}
