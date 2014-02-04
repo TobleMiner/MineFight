@@ -82,6 +82,7 @@ public class Match
 	private Iterator<RadioStation> radioStationIterator;
 	private RadioStation activeRadioStation;
 	private int timer = 1;
+	private int beaconInterv;
 	public final StatHandler sh;
 	
 	private final HashMap<PVPPlayer,List<Claymore>> claymors = new HashMap<PVPPlayer,List<Claymore>>();
@@ -98,7 +99,6 @@ public class Match
 	private final HashMap<Arrow, SimpleProjectile> projectiles = new HashMap<Arrow,SimpleProjectile>();
 	private final boolean damageEnviron;
 	private final boolean exploDamageEnviron;
-	private int beaconInterv;
 	
 	public Match(World world, Gamemode gmode, String name, boolean hardcore, List<Sign> infoSigns, List<FlagContainer> flags, List<RadioStationContainer> radioStations, StatHandler sh)
 	{
@@ -489,11 +489,11 @@ public class Match
 					{
 						if(((double)flagsRed) > ((double)this.getFlagNum())/2d)
 						{
-							teamBlue.subPoints(pointLossPerFlagPerSecond/100d*(((double)flagsRed)-((double)this.getFlagNum())/2d));
+							teamBlue.subPoints(pointLossPerFlagPerSecond/GameEngine.tps*(((double)flagsRed)-((double)this.getFlagNum())/2d));
 						}
 						else if(((double)flagsBlue) > ((double)this.getFlagNum())/2d)
 						{
-							teamRed.subPoints(pointLossPerFlagPerSecond/100d*(((double)flagsBlue)-((double)this.getFlagNum())/2d));
+							teamRed.subPoints(pointLossPerFlagPerSecond/GameEngine.tps*(((double)flagsBlue)-((double)this.getFlagNum())/2d));
 						}
 					}
 				}
@@ -535,10 +535,10 @@ public class Match
 				{
 					this.beaconInterv = Main.gameEngine.configuration.getInfoBeaconInterval(gmode, world);
 					timer = 0;
-					this.sendTeamMessage(null,ChatColor.GOLD+"Tickets: "+teamRed.color+Integer.toString((int)Math.round(teamRed.getPoints()))+ChatColor.RESET+" | "+teamBlue.color+Integer.toString((int)Math.round(teamBlue.getPoints())));
+					this.sendTeamMessage(null,ChatColor.GOLD+String.format("%s: %s",Main.gameEngine.dict.get("tickets"),teamRed.color+Integer.toString((int)Math.round(teamRed.getPoints()))+ChatColor.RESET+" | "+teamBlue.color+Integer.toString((int)Math.round(teamBlue.getPoints()))));
 					if(gmode.equals(Gamemode.Conquest))
 					{
-						this.sendTeamMessage(null,ChatColor.GOLD+"Flags: "+teamRed.color+Integer.toString(this.getFlagsRed())+ChatColor.RESET+" | "+teamBlue.color+Integer.toString(this.getFlagsBlue()));
+						this.sendTeamMessage(null,ChatColor.GOLD+String.format("%s: %s",Main.gameEngine.dict.get("Flags"),teamRed.color+Integer.toString(this.getFlagsRed())+ChatColor.RESET+" | "+teamBlue.color+Integer.toString(this.getFlagsBlue())));
 						if(this.getFlagNum() - this.getFlagsRed() - this.getFlagsBlue() > 0)
 						{
 							this.sendTeamMessage(null,ChatColor.GOLD+String.format(Main.gameEngine.dict.get("uncapped"),Integer.toString(this.getFlagNum() - this.getFlagsRed() - this.getFlagsBlue())));

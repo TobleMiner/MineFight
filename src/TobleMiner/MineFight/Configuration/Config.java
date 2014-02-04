@@ -53,11 +53,11 @@ public class Config
 			config.set("CombatClass.Sniper.Armor","LEATHER_HELMET,LEATHER_CHESTPLATE,LEATHER_LEGGINGS,LEATHER_BOOTS");
 			config.set("CombatClass.Heavy.Kit","IRON_SWORD:0,1;DIAMOND:0,1;INK_SACK:4,5;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32;BONE:0,3");
 			config.set("CombatClass.Heavy.Armor","DIAMOND_HELMET,DIAMOND_CHESTPLATE,DIAMOND_LEGGINGS,DIAMOND_BOOTS");
-			config.set("CombatClass.Engineer.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,64;SULPHUR:0,64;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
+			config.set("CombatClass.Engineer.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,64;SULPHUR:0,16;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Engineer.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
 			config.set("CombatClass.Medic.Kit","IRON_SWORD:0,1;GOLD_SWORD:0,1;ARROW:0,64;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Medic.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
-			config.set("CombatClass.Pyro.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;DISPENSER:0,1;ARROW:0,64;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;BLAZE_POWDER:0,64;BLAZE_POWDER:0,64;DIRT:0,64;LADDER:0,32");
+			config.set("CombatClass.Pyro.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;BLAZE_POWDER:0,64;BLAZE_POWDER:0,64;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Pyro.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
 			config.set("GameControl.Sign.joinCmd","Join game");
 			config.set("GameProps.C4.exploStr",4.0d);
@@ -92,7 +92,7 @@ public class Config
 			config.set("GameProps.ammoResupply.range", 4.0d);
 			config.set("GameProps.ammoResupply.speed", 4.0d);
 			config.set("GameProps.ammoResupply.amount", 20);
-			config.set("GameProps.flamethrower.ignitionDist", 4.0d);
+			config.set("GameProps.flamethrower.ignitionDist", 6.0d);
 			config.set("GameProps.flamethrower.directDamage", 10d);
 			config.set("GameProps.medigun.healingDist", 4.0d);
 			config.set("GameProps.medigun.healingRate", 10d);
@@ -903,6 +903,6 @@ public class Config
 		}
 		Error err = new Error("Tried to get infoBeaconInterval for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
-		return 600;
+		return 30;
 	}
 }

@@ -141,7 +141,7 @@ public class WorldConfig
 				config.set(gmpref+".weapon.claymore.maxNum",5);					
 				config.set(gmpref+".environment.canBeDamaged",true);					
 				config.set(gmpref+".environment.doExplosionsDamageEnvironment",true);
-				config.set(gmpref+"infoBeaconInterval", 600);
+				config.set(gmpref+"infoBeaconInterval", 30);
 			}
 			config.set("gameProps.score.flagCapture",100d);
 			config.set("gameProps.score.kill", 100d);
@@ -563,6 +563,6 @@ public class WorldConfig
 
 	public int getInfoBeaconInterval(Gamemode gmode) 
 	{
-		return config.getInt("gamemodes."+gmode.toString().toLowerCase()+".infoBeaconInterval",600);
+		return config.getInt("gamemodes."+gmode.toString().toLowerCase()+".infoBeaconInterval",30);
 	}
 }
