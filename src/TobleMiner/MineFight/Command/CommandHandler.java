@@ -63,6 +63,10 @@ public abstract class CommandHandler
 			{
 				return new CommandPlayer(sender).handle(argsShort);
 			}
+			else if(args[0].equalsIgnoreCase("debug"))
+			{
+				return new CommandDebug(sender).handle(argsShort);
+			}
 			else if(args[0].equalsIgnoreCase("version"))
 			{
 				PluginDescriptionFile pdf = Main.main.getDescription();

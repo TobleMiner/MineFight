@@ -32,6 +32,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
+import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.Util.Util;
 
 public class EventListener implements Listener
@@ -284,6 +285,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event)
 	{
+		Debugger.writeDebugOut("Entity damage by Entity called: "+event.getDamager()+" => "+event.getEntity());
 		if(event.getDamager() instanceof Arrow && event.getEntity() instanceof Player)
 		{
 			event.setCancelled(Main.gameEngine.arrowHitPlayer((Arrow)event.getDamager(),(Player)event.getEntity(),event.getDamage()));
@@ -292,6 +294,7 @@ public class EventListener implements Listener
 		{
 			event.setCancelled(Main.gameEngine.playerDamagePlayer((Player)event.getDamager(),(Player)event.getEntity(),event.getDamage()));
 		}
+		if(event.isCancelled()) event.setDamage(0d);
 	}
 	
 	@EventHandler
