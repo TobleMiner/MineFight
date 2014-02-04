@@ -146,7 +146,7 @@ public class Config
 		{
 			return wcfg.protectedRegions;
 		}
-		Error err = new Error("Tried to get protected regions for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get protected regions for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return null;
 	}
@@ -158,7 +158,7 @@ public class Config
 		{
 			return wcfg.getRoundEndSpawn();
 		}
-		Error err = new Error("Tried to fetch leave world for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to fetch leave world for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return null;
 	}
@@ -170,7 +170,7 @@ public class Config
 		{
 			return wcfg.getRespawnLoc();
 		}
-		Error err = new Error("Tried to fetch respawn point for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to fetch respawn point for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return null;
 	}
@@ -182,7 +182,7 @@ public class Config
 		{
 			return wcfg.getSpawnLoc();
 		}
-		Error err = new Error("Tried to fetch spawn point for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to fetch spawn point for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return null;		
 	}
@@ -244,7 +244,7 @@ public class Config
 		{
 			return wcfg.isGamemodeEnabled(gmode);
 		}
-		Error err = new Error("Tried to get gmode enabled for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get gmode enabled for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;		
 	}
@@ -256,7 +256,7 @@ public class Config
 		{
 			return wcfg.getTickets(gmode);
 		}
-		Error err = new Error("Tried to get max tickets for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get max tickets for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 500;		
 	}
@@ -269,7 +269,7 @@ public class Config
 			wcfg.addInfoSign(gm,sign);
 			return;
 		}
-		Error err = new Error("Tried to add info sign to unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to add info sign to unknown world.",String.format("World: %s", sign.getWorld().getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 	}
 	
@@ -281,7 +281,7 @@ public class Config
 			wcfg.removeInfoSign(gm,sign);
 			return;
 		}
-		Error err = new Error("Tried to remove info sign from unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to remove info sign from unknown world.",String.format("World: %s", sign.getWorld().getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 	}
 	
@@ -292,7 +292,7 @@ public class Config
 		{
 			return wcfg.getInfoSigns(gm);
 		}
-		Error err = new Error("Tried to get info signs for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get info signs for unknown world.",String.format("World: %s", world.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return new ArrayList<Sign>();
 	}
@@ -304,7 +304,7 @@ public class Config
 		{
 			return wcfg.getPreventItemDropOnDeath(gm);
 		}
-		Error err = new Error("Tried to get prevent item drop on death for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get prevent item drop on death for unknown world.",String.format("World: %s", world.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -316,7 +316,7 @@ public class Config
 		{
 			return wcfg.getPreventItemDrop(gm);
 		}
-		Error err = new Error("Tried to get prevent item drop for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get prevent item drop for unknown world.",String.format("World: %s", world.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -329,7 +329,7 @@ public class Config
 			wcfg.addFlag(fc);
 			return;
 		}
-		Error err = new Error("Tried to add flag to unknown world.",String.format("World: %s", fc.sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to add flag to unknown world.",String.format("World: %s", fc.sign.getWorld().getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 	}
 	
@@ -341,7 +341,7 @@ public class Config
 			wcfg.removeFlag(sign);
 			return;
 		}
-		Error err = new Error("Tried to remove flag from unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to remove flag from unknown world.",String.format("World: %s", sign.getWorld().getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 	}
 	
@@ -352,7 +352,7 @@ public class Config
 		{
 			return wcfg.getFlags();
 		}
-		Error err = new Error("Tried to get flags for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get flags for unknown world.",String.format("World: %s", world.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return new ArrayList<FlagContainer>();
 	}
@@ -364,7 +364,7 @@ public class Config
 		{
 			return wcfg.getFlagCaptureDistance();
 		}
-		Error err = new Error("Tried to remove flag from unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to remove flag from unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 10d;
 	}
@@ -376,7 +376,7 @@ public class Config
 		{
 			return wcfg.getFlagCaptureSpeed();
 		}
-		Error err = new Error("Tried to get flag capture speed for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get flag capture speed for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 10d;
 	}
@@ -388,7 +388,7 @@ public class Config
 		{
 			return wcfg.getFlagCaptureAcceleration();
 		}
-		Error err = new Error("Tried to get flag capture acceleration for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get flag capture acceleration for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 1.2d;
 	}
@@ -400,7 +400,7 @@ public class Config
 		{
 			return wcfg.getPointlossPerFlagPerSecond();
 		}
-		Error err = new Error("Tried to get flag pointloss for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get flag pointloss for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 1.0d;
 	}
@@ -412,7 +412,7 @@ public class Config
 		{
 			return wcfg.getLosePointsWhenEnemyHasLessThanHalfFlags();
 		}
-		Error err = new Error("Tried to get lose points when enemy has less than half flags for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get lose points when enemy has less than half flags for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -424,7 +424,7 @@ public class Config
 		{
 			return wcfg.getAutobalance(gm);
 		}
-		Error err = new Error("Tried to get autobalance for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get autobalance for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -491,7 +491,7 @@ public class Config
 		{
 			return wcfg.getRadioStations();
 		}
-		Error err = new Error("Tried to get radio stations for unknown world.",String.format("World: %s", world.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get radio stations for unknown world.",String.format("World: %s", world.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return new ArrayList<RadioStationContainer>();
 	}
@@ -503,7 +503,7 @@ public class Config
 		{
 			wcfg.addRadioStation(rsc);
 		}
-		Error err = new Error("Tried to add radio station to unknown world.",String.format("World: %s", rsc.sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to add radio station to unknown world.",String.format("World: %s", rsc.sign.getWorld().getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 	}
 	
@@ -514,7 +514,7 @@ public class Config
 		{
 			wcfg.removeRadioStation(sign);
 		}
-		Error err = new Error("Tried to remove radio station from unknown world.",String.format("World: %s", sign.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to remove radio station from unknown world.",String.format("World: %s", sign.getWorld().getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 	}
 	
@@ -525,7 +525,7 @@ public class Config
 		{
 			return wcfg.getRadioStationDestructTime();
 		}
-		Error err = new Error("Tried to get radio station detonation time for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get radio station detonation time for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 15.0d;
 	}
@@ -537,7 +537,7 @@ public class Config
 		{
 			return wcfg.getDefenderInnerSpawnRadius();
 		}
-		Error err = new Error("Tried to get inner defender spawn radius for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get inner defender spawn radius for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 3.0d;
 	}
@@ -549,7 +549,7 @@ public class Config
 		{
 			return wcfg.getDefenderOuterSpawnRadius();
 		}
-		Error err = new Error("Tried to get outer defender spawn radius for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get outer defender spawn radius for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 15.0d;
 	}
@@ -561,7 +561,7 @@ public class Config
 		{
 			return wcfg.getAttackerInnerSpawnRadius();
 		}
-		Error err = new Error("Tried to get inner attacker spawn radius for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get inner attacker spawn radius for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 30.0d;
 	}
@@ -573,7 +573,7 @@ public class Config
 		{
 			return wcfg.getAttackerOuterSpawnRadius();
 		}
-		Error err = new Error("Tried to get outer attacker spawn radius for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get outer attacker spawn radius for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 50.0d;
 	}
@@ -607,7 +607,7 @@ public class Config
 		}
 		else
 		{
-			Error err = new Error("Tried to register protection for unknown world.",String.format("World: %s", pos1.getWorld().getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+			Error err = new Error("Tried to register protection for unknown world.",String.format("World: %s", pos1.getWorld().getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 			ErrorReporter.reportError(err);
 		}
 	}
@@ -639,7 +639,7 @@ public class Config
 		{
 			return wcfg.isFalldamageActive(gm);
 		}
-		Error err = new Error("Tried to get falldamage active for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get falldamage active for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -651,7 +651,7 @@ public class Config
 		{
 			return wcfg.isHungerActive(gm);
 		}
-		Error err = new Error("Tried to get hunger active for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get hunger active for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -698,7 +698,7 @@ public class Config
 		{
 			return wcfg.isMpvpEnabled();
 		}
-		Error err = new Error("Tried to get mpvp enabled for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get mpvp enabled for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -725,7 +725,7 @@ public class Config
 		{
 			return wcfg.isMinimapEnabled();
 		}
-		Error err = new Error("Tried to get minimap enabled for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get minimap enabled for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -737,7 +737,7 @@ public class Config
 		{
 			return wcfg.getProjectileDamage(g, pt);
 		}
-		Error err = new Error("Tried to get projectile damage for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get projectile damage for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 10.0d;
 	}
@@ -749,7 +749,7 @@ public class Config
 		{
 			return wcfg.getHeadshotDamageMultiplier(g);
 		}
-		Error err = new Error("Tried to get headshot multiplier for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get headshot multiplier for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 2.0d;
 	}
@@ -761,7 +761,7 @@ public class Config
 		{
 			return wcfg.getLegshotDamageMultiplier(g);
 		}
-		Error err = new Error("Tried to get legshot multiplier for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get legshot multiplier for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 0.5d;
 	}
@@ -773,7 +773,7 @@ public class Config
 		{
 			return wcfg.getCritProbability(g);
 		}
-		Error err = new Error("Tried to get crit probability for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get crit probability for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 0.02d;
 	}
@@ -785,7 +785,7 @@ public class Config
 		{
 			return wcfg.getCritMultiplier(g);
 		}
-		Error err = new Error("Tried to get crit multiplier for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get crit multiplier for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 2.0d;
 	}
@@ -797,7 +797,7 @@ public class Config
 		{
 			return wcfg.canEvironmentBeDamaged(gmode);
 		}
-		Error err = new Error("Tried to get can environment be damaged for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get can environment be damaged for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -809,7 +809,7 @@ public class Config
 		{
 			return wcfg.canExplosionDamageEvironment(gmode);
 		}
-		Error err = new Error("Tried to get can explosions damage environment for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get can explosions damage environment for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -821,7 +821,7 @@ public class Config
 		{
 			return wcfg.canEvironmentBeDamaged();
 		}
-		Error err = new Error("Tried to get can environment be damaged for unknown world.",String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get can environment be damaged for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return false;
 	}
@@ -833,7 +833,7 @@ public class Config
 		{
 			return wcfg.getScoreForAction(s);
 		}
-		Error err = new Error(String.format("Tried to get score for action \"%s\" for unknown world.",s.name()),String.format("World: %s", w.getName()), "This error isn't critical.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error(String.format("Tried to get score for action \"%s\" for unknown world.",s.name()),String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 0d;
 	}
@@ -856,5 +856,53 @@ public class Config
 	public boolean gStatInstantUpdateEnabled()
 	{
 		return config.getBoolean("GameProps.statistics.global.instantUpdate.enabled",false);
+	}
+	
+	public int getMaxClaymors(World w, Gamemode gm)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getMaxClaymors(gm);
+		}
+		Error err = new Error("Tried to get maxClaymors for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 0;
+	}
+	
+	public boolean canAvoidClaymore(World w, Gamemode gm)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.canAvoidClaymore(gm);
+		}
+		Error err = new Error("Tried to get canAvoidClaymore for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return true;
+	}
+	
+	public boolean canPickupClaymore(World w, Gamemode gm)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.canPickupClaymore(gm);
+		}
+		Error err = new Error("Tried to get canPickupClaymore for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return true;
+	}
+
+	public int getInfoBeaconInterval(Gamemode gmode, World w) 
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getInfoBeaconInterval(gmode);
+		}
+		Error err = new Error("Tried to get infoBeaconInterval for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 600;
 	}
 }

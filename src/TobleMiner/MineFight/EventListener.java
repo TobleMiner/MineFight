@@ -23,6 +23,7 @@ import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -158,9 +159,9 @@ public class EventListener implements Listener
 		if(event.getEntity() instanceof Item)
 		{
 			Material mat = ((Item)event.getEntity()).getItemStack().getType();
-			if(mat.equals(Material.REDSTONE) || mat.equals(Material.CLAY_BALL))
+			if(mat.equals(Material.REDSTONE) || mat.equals(Material.CLAY_BALL) || mat.equals(Material.INK_SACK))
 			{
-				event.setCancelled(Main.gameEngine.itemDamage((Item)event.getEntity()));
+				event.setCancelled(Main.gameEngine.itemDamage((Item)event.getEntity(),event.getCause()));
 			}
 		}
 		else if(event.getEntity() instanceof Player)
@@ -175,9 +176,9 @@ public class EventListener implements Listener
 		if(event.getEntity() instanceof Item)
 		{
 			Material mat = ((Item)event.getEntity()).getItemStack().getType();
-			if(mat.equals(Material.REDSTONE) || mat.equals(Material.CLAY_BALL))
+			if(mat.equals(Material.REDSTONE) || mat.equals(Material.CLAY_BALL) || mat.equals(Material.INK_SACK))
 			{
-				event.setCancelled(Main.gameEngine.itemDamage((Item)event.getEntity()));
+				event.setCancelled(Main.gameEngine.itemDamage((Item)event.getEntity(),DamageCause.MELTING));
 			}
 		}
 	}

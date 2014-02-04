@@ -1,5 +1,6 @@
 package TobleMiner.MineFight.Weapon.TickControlled;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Item;
 
 import TobleMiner.MineFight.GameEngine.Match.Match;
@@ -13,6 +14,7 @@ public class Claymore
 	private final float exploStr;
 	private final Match match;
 	private final float killRangeMod;
+	private boolean exploded = false;
 	
 	public Claymore(Item is,PVPPlayer owner,float exploStr,Match match,float killRangeMod)
 	{
@@ -25,7 +27,10 @@ public class Claymore
 	
 	public void explode()
 	{
+		if(exploded) return;
+		this.exploded = true;
+		Location loc = this.claymore.getLocation().clone();
 		EntitySyncCalls.removeEntity(claymore);
-		match.createExplosion(this.owner,this.claymore.getLocation(),exploStr,this.exploStr*this.killRangeMod,"M18 CLAYMORE");
+		match.createExplosion(this.owner, loc, exploStr, this.exploStr*this.killRangeMod, "M18 CLAYMORE");
 	}
 }

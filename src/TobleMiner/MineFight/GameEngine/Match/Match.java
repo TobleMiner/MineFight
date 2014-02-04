@@ -31,6 +31,7 @@ import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
+import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Conquest.Flag;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Rush.RadioStation;
@@ -83,7 +84,7 @@ public class Match
 	private int timer = 1;
 	public final StatHandler sh;
 	
-	private final HashMap<Item,Claymore> claymores = new HashMap<Item,Claymore>();
+	private final HashMap<PVPPlayer,List<Claymore>> claymors = new HashMap<PVPPlayer,List<Claymore>>();
 	private final HashMap<PVPPlayer,List<C4>> c4explosives = new HashMap<PVPPlayer,List<C4>>();
 	private final HashMap<PVPPlayer,SentryGun> sentries = new HashMap<PVPPlayer,SentryGun>();
 	private final HashMap<Item,HandGrenade> handGrenades = new HashMap<Item,HandGrenade>();
@@ -91,13 +92,15 @@ public class Match
 	private final HashMap<Arrow,SentryGun> sentryArrows = new HashMap<Arrow,SentryGun>();
 	private final HashMap<Arrow, SentryMissile> sentryMissiles = new HashMap<Arrow,SentryMissile>();
 	private final HashMap<Arrow,RPG> rpgs = new HashMap<Arrow,RPG>();
-	private final List<Item> c4registry = new ArrayList<Item>();
+	private final HashMap<Item,C4> c4registry = new HashMap<Item,C4>();
+	private final HashMap<Item,Claymore> claymoreRegistry = new HashMap<Item,Claymore>();
 	private final List<ResupplyStation> resupplyStations = new ArrayList<ResupplyStation>();
 	private final HashMap<Arrow, SimpleProjectile> projectiles = new HashMap<Arrow,SimpleProjectile>();
 	private final boolean damageEnviron;
 	private final boolean exploDamageEnviron;
+	private int beaconInterv;
 	
-	public Match(World world,Gamemode gmode,String name,boolean hardcore,List<Sign> infoSigns,List<FlagContainer> flags,List<RadioStationContainer> radioStations, StatHandler sh)
+	public Match(World world, Gamemode gmode, String name, boolean hardcore, List<Sign> infoSigns, List<FlagContainer> flags, List<RadioStationContainer> radioStations, StatHandler sh)
 	{
 		this.sh = sh;
 		this.world = world;
@@ -154,6 +157,8 @@ public class Match
 		}
 		this.damageEnviron = Main.gameEngine.configuration.canEvironmentBeDamaged(gmode, world);
 		this.exploDamageEnviron = Main.gameEngine.configuration.canExlosionsDamageEnvironment(gmode, world);
+		this.beaconInterv = Main.gameEngine.configuration.getInfoBeaconInterval(gmode, world);
+
 	}
 	
 	public boolean canEnvironmentBeDamaged()
@@ -524,20 +529,24 @@ public class Match
 					this.win(teamRed);
 				}
 			}
-			if(timer > 6000)
+			if(beaconInterv > 0)
 			{
-				timer = 0;
-				this.sendTeamMessage(null,ChatColor.GOLD+"Tickets: "+teamRed.color+Integer.toString((int)Math.round(teamRed.getPoints()))+ChatColor.RESET+" | "+teamBlue.color+Integer.toString((int)Math.round(teamBlue.getPoints())));
-				if(gmode.equals(Gamemode.Conquest))
+				if(timer > ((double)this.beaconInterv)*GameEngine.tps)
 				{
-					this.sendTeamMessage(null,ChatColor.GOLD+"Flags: "+teamRed.color+Integer.toString(this.getFlagsRed())+ChatColor.RESET+" | "+teamBlue.color+Integer.toString(this.getFlagsBlue()));
-					if(this.getFlagNum() - this.getFlagsRed() - this.getFlagsBlue() > 0)
+					this.beaconInterv = Main.gameEngine.configuration.getInfoBeaconInterval(gmode, world);
+					timer = 0;
+					this.sendTeamMessage(null,ChatColor.GOLD+"Tickets: "+teamRed.color+Integer.toString((int)Math.round(teamRed.getPoints()))+ChatColor.RESET+" | "+teamBlue.color+Integer.toString((int)Math.round(teamBlue.getPoints())));
+					if(gmode.equals(Gamemode.Conquest))
 					{
-						this.sendTeamMessage(null,ChatColor.GOLD+String.format(Main.gameEngine.dict.get("uncapped"),Integer.toString(this.getFlagNum() - this.getFlagsRed() - this.getFlagsBlue())));
+						this.sendTeamMessage(null,ChatColor.GOLD+"Flags: "+teamRed.color+Integer.toString(this.getFlagsRed())+ChatColor.RESET+" | "+teamBlue.color+Integer.toString(this.getFlagsBlue()));
+						if(this.getFlagNum() - this.getFlagsRed() - this.getFlagsBlue() > 0)
+						{
+							this.sendTeamMessage(null,ChatColor.GOLD+String.format(Main.gameEngine.dict.get("uncapped"),Integer.toString(this.getFlagNum() - this.getFlagsRed() - this.getFlagsBlue())));
+						}
 					}
 				}
+				timer++;
 			}
-			timer++;
 		}
 		catch(Exception ex)
 		{
@@ -570,7 +579,18 @@ public class Match
 			{
 				float mod = Main.gameEngine.configuration.getM18KillRangeMod();
 				Claymore clay = new Claymore(is, player,Main.gameEngine.configuration.getM18ExploStr(),this,mod);
-				claymores.put(is, clay);
+				claymoreRegistry.put(is, clay);
+				List<Claymore> clays = this.claymors.get(player);
+				if(clays == null) clays = new ArrayList<Claymore>();
+				clays.add(clay);
+				if(clays.size() > Main.gameEngine.configuration.getMaxClaymors(this.world,this.gmode))
+				{
+					Claymore c = clays.get(0);
+					this.claymoreRegistry.remove(c.claymore);
+					clays.remove(c);
+					c.explode();
+				}
+				this.claymors.put(player, clays);
 				return false;
 			}
 			else if(is.getItemStack().getType().equals(Material.IRON_INGOT))
@@ -612,13 +632,24 @@ public class Match
 				C4 explosive = new C4(null,is,Main.gameEngine.configuration.getC4ExploStr(),player,this,mod);
 				c4s.add(explosive);
 				c4explosives.put(player, c4s);			
-				c4registry.add(is);
+				c4registry.put(is,explosive);
 				return false;
 			}
 		}
 		return Main.gameEngine.configuration.getPreventItemDrop(world, gmode);
 	}
 
+	private void unregisterClaymore(Claymore clay)
+	{
+		List<Claymore> clays = this.claymors.get(clay.owner);
+		if(clays != null)
+		{
+			clays.remove(clay);
+		}
+		this.claymors.put(clay.owner, clays);
+		this.claymoreRegistry.remove(clay.claymore);
+	}
+	
 	public boolean playerPickUpItem(Item is, Player p)
 	{
 		PVPPlayer player = this.getPlayerExact(p);
@@ -626,12 +657,17 @@ public class Match
 		{
 			if(is.getItemStack().getType().equals(Material.CLAY_BALL))
 			{
-				Claymore clay = claymores.get(is);
+				Claymore clay = claymoreRegistry.get(is);
 				if(clay != null)
 				{
-					if(this.canKill(clay.owner,player))
+					if((clay.owner == player && player.thePlayer.isSneaking()))
 					{
-						claymores.remove(is);
+						this.unregisterClaymore(clay);
+						return false;
+					}
+					if(this.canKill(clay.owner,player) && !player.thePlayer.isSneaking())
+					{
+						this.unregisterClaymore(clay);
 						this.kill(clay.owner,player,"M18 CLAYMORE",player.thePlayer.getHealth() > 0d);
 						clay.explode();
 					}
@@ -657,7 +693,7 @@ public class Match
 			}
 			else if(is.getItemStack().getType().equals(Material.INK_SACK))
 			{
-				if(c4registry.contains(is))
+				if(c4registry.get(is) != null)
 				{
 					return true;
 				}
@@ -669,28 +705,7 @@ public class Match
 
 	public boolean itemDespawn(Item is)
 	{
-		if(is.getItemStack().getType().equals(Material.CLAY_BALL))
-		{
-			if(claymores.get(is) != null)
-			{
-				return true;
-			}
-		}
-		else if(is.getItemStack().getType().equals(Material.REDSTONE))
-		{
-			if(imss.get(is) != null)
-			{
-				return true;
-			}
-		}
-		else if(is.getItemStack().getType().equals(Material.INK_SACK))
-		{
-			if(c4registry.contains(is))
-			{
-				return true;
-			}
-		}
-		return false;
+		return this.itemDamage(is, DamageCause.CUSTOM);
 	}
 	
 	private void checkKillstreak(PVPPlayer player)
@@ -744,7 +759,7 @@ public class Match
 		playersRed = new ArrayList<PVPPlayer>();
 		infSs = new ArrayList<InformationSign>();
 		flags = new ArrayList<Flag>();
-		claymores.clear();
+		claymors.clear();
 		imss.clear();
 		c4explosives.clear();
 		handGrenades.clear();
@@ -763,7 +778,10 @@ public class Match
 			c4explosives.remove(player);
 			if(Main.gameEngine.configuration.getPreventItemDropOnDeath(world, gmode))
 			{
-				drops.clear();
+				if(drops != null)
+				{
+					drops.clear();
+				}
 			}
 			if(player.normalDeathBlocked)
 			{
@@ -1690,5 +1708,48 @@ public class Match
 				this.kill(issuer,p,weapon,p.thePlayer.get0d() > 0);
 			}
 		}*/
+	}
+
+	public boolean itemDamage(Item is, DamageCause cause)
+	{
+		boolean explo = ((cause == DamageCause.BLOCK_EXPLOSION) || (cause == DamageCause.ENTITY_EXPLOSION));
+		if(is.getItemStack().getType().equals(Material.CLAY_BALL))
+		{
+			Claymore clay = this.claymoreRegistry.get(is); 
+			if(clay != null)
+			{
+				if(explo)
+				{
+					this.unregisterClaymore(clay);
+				}
+				return true;
+			}
+		}
+		else if(is.getItemStack().getType().equals(Material.REDSTONE))
+		{
+			if(imss.get(is) != null)
+			{
+				return true;
+			}
+		}
+		else if(is.getItemStack().getType().equals(Material.INK_SACK))
+		{
+			C4 c4 = c4registry.get(is);
+			if(c4 != null)
+			{
+				if(explo)
+				{
+					List<C4> c4s = this.c4explosives.get(c4.owner);
+					if(c4s != null)
+					{
+						c4s.remove(c4);
+					}
+					this.c4registry.remove(is);
+					c4.explode();
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 }

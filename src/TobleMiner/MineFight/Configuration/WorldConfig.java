@@ -136,8 +136,12 @@ public class WorldConfig
 				config.set(gmpref+".weapon.legshotMultiplier",0.5d);					
 				config.set(gmpref+".weapon.critProbability",0.02d);					
 				config.set(gmpref+".weapon.critMultiplier",2d);					
+				config.set(gmpref+".weapon.claymore.canAvoid",true);					
+				config.set(gmpref+".weapon.claymore.canPickup",true);					
+				config.set(gmpref+".weapon.claymore.maxNum",5);					
 				config.set(gmpref+".environment.canBeDamaged",true);					
-				config.set(gmpref+".environment.doExplosionsDamageEnvironment",true);					
+				config.set(gmpref+".environment.doExplosionsDamageEnvironment",true);
+				config.set(gmpref+"infoBeaconInterval", 600);
 			}
 			config.set("gameProps.score.flagCapture",100d);
 			config.set("gameProps.score.kill", 100d);
@@ -540,5 +544,25 @@ public class WorldConfig
 	public double getScoreForAction(Score s)
 	{
 		return config.getDouble("gameProps.score."+s.name,0d);
+	}
+
+	public int getMaxClaymors(Gamemode gmode)
+	{
+		return config.getInt("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.maxNum",5);
+	}
+	
+	public boolean canAvoidClaymore(Gamemode gmode) 
+	{
+		return config.getBoolean("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.canAvoid",true);					
+	}
+	
+	public boolean canPickupClaymore(Gamemode gmode) 
+	{
+		return config.getBoolean("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.canPickup",true);					
+	}
+
+	public int getInfoBeaconInterval(Gamemode gmode) 
+	{
+		return config.getInt("gamemodes."+gmode.toString().toLowerCase()+".infoBeaconInterval",600);
 	}
 }

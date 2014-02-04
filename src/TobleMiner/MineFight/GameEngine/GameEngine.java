@@ -256,12 +256,12 @@ public class GameEngine
 		return false;
 	}
 
-	public boolean itemDamage(Item is)
+	public boolean itemDamage(Item is, DamageCause cause)
 	{
 		Match m = this.getMatch(is.getWorld());
 		if(m != null)
 		{
-			return m.itemDespawn(is); //Same as items just despawning
+			return m.itemDamage(is, cause);
 		}
 		return false;
 	}

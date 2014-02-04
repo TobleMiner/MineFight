@@ -1,5 +1,6 @@
 package TobleMiner.MineFight.Weapon.RC;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
@@ -20,6 +21,7 @@ public class C4
 	private Material blockIdStore;
 	private MaterialData blockDataStore;
 	private final boolean damageEnviron;
+	private boolean exploded = false;
 	
 	public C4(Block b,Item i,float f,PVPPlayer owner,Match match,float killRangeMod)
 	{
@@ -40,6 +42,8 @@ public class C4
 	
 	public void explode()
 	{
+		if(exploded) return;
+		exploded = true;
 		if(this.block != null)
 		{
 			if(this.block.getType().equals(Material.LAPIS_ORE))
@@ -58,8 +62,9 @@ public class C4
 		}
 		if(this.item != null)
 		{
-			match.createExplosion(owner, this.item.getLocation(), exploStr, exploStr*killRangeMod,"C4");
+			Location loc = this.item.getLocation().clone();
 			EntitySyncCalls.removeEntity(item);
+			match.createExplosion(owner, loc, exploStr, exploStr*killRangeMod,"C4");
 		}
-	}
+	}	
 }
