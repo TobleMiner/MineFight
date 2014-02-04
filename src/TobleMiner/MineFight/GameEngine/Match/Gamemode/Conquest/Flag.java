@@ -199,13 +199,18 @@ public class Flag
 					}
 				}
 				//Flag info update
+				String fname = this.name;
+				if(fname == null || fname.length() == 0)
+				{
+					fname = "Flag";
+				}
 				if(owner != null)
 				{
-					this.sign.setLine(0,owner.color+"Flag");
+					this.sign.setLine(0,owner.color+fname);
 				}
 				else
 				{
-					this.sign.setLine(0,"Flag");
+					this.sign.setLine(0,fname);
 				}
 				this.sign.setLine(1,"RED | BLUE");
 				this.sign.setLine(2,Integer.toString((int)Math.floor(percRed))+" | "+Integer.toString((int)Math.floor(percBlue)));
