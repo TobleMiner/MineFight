@@ -17,6 +17,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
+import TobleMiner.MineFight.Configuration.Container.Killstreak;
+import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
 import TobleMiner.MineFight.Configuration.Container.PlayerSeekerContainer;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
@@ -140,12 +142,15 @@ public class WorldConfig
 				config.set(gmpref+".weapon.claymore.canAvoid",true);					
 				config.set(gmpref+".weapon.claymore.canPickup",true);					
 				config.set(gmpref+".weapon.claymore.maxNum",5);					
+				ConfigurationSection cs = config.createSection(gmpref+".weapon.killstreak.killstreaks");
+				cs.set("3", "ims");
+				cs.set("5", "playerseeker");
 				config.set(gmpref+".weapon.killstreak.playerseeker.detectDist",20d);					
 				config.set(gmpref+".weapon.killstreak.playerseeker.exploStr",10d);					
 				config.set(gmpref+".weapon.killstreak.playerseeker.maxSpeed",10d);					
 				config.set(gmpref+".weapon.killstreak.playerseeker.peakHeight",10d);					
 				config.set(gmpref+".weapon.killstreak.playerseeker.maxAccel",5d);					
-				config.set(gmpref+".weapon.killstreak.playerseeker.threshold",5d);					
+				config.set(gmpref+".weapon.killstreak.playerseeker.threshold",5d);
 				config.set(gmpref+".environment.canBeDamaged",true);					
 				config.set(gmpref+".environment.doExplosionsDamageEnvironment",true);
 				config.set(gmpref+"infoBeaconInterval", 30);
@@ -583,5 +588,40 @@ public class WorldConfig
 		double maxAccel = config.getDouble(pref+"maxAccel",5d);					
 		double threshold = config.getDouble(pref+"threshold",5d);					
 		return new PlayerSeekerContainer(detectDist, exploStr, maxSpeed, peakHeight, maxAccel, threshold);
+	}
+	
+	public KillstreakConfig getKillstreaks(Gamemode gmode)
+	{
+		KillstreakConfig kc = new KillstreakConfig();
+		ConfigurationSection cs = this.config.getConfigurationSection("gamemodes."+gmode.toString().toLowerCase()+".weapon.killstreak.killstreaks");
+		if(cs != null)
+		{
+			for(String key : cs.getValues(false).keySet())
+			{
+				try
+				{
+					int num = Integer.parseInt(key);
+					String ksname = cs.getString(Integer.toString(num));
+					Killstreak ks = Killstreak.getByName(ksname);
+					if(ks == Killstreak.NONE)
+					{
+						Error err = new Error("Error parsing killstreak config.",String.format("The name \"%s\" is not a valid killstreak name."),"Take a look at the coresponding config file.",this.getClass().getName(),ErrorSeverity.ERROR);
+						ErrorReporter.reportError(err);
+					}
+					kc.add(num, ks);
+				}
+				catch(Exception ex)
+				{
+					Error err = new Error("Error parsing killstreak config.",String.format("The key \"%s\" is not numeric."),"Take a look at the coresponding config file.",this.getClass().getName(),ErrorSeverity.ERROR);
+					ErrorReporter.reportError(err);
+				}
+			}
+		}
+		else
+		{
+			Error err = new Error("No killstreak section found!", String.format("The killstreak config for world \"%s\", gamemode \"%s\" could not be found. Try regenerating the config file.",this.world.getName(),Main.gameEngine.dict.get(gmode.transname)), "There will be no killstreaks available for this particular gamemode in the world.", this.getClass().getName(), ErrorSeverity.ERROR);
+			ErrorReporter.reportError(err);
+		}
+		return kc;
 	}
 }
