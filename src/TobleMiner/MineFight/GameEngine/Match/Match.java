@@ -58,6 +58,8 @@ import TobleMiner.MineFight.Weapon.TickControlled.IMS;
 import TobleMiner.MineFight.Weapon.TickControlled.RPG;
 import TobleMiner.MineFight.Weapon.TickControlled.SentryMissile;
 import TobleMiner.MineFight.Weapon.TickControlled.TickControlledWeapon;
+import TobleMiner.MineFight.Weapon.TickControlled.Missile.IMSProjectile;
+import TobleMiner.MineFight.Weapon.TickControlled.Missile.Missile;
 import TobleMiner.MineFight.WeaponStationary.SentryGun;
 
 public class Match 
@@ -90,6 +92,7 @@ public class Match
 	private final HashMap<PVPPlayer,SentryGun> sentries = new HashMap<PVPPlayer,SentryGun>();
 	private final HashMap<Item,HandGrenade> handGrenades = new HashMap<Item,HandGrenade>();
 	private final HashMap<Item,IMS> imss = new HashMap<Item,IMS>();
+	private final HashMap<Arrow,Missile> missiles = new HashMap<Arrow,Missile>();
 	private final HashMap<Arrow,SentryGun> sentryArrows = new HashMap<Arrow,SentryGun>();
 	private final HashMap<Arrow, SentryMissile> sentryMissiles = new HashMap<Arrow,SentryMissile>();
 	private final HashMap<Arrow,RPG> rpgs = new HashMap<Arrow,RPG>();
@@ -1463,6 +1466,12 @@ public class Match
 			sm.explode();
 			return;
 		}
+		Missile missile = this.missiles.get(arr);
+		if(missile != null)
+		{
+			missile.explode();
+			return;
+		}
 	}
 	
 	public List<PVPPlayer> getSpawnedPlayersNearLocation(Location loc, double dist)
@@ -1752,4 +1761,14 @@ public class Match
 		}
 		return false;
 	}
+
+	public void addMissile(Missile proj)
+	{
+		this.missiles.put(proj.getProjectile(), proj);
+	}
+	
+	public void rmMissile(Missile proj)
+	{
+		this.missiles.remove(proj.getProjectile());
+	}	
 }

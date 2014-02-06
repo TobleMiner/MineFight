@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
+import TobleMiner.MineFight.Configuration.Container.PlayerSeekerContainer;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
@@ -904,5 +905,17 @@ public class Config
 		Error err = new Error("Tried to get infoBeaconInterval for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return 30;
+	}
+	
+	public PlayerSeekerContainer getPlayerSeekerConf(World w, Gamemode gmode)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getPlayerSeekerConf(gmode);
+		}
+		Error err = new Error("Tried to get playerSeekerContainer for unknown world.",String.format("World: %s", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return new PlayerSeekerContainer(20d, 10f, 10d, 10d, 5d, 5d);
 	}
 }

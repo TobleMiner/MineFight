@@ -16,6 +16,7 @@ import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
 import TobleMiner.MineFight.Util.SyncDerp.EntitySyncCalls;
+import TobleMiner.MineFight.Weapon.TickControlled.Missile.IMSProjectile;
 
 public class IMS extends TickControlledWeapon
 {
@@ -23,7 +24,7 @@ public class IMS extends TickControlledWeapon
 	private final Item item;
 	private final double triggerDist;
 	private int projNum;
-	private final PVPPlayer owner;
+	public final PVPPlayer owner;
 	private int timer = 1;
 	private final double grenadeSpeed;
 	private final double grenadeHeight;

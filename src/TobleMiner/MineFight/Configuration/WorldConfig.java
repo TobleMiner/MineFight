@@ -17,6 +17,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
+import TobleMiner.MineFight.Configuration.Container.PlayerSeekerContainer;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
@@ -139,6 +140,12 @@ public class WorldConfig
 				config.set(gmpref+".weapon.claymore.canAvoid",true);					
 				config.set(gmpref+".weapon.claymore.canPickup",true);					
 				config.set(gmpref+".weapon.claymore.maxNum",5);					
+				config.set(gmpref+".weapon.killstreak.playerseeker.detectDist",20d);					
+				config.set(gmpref+".weapon.killstreak.playerseeker.exploStr",10d);					
+				config.set(gmpref+".weapon.killstreak.playerseeker.maxSpeed",10d);					
+				config.set(gmpref+".weapon.killstreak.playerseeker.peakHeight",10d);					
+				config.set(gmpref+".weapon.killstreak.playerseeker.maxAccel",5d);					
+				config.set(gmpref+".weapon.killstreak.playerseeker.threshold",5d);					
 				config.set(gmpref+".environment.canBeDamaged",true);					
 				config.set(gmpref+".environment.doExplosionsDamageEnvironment",true);
 				config.set(gmpref+"infoBeaconInterval", 30);
@@ -564,5 +571,17 @@ public class WorldConfig
 	public int getInfoBeaconInterval(Gamemode gmode) 
 	{
 		return config.getInt("gamemodes."+gmode.toString().toLowerCase()+".infoBeaconInterval",30);
+	}
+
+	public PlayerSeekerContainer getPlayerSeekerConf(Gamemode gmode) 
+	{
+		String pref = "gamemodes."+gmode.toString().toLowerCase()+"weapon.killstreak.playerseeker.";
+		double detectDist = config.getDouble(pref+"detectDist",20d);					
+		float exploStr = (float)config.getDouble(pref+"exploStr",10d);					
+		double maxSpeed = config.getDouble(pref+"maxSpeed",10d);					
+		double peakHeight = config.getDouble(pref+"peakHeight",10d);					
+		double maxAccel = config.getDouble(pref+"maxAccel",5d);					
+		double threshold = config.getDouble(pref+"threshold",5d);					
+		return new PlayerSeekerContainer(detectDist, exploStr, maxSpeed, peakHeight, maxAccel, threshold);
 	}
 }
