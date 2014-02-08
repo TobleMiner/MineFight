@@ -25,7 +25,10 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Configuration.Container.ClaymoreContainer;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
+import TobleMiner.MineFight.Configuration.Container.Killstreak;
+import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.ErrorHandling.Error;
@@ -58,8 +61,8 @@ import TobleMiner.MineFight.Weapon.TickControlled.IMS;
 import TobleMiner.MineFight.Weapon.TickControlled.RPG;
 import TobleMiner.MineFight.Weapon.TickControlled.SentryMissile;
 import TobleMiner.MineFight.Weapon.TickControlled.TickControlledWeapon;
-import TobleMiner.MineFight.Weapon.TickControlled.Missile.IMSProjectile;
 import TobleMiner.MineFight.Weapon.TickControlled.Missile.Missile;
+import TobleMiner.MineFight.Weapon.TickControlled.Missile.PlayerSeeker;
 import TobleMiner.MineFight.WeaponStationary.SentryGun;
 
 public class Match 
@@ -86,6 +89,7 @@ public class Match
 	private int timer = 1;
 	private int beaconInterv;
 	public final StatHandler sh;
+	private final KillstreakConfig kcconf;
 	
 	private final HashMap<PVPPlayer,List<Claymore>> claymors = new HashMap<PVPPlayer,List<Claymore>>();
 	private final HashMap<PVPPlayer,List<C4>> c4explosives = new HashMap<PVPPlayer,List<C4>>();
@@ -113,6 +117,7 @@ public class Match
 		this.matchLeaveLoc = Main.gameEngine.configuration.getRoundEndSpawnForWorld(world);
 		this.spawnLoc = Main.gameEngine.configuration.getSpawnForWorld(world);
 		this.classSelectLoc = Main.gameEngine.configuration.getRespawnForWorld(world);
+		this.kcconf = Main.gameEngine.configuration.getKillstreaks(world, gmode);
 		if(gmode.equals(Gamemode.Conquest))
 		{
 			this.teamRed.setPoints(Main.gameEngine.configuration.getPointsForGamemodeInWorld(world,gmode));
@@ -586,12 +591,12 @@ public class Match
 				List<Claymore> clays = this.claymors.get(player);
 				if(clays == null) clays = new ArrayList<Claymore>();
 				clays.add(clay);
-				if(clays.size() > Main.gameEngine.configuration.getMaxClaymors(this.world,this.gmode))
+				if(clays.size() > Main.gameEngine.configuration.getClaymoreConfig(this.world,this.gmode).maxClayNum)
 				{
 					Claymore c = clays.get(0);
 					this.claymoreRegistry.remove(c.claymore);
 					clays.remove(c);
-					c.explode();
+					EntitySyncCalls.removeEntity(c.claymore);
 				}
 				this.claymors.put(player, clays);
 				return false;
@@ -663,12 +668,13 @@ public class Match
 				Claymore clay = claymoreRegistry.get(is);
 				if(clay != null)
 				{
-					if((clay.owner == player && player.thePlayer.isSneaking()))
+					ClaymoreContainer cc = Main.gameEngine.configuration.getClaymoreConfig(this.world, this.gmode);
+					if((clay.owner == player && player.thePlayer.isSneaking() && cc.canPickup))
 					{
 						this.unregisterClaymore(clay);
 						return false;
 					}
-					if(this.canKill(clay.owner,player) && !player.thePlayer.isSneaking())
+					if(this.canKill(clay.owner,player) && !(player.thePlayer.isSneaking() && cc.canAvoid))
 					{
 						this.unregisterClaymore(clay);
 						this.kill(clay.owner,player,"M18 CLAYMORE",player.thePlayer.getHealth() > 0d);
@@ -713,7 +719,11 @@ public class Match
 	
 	private void checkKillstreak(PVPPlayer player)
 	{
-		//TODO Whatever
+		Killstreak ks = this.kcconf.getKillstreak(player.killstreak);
+		if(ks != null && ks != Killstreak.NONE)
+		{
+			player.addKillstreak(ks);
+		}
 	}
 	
 	public void endMatch()
@@ -778,8 +788,8 @@ public class Match
 		if(player != null)
 		{
 			Debugger.writeDebugOut("Player "+player.getName()+" died.");
-			c4explosives.remove(player);
-			if(Main.gameEngine.configuration.getPreventItemDropOnDeath(world, gmode))
+			this.c4explosives.remove(player);
+			if(Main.gameEngine.configuration.getPreventItemDropOnDeath(this.world, this.gmode))
 			{
 				if(drops != null)
 				{
@@ -798,7 +808,7 @@ public class Match
 			}
 			String weapon = Main.gameEngine.dict.get("killed");
 			deathMessage = deathMessage.toLowerCase();
-			if((deathMessage.contains("shot") || deathMessage.contains("bow")) && PVPkiller.getCombatClass().wt == WeaponType.SNIPER)
+			if((deathMessage.contains("shot") || deathMessage.contains("bow")) && PVPkiller != null && PVPkiller.getCombatClass().wt == WeaponType.SNIPER)
 			{
 				weapon = "M82A1";
 			}
@@ -1770,5 +1780,24 @@ public class Match
 	public void rmMissile(Missile proj)
 	{
 		this.missiles.remove(proj.getProjectile());
+	}
+
+	public void rightClickWithStick(Player p) 
+	{
+		PVPPlayer player = this.getPlayerExact(p);
+		if(player != null)
+		{
+			if(player.killstreaks.contains(Killstreak.PLAYERSEEKER))
+			{
+				player.killstreaks.remove(Killstreak.PLAYERSEEKER);
+				InventorySyncCalls.removeItemStack(player.thePlayer.getInventory(), new ItemStack(Material.STICK,1));
+				double offset = 2.5d;
+				Vector dir = player.thePlayer.getLocation().getDirection().clone();
+				dir = dir.clone().multiply(15d/dir.length());
+				Arrow arr = this.world.spawnArrow(player.thePlayer.getLocation().clone().add(new Vector(0d, offset, 0d)), dir, 2f, 0.1f);
+				arr.setVelocity(dir);
+				new PlayerSeeker(this, arr, player, null, Main.gameEngine.configuration);
+			}
+		}
 	}	
 }

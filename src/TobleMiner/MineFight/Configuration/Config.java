@@ -12,6 +12,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Configuration.Container.ClaymoreContainer;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
 import TobleMiner.MineFight.Configuration.Container.PlayerSeekerContainer;
@@ -860,42 +861,18 @@ public class Config
 		return config.getBoolean("GameProps.statistics.global.instantUpdate.enabled",false);
 	}
 	
-	public int getMaxClaymors(World w, Gamemode gm)
+	public ClaymoreContainer getClaymoreConfig(World w, Gamemode gm)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
 		if(wcfg != null)
 		{
-			return wcfg.getMaxClaymors(gm);
+			return wcfg.getClaymoreConfig(gm);
 		}
-		Error err = new Error("Tried to get maxClaymors for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		Error err = new Error("Tried to get claymoreConfigurationContainer for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
-		return 0;
+		return new ClaymoreContainer(5, true, true);
 	}
 	
-	public boolean canAvoidClaymore(World w, Gamemode gm)
-	{
-		WorldConfig wcfg = this.configByWorldName.get(w.getName());
-		if(wcfg != null)
-		{
-			return wcfg.canAvoidClaymore(gm);
-		}
-		Error err = new Error("Tried to get canAvoidClaymore for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
-		ErrorReporter.reportError(err);
-		return true;
-	}
-	
-	public boolean canPickupClaymore(World w, Gamemode gm)
-	{
-		WorldConfig wcfg = this.configByWorldName.get(w.getName());
-		if(wcfg != null)
-		{
-			return wcfg.canPickupClaymore(gm);
-		}
-		Error err = new Error("Tried to get canPickupClaymore for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
-		ErrorReporter.reportError(err);
-		return true;
-	}
-
 	public int getInfoBeaconInterval(Gamemode gmode, World w) 
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());

@@ -514,4 +514,13 @@ public class GameEngine
 		}
 		return false;
 	}
+
+	public void rightClickWithStick(Player p) 
+	{
+		Match m = this.getMatch(p.getWorld());
+		if(m != null)
+		{
+			m.rightClickWithStick(p);
+		}
+	}
 }

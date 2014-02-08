@@ -16,6 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Configuration.Container.ClaymoreContainer;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.Killstreak;
 import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
@@ -558,21 +559,14 @@ public class WorldConfig
 		return config.getDouble("gameProps.score."+s.name,0d);
 	}
 
-	public int getMaxClaymors(Gamemode gmode)
+	public ClaymoreContainer getClaymoreConfig(Gamemode gmode)
 	{
-		return config.getInt("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.maxNum",5);
+		int maxNum = config.getInt("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.maxNum",5);
+		boolean canAvoid = config.getBoolean("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.canAvoid",true);					
+		boolean canPickup = config.getBoolean("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.canPickup",true);					
+		return new ClaymoreContainer(maxNum, canPickup, canAvoid);
 	}
 	
-	public boolean canAvoidClaymore(Gamemode gmode) 
-	{
-		return config.getBoolean("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.canAvoid",true);					
-	}
-	
-	public boolean canPickupClaymore(Gamemode gmode) 
-	{
-		return config.getBoolean("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.canPickup",true);					
-	}
-
 	public int getInfoBeaconInterval(Gamemode gmode) 
 	{
 		return config.getInt("gamemodes."+gmode.toString().toLowerCase()+".infoBeaconInterval",30);

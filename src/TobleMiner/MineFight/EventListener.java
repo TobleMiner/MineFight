@@ -68,6 +68,10 @@ public class EventListener implements Listener
 			{
 				if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 				{
+					if(is.getType().equals(Material.STICK))
+					{
+						Main.gameEngine.rightClickWithStick(p);
+					}
 					if(is.getType().equals(Material.DIAMOND))
 					{
 						Main.gameEngine.rightClickWithDiamond(p);					
@@ -88,7 +92,6 @@ public class EventListener implements Listener
 						Main.gameEngine.ClickWithWoodenSword(p,false);
 					}
 				}
-
 			}
 		}
 		catch(Exception e)

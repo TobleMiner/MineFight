@@ -24,6 +24,7 @@ import org.bukkit.map.MapView.Scale;
 import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Configuration.Container.Killstreak;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
@@ -66,6 +67,7 @@ public class PVPPlayer
 	private ItemStack legginsBackup;
 	private ItemStack bootBackup; //hehe
 	public boolean hasMap;
+	public final List<Killstreak> killstreaks = new ArrayList<Killstreak>();
 	
 	public PVPPlayer(Player thePlayer,Team team,Match match,double flamethrowerIgnDist,double flamethrowerDmg, double medigunHealingDist, double medigunHealingRate, MapView mv)
 	{
@@ -398,5 +400,15 @@ public class PVPPlayer
 		this.addPoints(pDisarm);
 		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsdisarmpoints"),pDisarm));
 		this.match.sh.updatePlayer(this, StatType.RSDISARM, StatUpdateType.ADD, new Long(1L));
+	}
+
+	public void addKillstreak(Killstreak ks) 
+	{
+		this.killstreaks.add(ks);
+		switch(ks)
+		{
+			case IMS: this.thePlayer.getInventory().addItem(new ItemStack(Material.REDSTONE)); break;
+			case PLAYERSEEKER: this.thePlayer.getInventory().addItem(new ItemStack(Material.STICK)); break;
+		}		
 	}
 }

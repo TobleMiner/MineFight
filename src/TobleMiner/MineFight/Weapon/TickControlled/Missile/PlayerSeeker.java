@@ -6,8 +6,10 @@ import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.util.Vector;
 
+import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Config;
 import TobleMiner.MineFight.Configuration.Container.PlayerSeekerContainer;
+import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 
@@ -47,7 +49,7 @@ public class PlayerSeeker extends Missile
 		if(this.target != null)
 		{
 			if(!this.canTarget(this.target)) this.explode();
-			this.speed += psc.maxAccel;
+			this.speed += psc.maxAccel/GameEngine.tps;
 			if(speed > psc.maxSpeed) speed = psc.maxSpeed;
 			Vector dirTarget = null;
 			if(state == 0)
@@ -68,9 +70,10 @@ public class PlayerSeeker extends Missile
 				}
 			}
 			Vector dirCurrent = this.arr.getVelocity().clone();
+			dirTarget = dirTarget.clone().multiply(this.speed/dirTarget.length());
 			Vector delta = dirTarget.clone().subtract(dirCurrent.clone());
-			Vector dirEff = dirCurrent.clone().add(delta);
-			Vector velocity = dirEff.clone().multiply(dirEff.length()/this.speed);
+			Vector dirEff = dirCurrent.clone().add(delta.clone().multiply(Math.min(1d, delta.length()/(psc.maxAccel/GameEngine.tps))));
+			Vector velocity = dirEff.clone();
 			this.arr.setVelocity(velocity);
 		}
 	}
