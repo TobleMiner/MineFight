@@ -136,6 +136,10 @@ public class Langfile
 	public String get(String key)
 	{
 		List<String> vals = this.dictionary.get(key);
+		if(vals == null || vals.size() == 0)
+		{
+			return String.format("{%s}", key);
+		}
 		Random rand = new Random();
 		return vals.get(rand.nextInt(vals.size()));
 	}

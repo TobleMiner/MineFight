@@ -12,10 +12,8 @@ import org.bukkit.block.Sign;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.GameEngine.GameEngine;
-import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.Util.Location.FacingUtil;
@@ -34,9 +32,11 @@ public class RadioStation
 	public PVPPlayer armer;
 	private PVPPlayer attacker;
 	public PVPPlayer defender;
+	public boolean spawnSky;
 		
 	public RadioStation(RadioStationContainer rsc, double destructTime, Match match)
 	{
+		this.spawnSky = rsc.sky;
 		this.sign = rsc.sign;
 		this.name = rsc.name;
 		RadioStation.buildRadioStation(this.sign,RadioStation.getFacing(this.sign));

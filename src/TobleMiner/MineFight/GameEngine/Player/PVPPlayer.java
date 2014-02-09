@@ -17,6 +17,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.map.MapView;
@@ -405,10 +406,13 @@ public class PVPPlayer
 	public void addKillstreak(Killstreak ks) 
 	{
 		this.killstreaks.add(ks);
+		this.thePlayer.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("killstreak"));
+		this.thePlayer.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get(ks.transname));
+		Inventory i = this.thePlayer.getInventory();
 		switch(ks)
 		{
-			case IMS: this.thePlayer.getInventory().addItem(new ItemStack(Material.REDSTONE)); break;
-			case PLAYERSEEKER: this.thePlayer.getInventory().addItem(new ItemStack(Material.STICK)); break;
+			case IMS: InventorySyncCalls.addItemStack(i, new ItemStack(Material.REDSTONE)); break;
+			case PLAYERSEEKER: InventorySyncCalls.addItemStack(i, new ItemStack(Material.STICK)); break;
 		}		
 	}
 }

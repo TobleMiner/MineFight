@@ -38,13 +38,22 @@ public class CommandRadioStation extends CommandHandler
 				if(tb != null && (tb.getType().equals(Material.WALL_SIGN)))
 				{
 					String name = "";
-					if(args.length > 1)
+					boolean sky = true;
+					if(args.length >= 2)
 					{
 						name = args[1];
+						if(args.length >= 3)
+						{
+							try
+							{
+								sky = Boolean.parseBoolean(args[2]);
+							}
+							catch(Exception ex) { };
+						}
 					}
 					Sign sign = (Sign)tb.getState();
 					RadioStation.buildRadioStation(sign,RadioStation.getFacing(sign));
-					Main.gameEngine.configuration.addRadioStation(new RadioStationContainer(sign, name));
+					Main.gameEngine.configuration.addRadioStation(new RadioStationContainer(sign, name, sky));
 					Main.gameEngine.configuration.addNewProtectedRegion(sign.getLocation().clone().subtract(11d, 11d, 11d), sign.getLocation().clone().add(11d, 11d, 11d));
 					sender.sendMessage(ChatColor.DARK_GREEN+Main.gameEngine.dict.get("addRs"));
 				}

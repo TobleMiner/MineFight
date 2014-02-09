@@ -40,9 +40,11 @@ public class Flag
 	private Team owner = null;
 	private int timer = 0;
 	private List<PVPPlayer> helpers= new ArrayList<PVPPlayer>();
+	public final boolean spawnSky;
 	
 	public Flag(FlagContainer fc,Match match,double flagCaptureDist,double flagCapSpeed,double flagCapAccel)
 	{
+		this.spawnSky = fc.sky;
 		this.sign = fc.sign;
 		this.flagArea = getFlagBlocks(sign, getFacing(sign));
 		this.name = fc.name;

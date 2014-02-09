@@ -2,15 +2,17 @@ package TobleMiner.MineFight.Configuration.Container;
 
 public enum Killstreak 
 {
-	IMS("ims"),
-	PLAYERSEEKER("playerseeker","ps"),
-	NONE("dummy");
+	IMS("killstreakims","ims"),
+	PLAYERSEEKER("killstreakps","playerseeker","ps"),
+	NONE("killstreakdummy","dummy");
 	
 	private final String[] names;
+	public final String transname;
 	
-	private Killstreak(String... names)
+	private Killstreak(String transname, String... names)
 	{
 		this.names = names;
+		this.transname = transname;
 	}
 	
 	public static Killstreak getByName(String name)

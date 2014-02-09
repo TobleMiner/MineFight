@@ -338,6 +338,7 @@ public class WorldConfig
 			cs.set(flagName+".Y",fc.sign.getLocation().getY());
 			cs.set(flagName+".Z",fc.sign.getLocation().getZ());
 			cs.set(flagName+".name",fc.name);
+			cs.set(flagName+".sky", fc.sky);
 			this.save();
 		}
 	}
@@ -351,6 +352,8 @@ public class WorldConfig
 			cs.set(flagName+".X",null);
 			cs.set(flagName+".Y",null);
 			cs.set(flagName+".Z",null);
+			cs.set(flagName+".name",null);
+			cs.set(flagName+".sky",null);
 			cs.set(flagName,null);
 			this.save();
 		}		
@@ -367,11 +370,12 @@ public class WorldConfig
 				for(String s : cs.getValues(false).keySet())
 				{
 					Location loc = new Location(world,cs.getDouble(s+".X"),cs.getDouble(s+".Y"),cs.getDouble(s+".Z"));
-					String name = cs.getString(s+".name");
+					String name = cs.getString(s+".name","");
+					boolean sky = cs.getBoolean(s+".sky",true);
 					Block b = world.getBlockAt(loc);
 					if(b.getType().equals(Material.WALL_SIGN))
 					{
-						signs.add(new FlagContainer((Sign)b.getState(),name));
+						signs.add(new FlagContainer((Sign)b.getState(), name, sky));
 					}
 				}
 			}
@@ -424,11 +428,12 @@ public class WorldConfig
 				for(String s : cs.getValues(false).keySet())
 				{
 					Location loc = new Location(world,cs.getDouble(s+".X"),cs.getDouble(s+".Y"),cs.getDouble(s+".Z"));
-					String name = cs.getString(s+".name");
+					String name = cs.getString(s+".name","");
+					boolean sky = cs.getBoolean(s+".sky",true);
 					Block b = world.getBlockAt(loc);
 					if(b.getType().equals(Material.WALL_SIGN))
 					{
-						signs.add(new RadioStationContainer((Sign)b.getState(),name));
+						signs.add(new RadioStationContainer((Sign)b.getState(),name,sky));
 					}
 				}
 			}
@@ -451,6 +456,7 @@ public class WorldConfig
 			cs.set(rsName+".Y",sign.getLocation().getY());
 			cs.set(rsName+".Z",sign.getLocation().getZ());
 			cs.set(rsName+".name",rsc.name);
+			cs.set(rsName+".sky",rsc.sky);
 			this.save();
 		}
 	}
@@ -464,6 +470,8 @@ public class WorldConfig
 			cs.set(rsName+".X",null);
 			cs.set(rsName+".Y",null);
 			cs.set(rsName+".Z",null);
+			cs.set(rsName+".name",null);
+			cs.set(rsName+".sky",null);
 			cs.set(rsName,null);
 			this.save();
 		}		

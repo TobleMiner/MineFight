@@ -33,26 +33,27 @@ public class TeleportUtil
 		return new Location(w, x, searchBeginY, z);
 	}
 
-	public static List<Location> getSafeTeleportLocations(Location loc)
+	public static List<Location> getSafeTeleportLocations(Location loc, boolean sky)
 	{
-		return getSafeTeleportLocations(loc, 257);
+		return getSafeTeleportLocations(loc, 257, sky);
 	}
 	
-	public static List<Location> getSafeTeleportLocations(Location loc, int searchBeginY)
+	public static List<Location> getSafeTeleportLocations(Location loc, int searchBeginY, boolean sky)
 	{
-		return getSafeTeleportLocations(loc.getWorld(), loc.getBlockX(), loc.getBlockZ(), searchBeginY);
+		return getSafeTeleportLocations(loc.getWorld(), loc.getBlockX(), loc.getBlockZ(), searchBeginY, sky);
 	}
 	
 	
-	public static List<Location> getSafeTeleportLocations(World w, int x, int z, int searchBeginY)
+	public static List<Location> getSafeTeleportLocations(World w, int x, int z, int searchBeginY, boolean sky)
 	{
+		int initialY = searchBeginY;
 		int freespacesize = 0;
 		List<Location> safeLocs = new ArrayList<Location>();
 		for(;searchBeginY>=0;searchBeginY--)
 		{
 			if(!w.getBlockAt(x, searchBeginY, z).getType().equals(Material.AIR))
 			{
-				if(freespacesize > 2)
+				if(freespacesize > 2 && (sky || freespacesize >= initialY - searchBeginY))
 				{
 					safeLocs.add(new Location(w, x, searchBeginY+1, z));
 				}

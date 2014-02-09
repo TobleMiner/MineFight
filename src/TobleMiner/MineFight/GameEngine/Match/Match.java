@@ -20,6 +20,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
@@ -879,11 +880,11 @@ public class Match
 		String name = cc.name;
 		List<ItemStack> lis = cc.kit;
 		PlayerInventory pi = player.thePlayer.getInventory();
-		pi.clear();
+		InventorySyncCalls.clear(pi);
 		player.thePlayer.updateInventory();
 		for(ItemStack is : lis)
 		{
-			pi.addItem(is);
+			InventorySyncCalls.addItemStack(pi, is);
 		}
 		pi.setHelmet(cc.armor[0]);
 		pi.setChestplate(cc.armor[1]);
@@ -893,8 +894,8 @@ public class Match
 		{
 			if(gmode.equals(Gamemode.Rush))
 			{
-				pi.addItem(new ItemStack(Material.COMPASS,1));
-				pi.addItem(new ItemStack(Material.REDSTONE_TORCH_ON,64));
+				InventorySyncCalls.addItemStack(pi, new ItemStack(Material.COMPASS,1));
+				InventorySyncCalls.addItemStack(pi, new ItemStack(Material.REDSTONE_TORCH_ON,64));
 				if(this.activeRadioStation != null)
 				{
 					player.thePlayer.setCompassTarget(activeRadioStation.getLocation());
@@ -905,6 +906,7 @@ public class Match
 		player.thePlayer.sendMessage(String.format(ChatColor.DARK_GREEN+Main.gameEngine.dict.get("classchange"),name));
 		player.setCombatClass(cc);
 	}
+	
 	private void spawnPlayer(PVPPlayer player)
 	{
 		player.setSpawned(true);
@@ -914,8 +916,14 @@ public class Match
 		{
 			player.getMapView().setCenterX(loc.getBlockX());
 			player.getMapView().setCenterZ(loc.getBlockZ());
-			player.thePlayer.getInventory().addItem(new ItemStack(Material.MAP,1,player.getMapView().getId()));
+			InventorySyncCalls.addItemStack(player.thePlayer.getInventory(), new ItemStack(Material.MAP,1,player.getMapView().getId()));
 			player.thePlayer.updateInventory();
+		}
+		for(Killstreak ks : player.killstreaks)
+		{
+			Inventory i = player.thePlayer.getInventory();
+			if(ks == Killstreak.IMS) InventorySyncCalls.addItemStack(i,new ItemStack(Material.REDSTONE,1));
+			if(ks == Killstreak.PLAYERSEEKER) InventorySyncCalls.addItemStack(i, new ItemStack(Material.STICK,1));
 		}
 		player.teleport(loc);
 	}
@@ -955,7 +963,7 @@ public class Match
 				}
 				avgHeight /= radioStations.size();
 				Location loc = baseLoc.clone().add(x,5d,z);
-				List<Location> locs = TeleportUtil.getSafeTeleportLocations(loc,200);
+				List<Location> locs = TeleportUtil.getSafeTeleportLocations(loc,200,this.activeRadioStation.spawnSky);
 				if(locs.size() > 0)
 				{
 					double hdiff = Double.MAX_VALUE;
@@ -1001,7 +1009,7 @@ public class Match
 				}
 				avgHeight /= flags.size();
 				Location loc = baseLoc.clone().add(x,5d,z);
-				List<Location> locs = TeleportUtil.getSafeTeleportLocations(loc,200);
+				List<Location> locs = TeleportUtil.getSafeTeleportLocations(loc,200,flag.spawnSky);
 				if(locs.size() > 0)
 				{
 					double hdiff = Double.MAX_VALUE;
@@ -1277,7 +1285,7 @@ public class Match
 		return matchLeaveLoc;
 	}
 	
-	public void sendTeamMessage(Team team, String message) //Team = NULL will send a message to all players
+	public void sendTeamMessage(Team team, String message) //Team = null will send a message to all players
 	{
 		if(team != teamBlue)
 		{
@@ -1286,7 +1294,7 @@ public class Match
 				p.thePlayer.sendMessage(message);
 			}			
 		}
-		else if(team != teamRed)
+		if(team != teamRed)
 		{
 			for(PVPPlayer p : this.playersBlue)
 			{
