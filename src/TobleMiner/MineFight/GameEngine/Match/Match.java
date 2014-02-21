@@ -31,6 +31,10 @@ import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.Killstreak;
 import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponIndex;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor.DamageType;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor.WeaponUseType;
 import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
@@ -46,16 +50,18 @@ import TobleMiner.MineFight.GameEngine.Match.Team.TeamRed;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.GameEngine.Player.Info.InformationSign;
+import TobleMiner.MineFight.GameEngine.Player.PVPPlayer.HitZone;
 import TobleMiner.MineFight.GameEngine.Player.Resupply.ResupplyStation;
 import TobleMiner.MineFight.Protection.ProtectedArea;
 import TobleMiner.MineFight.Util.Location.TeleportUtil;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
 import TobleMiner.MineFight.Util.SyncDerp.EntitySyncCalls;
 import TobleMiner.MineFight.Util.SyncDerp.InventorySyncCalls;
-import TobleMiner.MineFight.Weapon.WeaponType;
-import TobleMiner.MineFight.Weapon.Projectile.ProjectileType;
+import TobleMiner.MineFight.Weapon.Projectile.Projectile;
 import TobleMiner.MineFight.Weapon.Projectile.SimpleProjectile;
+import TobleMiner.MineFight.Weapon.Projectile.WeaponProjectile;
 import TobleMiner.MineFight.Weapon.RC.C4;
+import TobleMiner.MineFight.Weapon.Stationary.SentryGun;
 import TobleMiner.MineFight.Weapon.TickControlled.Claymore;
 import TobleMiner.MineFight.Weapon.TickControlled.HandGrenade;
 import TobleMiner.MineFight.Weapon.TickControlled.IMS;
@@ -64,7 +70,6 @@ import TobleMiner.MineFight.Weapon.TickControlled.SentryMissile;
 import TobleMiner.MineFight.Weapon.TickControlled.TickControlledWeapon;
 import TobleMiner.MineFight.Weapon.TickControlled.Missile.Missile;
 import TobleMiner.MineFight.Weapon.TickControlled.Missile.PlayerSeeker;
-import TobleMiner.MineFight.WeaponStationary.SentryGun;
 
 public class Match 
 {
@@ -104,17 +109,19 @@ public class Match
 	private final HashMap<Item,C4> c4registry = new HashMap<Item,C4>();
 	private final HashMap<Item,Claymore> claymoreRegistry = new HashMap<Item,Claymore>();
 	private final List<ResupplyStation> resupplyStations = new ArrayList<ResupplyStation>();
-	private final HashMap<Arrow, SimpleProjectile> projectiles = new HashMap<Arrow,SimpleProjectile>();
-	private final boolean damageEnviron;
+	private final HashMap<Arrow, Projectile> projectiles = new HashMap<Arrow, Projectile>();
+	public final boolean damageEnviron;
 	private final boolean exploDamageEnviron;
+	public final WeaponIndex weapons;
 	
-	public Match(World world, Gamemode gmode, String name, boolean hardcore, List<Sign> infoSigns, List<FlagContainer> flags, List<RadioStationContainer> radioStations, StatHandler sh)
+	public Match(World world, Gamemode gmode, String name, boolean hardcore, WeaponIndex weapons, List<Sign> infoSigns, List<FlagContainer> flags, List<RadioStationContainer> radioStations, StatHandler sh)
 	{
 		this.sh = sh;
 		this.world = world;
 		this.gmode = gmode;
 		this.name = name;
 		this.hardcore = hardcore;
+		this.weapons = weapons;
 		this.matchLeaveLoc = Main.gameEngine.configuration.getRoundEndSpawnForWorld(world);
 		this.spawnLoc = Main.gameEngine.configuration.getSpawnForWorld(world);
 		this.classSelectLoc = Main.gameEngine.configuration.getRespawnForWorld(world);
@@ -207,7 +214,7 @@ public class Match
 				team = teamRed;
 			}
 		}
-		PVPPlayer player = new PVPPlayer(p,team,this,Main.gameEngine.configuration.getFlamethrowerIgnitionDist(),Main.gameEngine.configuration.getFlamethrowerDirectDamage(),Main.gameEngine.configuration.getMedigunHealingDist(),Main.gameEngine.configuration.getMedigunHealingRate(),Bukkit.getServer().createMap(world));
+		PVPPlayer player = new PVPPlayer(p, team, this, Bukkit.getServer().createMap(world));
 		p.setDisplayName(player.getName());
 		p.setCustomName(player.getName());
 		p.setCustomNameVisible(true);
@@ -809,10 +816,10 @@ public class Match
 			}
 			String weapon = Main.gameEngine.dict.get("killed");
 			deathMessage = deathMessage.toLowerCase();
-			if((deathMessage.contains("shot") || deathMessage.contains("bow")) && PVPkiller != null && PVPkiller.getCombatClass().wt == WeaponType.SNIPER)
+			/*if((deathMessage.contains("shot") || deathMessage.contains("bow")) && PVPkiller != null && PVPkiller.getCombatClass().wt == WeaponType.SNIPER)
 			{
 				weapon = "M82A1";
-			}
+			}*/
 			if(this.canKill(PVPkiller, player))
 			{
 				kill(PVPkiller, player, weapon, false);
@@ -1194,22 +1201,32 @@ public class Match
 		{
 			double critpProbab = Main.gameEngine.configuration.getCritProbability(world, gmode);
 			Random rand = new Random();
-			SimpleProjectile sp = new SimpleProjectile(player, ProjectileType.GENERAL, rand.nextDouble() <= critpProbab, 1.0d, arrow);
+			Projectile sp = new SimpleProjectile(player, rand.nextDouble() < critpProbab, 1.0d, arrow, "{placeholder}");
 			if(player.getCombatClass() != null)
 			{
-				if(player.getCombatClass().wt.equals(WeaponType.SNIPER))
+				ItemStack is = player.thePlayer.getItemInHand();
+				if(is != null)
 				{
-					float speed = Main.gameEngine.configuration.getSniperMuzzleVelocity();
-					/*double len = arrow.getVelocity().length();
-					if(len != 0)
+					WeaponIndex wi = this.weapons.get(WeaponUseType.PROJECTILEHIT);
+					if(wi != null)
 					{
-						Vector vel = arrow.getVelocity().clone().multiply(speed/len);
-						arrow.setVelocity(vel);
-					}*/
-					arrow.setVelocity(arrow.getVelocity().clone().multiply(speed));
-					sp.type = ProjectileType.SNIPER;
+						WeaponDescriptor wd = wi.get(is.getType());
+						if(wd != null)
+						{
+							Debugger.writeDebugOut(String.format("Projectile '%s' fired.",wd.name));
+							sp = new WeaponProjectile(player, arrow, wd, rand.nextDouble() < critpProbab);
+							double speed = wd.speed;
+							/*double len = arrow.getVelocity().length();
+							if(len != 0)
+							{
+								Vector vel = arrow.getVelocity().clone().multiply(speed/len);
+								arrow.setVelocity(vel);
+							}*/
+							arrow.setVelocity(arrow.getVelocity().clone().multiply(speed));
+						}
+					}
 				}
-			}
+			}	
 			this.projectiles.put(arrow, sp);
 			return false;
 		}
@@ -1311,16 +1328,17 @@ public class Match
 		{
 			if(player.isSpawned())
 			{
-				boolean headshot = false;
+				HitZone hitzone = HitZone.TORSO;
 				double deltaY = p.getLocation().clone().add(0d, 2d, 0d).getY()-a.getLocation().getY();
 				double multi = 1d;
 				if(deltaY > (2d/3d)) //Legshot
 				{
+					hitzone = HitZone.LEG;
 					multi = Main.gameEngine.configuration.getLegshotDamageMultiplier(world, gmode);
 				}
 				else if(deltaY < (1d/3d)) //Headshot
 				{
-					headshot = true;
+					hitzone = HitZone.HEAD;
 					multi = Main.gameEngine.configuration.getHeadshotDamageMultiplier(world, gmode);
 				}
 				SentryGun sg = this.sentryArrows.get(a);
@@ -1331,15 +1349,15 @@ public class Match
 					{
 						if(this.canKill(attacker, player))
 						{
-							if(headshot)
+							if(hitzone == HitZone.HEAD)
 							{
 								attacker.thePlayer.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("headshot")+"!");
 							}
 							player.normalDeathBlocked = true;
-							player.thePlayer.damage((float)Math.round(damage*multi));
+							player.thePlayer.damage((float)Math.round(damage * multi));
 							if(player.thePlayer.getHealth() <= 0d)
 							{
-								this.kill(attacker, player, "SENTRY", false, headshot);
+								this.kill(attacker, player, "SENTRY", false, hitzone == HitZone.HEAD);
 							}
 							else
 							{
@@ -1356,44 +1374,53 @@ public class Match
 				{
 					sm.explode();
 				}
-				SimpleProjectile sp = this.projectiles.get(a);
+				Projectile sp = this.projectiles.get(a);
 				if(sp != null)
 				{
+					Debugger.writeDebugOut("Projectile is registered!");
 					PVPPlayer attacker = sp.shooter;
 					if(attacker != null)
 					{
 						if(this.canKill(attacker, player))
 						{
 							Debugger.writeDebugOut(String.format("\"%s\" damaging \"%s\", teams: %s and %s",attacker.getName(),player.getName(),attacker.getTeam().getName(),player.getTeam().getName()));
-							damage = Main.gameEngine.configuration.getProjectileDamage(world, gmode, sp.type);
-							//Bukkit.getServer().broadcastMessage(sp.type.toString()+" "+damage);
+							if(sp instanceof WeaponProjectile)
+							{
+								multi = 1d;
+							}
+							else
+							{
+								damage = Main.gameEngine.configuration.getProjectileDamage(world, gmode);
+							}
 							if(sp.isCritical)
 							{
 								attacker.thePlayer.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("crit")+"!");
 								multi *= Main.gameEngine.configuration.getCritMultiplier(world, gmode);
 							}
-							if(headshot)
+							if(hitzone == HitZone.HEAD)
 							{
 								attacker.thePlayer.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("headshot")+"!");
 							}
-							//Bukkit.getServer().broadcastMessage(Double.toString((int)Math.round(damage*multi)));
 							player.normalDeathBlocked = true;
-							player.thePlayer.damage((float)Math.round(damage*multi));
+							player.thePlayer.damage((float)Math.round(sp.getDmg(damage, hitzone, player.thePlayer.getLocation()) * multi * player.thePlayer.getMaxHealth()));
+							Debugger.writeDebugOut("Flight distance: "+sp.getFlightDistance(player.thePlayer.getLocation()));
+							Debugger.writeDebugOut("Damage_base: "+sp.getDmg(damage, hitzone, player.thePlayer.getLocation()));
+							Debugger.writeDebugOut("Damage: "+(sp.getDmg(damage, hitzone, player.thePlayer.getLocation()) * multi * player.thePlayer.getMaxHealth()));
 							Debugger.writeDebugOut("Health: "+Double.toString(player.thePlayer.getHealth()));
 							if(player.thePlayer.getHealth() <= 0d)
 							{
-								this.kill(attacker, player, "M82A1", false, headshot);
+								this.kill(attacker, player, sp.getWpName(), false, hitzone == HitZone.HEAD);
 							}
 							else
 							{
-								player.addKillhelper(attacker, (int)Math.round(damage*multi));
+								player.addKillhelper(attacker, sp.getDmg(damage, hitzone, player.thePlayer.getLocation()) * multi * player.thePlayer.getMaxHealth());
 							}
 							player.normalDeathBlocked = false;
 						}
 					}
 					this.projectiles.remove(a);
 					EntitySyncCalls.removeEntity(a);
-					return !this.canKill(attacker, player);
+					return true;
 				}
 				else
 				{
@@ -1620,6 +1647,19 @@ public class Match
 		{
 			if(this.canKill(attacker, player))
 			{
+				ItemStack inHand = damager.getItemInHand();
+				if(inHand != null)
+				{
+					WeaponIndex wi = this.weapons.get(WeaponUseType.HIT);
+					if(wi != null)
+					{
+						WeaponDescriptor wd = wi.get(inHand.getType());
+						if(wd != null && wd.dmgType == DamageType.HIT)
+						{
+							d = damaged.getMaxHealth() * wd.getDamage(0d);
+						}
+					}
+				}
 				Debugger.writeDebugOut(String.format("\"%s\" damaging \"%s\", teams: %s and %s",attacker.getName(),player.getName(),attacker.getTeam().getName(),player.getTeam().getName()));
 				player.normalDeathBlocked = true;
 				player.thePlayer.damage(d);

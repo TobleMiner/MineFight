@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import TobleMiner.MineFight.Main;
-import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;

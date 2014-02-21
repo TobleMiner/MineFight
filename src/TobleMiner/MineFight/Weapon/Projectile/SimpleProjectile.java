@@ -1,23 +1,30 @@
 package TobleMiner.MineFight.Weapon.Projectile;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
+import TobleMiner.MineFight.GameEngine.Player.PVPPlayer.HitZone;
 
-public class SimpleProjectile 
+public class SimpleProjectile extends Projectile
 {
-	public final PVPPlayer shooter;
-	public ProjectileType type;
-	public final boolean isCritical;
 	public final double dmgMul;
-	public final Arrow proj;
+	public final double damage;
 	
-	public SimpleProjectile(PVPPlayer p, ProjectileType type, boolean crit, double mul, Arrow arr)
+	public SimpleProjectile(PVPPlayer p, boolean crit, double mul, double dmg, Arrow arr, String name)
 	{
-		this.shooter = p;
-		this.type = type;
-		this.isCritical = crit;
+		super(p, arr, crit, name);
 		this.dmgMul = mul;
-		this.proj = arr;
+		this.damage = -1d;
+	}
+	
+	public SimpleProjectile(PVPPlayer p, boolean crit, double mul, Arrow arr, String name)
+	{
+		this(p, crit, mul, -1d, arr, name);
+	}
+	
+	public double getDmg(double base, HitZone hz, Location loc)
+	{
+		return base * this.dmgMul;
 	}
 }

@@ -28,7 +28,7 @@ public class Langfile
 			{
 				langDir.mkdirs();
 			}
-			String[] files = {"DE_de.lang","EN_uk.lang","EN_us.lang"}; //Buck conventions, use ponies instead!
+			String[] files = {"DE_de.lang","EN_uk.lang","EN_us.lang"};
 			for(String s : files)
 			{
 				File langFile = new File(this.langDir,s);

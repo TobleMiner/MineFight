@@ -26,10 +26,13 @@ import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.Killstreak;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor.DamageType;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor.WeaponUseType;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponIndex;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
-import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Match.Statistics.StatType;
@@ -40,7 +43,6 @@ import TobleMiner.MineFight.GameEngine.Player.Info.MapInfoRenderer;
 import TobleMiner.MineFight.Util.Util;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
 import TobleMiner.MineFight.Util.SyncDerp.InventorySyncCalls;
-import TobleMiner.MineFight.Weapon.WeaponType;
 
 public class PVPPlayer
 {
@@ -56,10 +58,6 @@ public class PVPPlayer
 	private final HashMap<PVPPlayer,Killhelper> killHelpers = new HashMap<PVPPlayer,Killhelper>();
 	public boolean normalDeathBlocked = false;
 	public int timer = 1;
-	private final double flamethrowerIgniDist;
-	private final double flamethrowerDmg;
-	private final double medigunHealingDist;
-	private final double medigunHealingRate;
 	private final MapView mv;
 	private final MapInfoRenderer mir;
 	private ItemStack[] inventoryBackup;
@@ -70,15 +68,11 @@ public class PVPPlayer
 	public boolean hasMap;
 	public final List<Killstreak> killstreaks = new ArrayList<Killstreak>();
 	
-	public PVPPlayer(Player thePlayer,Team team,Match match,double flamethrowerIgnDist,double flamethrowerDmg, double medigunHealingDist, double medigunHealingRate, MapView mv)
+	public PVPPlayer(Player thePlayer,Team team,Match match, MapView mv)
 	{
 		this.thePlayer = thePlayer;
 		this.team = team;
 		this.match = match;
-		this.flamethrowerIgniDist = flamethrowerIgnDist;
-		this.flamethrowerDmg = flamethrowerDmg;
-		this.medigunHealingDist = medigunHealingDist;
-		this.medigunHealingRate = medigunHealingRate;
 		this.mv = mv;
 		this.mv.setScale(Scale.CLOSEST);
 		mv.addRenderer(this.mir = new MapInfoRenderer(match));
@@ -139,7 +133,12 @@ public class PVPPlayer
 	
 	public String getName()
 	{
-		return this.team.color+this.thePlayer.getName()+ChatColor.RESET;
+		String name = this.thePlayer.getName();
+		if(name.length() > 12)
+		{
+			name = name.substring(0,9)+"..";
+		}
+		return this.team.color+name+ChatColor.RESET;
 	}
 	
 	public Player getPlayer()
@@ -255,98 +254,102 @@ public class PVPPlayer
 	
 	public void doUpdate()
 	{
-		CombatClass cc = this.getCombatClass();
 		if(this.thePlayer.isBlocking() && this.isSpawned() && this.combatClass != null)
 		{
-			if(timer > GameEngine.tps/10d)
+			PlayerInventory pi = this.thePlayer.getInventory();
+			ItemStack inHand = pi.getItemInHand();
+			if(inHand != null)
 			{
-				timer = 0;
-				PlayerInventory pi = this.thePlayer.getInventory();
-				if(cc.wt == WeaponType.FLAMETHROWER)
+				WeaponIndex wi = this.match.weapons.get(WeaponUseType.BLOCK);
+				if(wi != null)
 				{
-					if(pi.contains(Material.BLAZE_POWDER))
+					WeaponDescriptor wd = wi.get(inHand.getType());
+					if(wd != null)
 					{
-						HashSet<Byte> trans = new HashSet<Byte>();
-						trans.add((byte)31);
-						trans.add((byte)0);
-						trans.add((byte)20);
-						trans.add((byte)102);
-						Block b = this.thePlayer.getTargetBlock(trans, 200);
-						if(b != null)
+						if(wd.cadence > 0 && (timer % ((int)Math.round(1200d / (double)wd.cadence))) == 0)
 						{
-							Location playerEyeLoc = this.thePlayer.getLocation().add(0d,1.0d,0d); 
-							Vector locHelp = b.getLocation().subtract(playerEyeLoc).toVector();
-							Location launchLoc = playerEyeLoc.add(locHelp.multiply(1.5d/locHelp.length()));
-							launchLoc.getWorld().playEffect(launchLoc, Effect.MOBSPAWNER_FLAMES, 5);
-							List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(),this.flamethrowerIgniDist);
-							PVPPlayer target = null;
-							for(PVPPlayer p : players)
+							if(wd.dmgType == DamageType.FLAMETHROWER)
 							{
-								if(match.canKill(this,p) && p != this)
+								if(pi.contains(Material.BLAZE_POWDER))
 								{
-									target = p;
-									break;
-								}
-							}
-							if(target != null)
-							{
-								target.normalDeathBlocked = true;
-								target.thePlayer.damage(flamethrowerDmg/1000d*target.thePlayer.getMaxHealth());
-								if(target.thePlayer.getHealth() <= 0)
-								{
-									this.match.kill(this, target,"FLAMETHROWER", target.thePlayer.getHealth() > 0);
-								}
-								else
-								{
-									target.thePlayer.setFireTicks(100);
-								}
-								target.normalDeathBlocked = false;
-							}
-							InventorySyncCalls.removeItemStack(pi, new ItemStack(Material.BLAZE_POWDER,1));
-						}
-						List<Block> potIgniBlocks = this.thePlayer.getLineOfSight(null,(int)Math.round(this.flamethrowerIgniDist));
-						for(Block block : potIgniBlocks)
-						{
-							if(block.getType().isFlammable() && (!Util.protect.isBlockProtected(block)))
-							{
-								Util.block.ignite(block);
-							}
-						}
-					}
-				}
-				else if(cc.wt == WeaponType.MEDIGUN)
-				{
-					if(pi.getItemInHand() != null && pi.getItemInHand().getType() == Material.GOLD_SWORD)
-					{
-						List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(),this.medigunHealingDist);
-						PVPPlayer target = null;
-						for(PVPPlayer p : players)
-						{
-							if(p.getTeam() == this.getTeam())
-							{
-								target = p;
-								break;
-							}
-						}
-						if(target != null)
-						{
-							if(target.thePlayer.getHealth() < target.thePlayer.getMaxHealth())
-							{
-								Vector dir = target.thePlayer.getLocation().clone().subtract(this.thePlayer.getLocation().clone()).toVector();
-								int len = (int)Math.round(dir.length());
-								if(len != 0)
-								{
-									for(int i=0;i<=len;i++)
+									HashSet<Byte> trans = new HashSet<Byte>();
+									trans.add((byte)31);
+									trans.add((byte)0);
+									trans.add((byte)20);
+									trans.add((byte)102);
+									Block b = this.thePlayer.getTargetBlock(trans, 200);
+									if(b != null)
 									{
-										this.thePlayer.getWorld().playEffect(this.thePlayer.getLocation().clone().add(0d,1d,0d).add(dir.clone().multiply(((double)i)/((double)len))),Effect.ENDER_SIGNAL,0);
+										Location playerEyeLoc = this.thePlayer.getLocation().add(0d,1.0d,0d); 
+										Vector locHelp = b.getLocation().subtract(playerEyeLoc).toVector();
+										Location launchLoc = playerEyeLoc.add(locHelp.multiply(1.5d/locHelp.length()));
+										launchLoc.getWorld().playEffect(launchLoc, Effect.MOBSPAWNER_FLAMES, 5);
+										List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(), (int)Math.round(wd.maxDist));
+										PVPPlayer target = null;
+										for(PVPPlayer p : players)
+										{
+											if(match.canKill(this,p) && p != this)
+											{
+												target = p;
+												break;
+											}
+										}
+										if(target != null)
+										{
+											target.normalDeathBlocked = true;
+											target.thePlayer.damage(wd.getDamage(this.thePlayer.getLocation().distance(target.thePlayer.getLocation())) * target.thePlayer.getMaxHealth());
+											if(target.thePlayer.getHealth() <= 0)
+											{
+												this.match.kill(this, target, wd.getName(), target.thePlayer.getHealth() > 0);
+											}
+											else
+											{
+												target.thePlayer.setFireTicks(100);
+											}
+											target.normalDeathBlocked = false;
+										}
+										InventorySyncCalls.removeItemStack(pi, new ItemStack(Material.BLAZE_POWDER,1));
+									}
+									List<Block> potIgniBlocks = this.thePlayer.getLineOfSight(null,(int)Math.round(wd.maxDist));
+									for(Block block : potIgniBlocks)
+									{
+										if(block.getType().isFlammable() && (!Util.protect.isBlockProtected(block)) && this.match.damageEnviron)
+										{
+											Util.block.ignite(block);
+										}
 									}
 								}
-								double health = target.thePlayer.getHealth()+this.medigunHealingRate/1000d*target.thePlayer.getMaxHealth();
-								if(health > target.thePlayer.getMaxHealth())
+							}
+							else if(wd.dmgType == DamageType.MEDIGUN)
+							{
+								List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(), (int)Math.round(wd.maxDist));
+								PVPPlayer target = null;
+								for(PVPPlayer p : players)
 								{
-									health = target.thePlayer.getMaxHealth();
+									if(p.getTeam() == this.getTeam() && p != this && p.thePlayer.getHealth() < p.thePlayer.getMaxHealth())
+									{
+										target = p;
+										break;
+									}
 								}
-								target.thePlayer.setHealth((float)health);
+								if(target != null)
+								{
+									Vector dir = target.thePlayer.getLocation().clone().subtract(this.thePlayer.getLocation().clone()).toVector();
+									int len = (int)Math.round(dir.length());
+									if(len != 0)
+									{
+										for(int i=0;i<=len;i++)
+										{
+											this.thePlayer.getWorld().playEffect(this.thePlayer.getLocation().clone().add(0d,1d,0d).add(dir.clone().multiply(((double)i)/((double)len))),Effect.ENDER_SIGNAL,0);
+										}
+									}
+									double health = target.thePlayer.getHealth() - wd.getDamage(this.thePlayer.getLocation().distance(target.thePlayer.getLocation())) * target.thePlayer.getMaxHealth();
+									if(health > target.thePlayer.getMaxHealth())
+									{
+										health = target.thePlayer.getMaxHealth();
+									}
+									target.thePlayer.setHealth(health);
+								}
 							}
 						}
 					}
@@ -414,5 +417,19 @@ public class PVPPlayer
 			case IMS: InventorySyncCalls.addItemStack(i, new ItemStack(Material.REDSTONE)); break;
 			case PLAYERSEEKER: InventorySyncCalls.addItemStack(i, new ItemStack(Material.STICK)); break;
 		}		
+	}
+	
+	public enum HitZone
+	{
+		HEAD("head"),
+		TORSO("torso"),
+		LEG("leg");
+		
+		public final String name;
+		
+		private HitZone(String name)
+		{
+			this.name = name;
+		}
 	}
 }

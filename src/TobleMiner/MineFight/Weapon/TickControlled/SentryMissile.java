@@ -9,7 +9,7 @@ import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
 import TobleMiner.MineFight.Util.SyncDerp.EntitySyncCalls;
-import TobleMiner.MineFight.WeaponStationary.SentryGun;
+import TobleMiner.MineFight.Weapon.Stationary.SentryGun;
 
 public class SentryMissile extends TickControlledWeapon
 {

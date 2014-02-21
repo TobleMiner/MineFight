@@ -1,0 +1,11 @@
+name: flamethrower
+translate: true
+cadence: 120
+speed: 0
+item: IRON_SWORD
+itemdmg: 0
+usetype: block
+dmgtype: flame
+damage:
+  3: 30
+  15: 0

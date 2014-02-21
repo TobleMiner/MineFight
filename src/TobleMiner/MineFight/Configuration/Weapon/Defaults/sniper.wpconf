@@ -1,0 +1,15 @@
+name: sniper
+translate: true
+cadence: 0
+speed: 112
+item: BOW
+itemdmg: 0
+usetype: projectilehit
+dmgtype: hit
+hitzones:
+  head: 2.0
+  torso: 1.06
+  leg: 1.0
+damage:
+  15: 95
+  40: 59

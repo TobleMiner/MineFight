@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.util.Vector;
 
-import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Config;
 import TobleMiner.MineFight.Configuration.Container.PlayerSeekerContainer;
 import TobleMiner.MineFight.GameEngine.GameEngine;

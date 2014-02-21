@@ -3,10 +3,10 @@ package TobleMiner.MineFight.GameEngine;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -22,9 +22,8 @@ import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Config;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
-import TobleMiner.MineFight.ErrorHandling.Error;
-import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
-import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponConfig;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponIndex;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.GameEngine.Match.Statistics.StatHandler;
@@ -32,16 +31,16 @@ import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.Language.Langfile;
 import TobleMiner.MineFight.Protection.ProtectedArea;
-import TobleMiner.MineFight.Weapon.WeaponType;
 
 public class GameEngine
 {
-	public final HashMap<String,CombatClass> combatClasses = new HashMap<String,CombatClass>();
+	public HashMap<String,CombatClass> combatClasses = new HashMap<String,CombatClass>();
 	public final Config configuration;
 	public final FileConfiguration config;
 	private final List<Match> matches = new ArrayList<Match>();
 	public final Langfile dict;
 	public final StatHandler stathandler;
+	private WeaponIndex weapons;
 	
 	public static double tps = 20.0d;
 	
@@ -51,7 +50,7 @@ public class GameEngine
 		this.configuration = new Config(mane, config);
 		this.dict = new Langfile(mane.getPluginDir());
 		this.stathandler = new StatHandler(mane.getDatabase());
-		init();
+		this.init();
 	}
 	
 	public void reload()
@@ -61,81 +60,13 @@ public class GameEngine
 	
 	private void init()
 	{
-		configuration.read();
-		dict.loadLanguageFile(configuration.getLangFile());
-		stathandler.reload(this);
-		
-		CombatClass sniper = new CombatClass("sniper",WeaponType.SNIPER);
-		String sniperKit = configuration.config.getString("CombatClass.Sniper.Kit");
-		sniper.kit = this.getKitFromString(sniperKit);
-		String sniperArmor = configuration.config.getString("CombatClass.Sniper.Armor");
-		sniper.armor = this.getArmorFromString(sniperArmor);
-		this.combatClasses.put("sniper",sniper);
-		CombatClass heavy = new CombatClass("heavy",WeaponType.MACHINEGUN);
-		String heavyKit = configuration.config.getString("CombatClass.Heavy.Kit");
-		heavy.kit = this.getKitFromString(heavyKit);
-		String heavyArmor = configuration.config.getString("CombatClass.Heavy.Armor");
-		heavy.armor = this.getArmorFromString(heavyArmor);
-		this.combatClasses.put("heavy",heavy);
-		CombatClass engineer = new CombatClass("engineer",WeaponType.MACHINEGUN);
-		String engineerKit = configuration.config.getString("CombatClass.Engineer.Kit");
-		engineer.kit = this.getKitFromString(engineerKit);
-		String engineerArmor = configuration.config.getString("CombatClass.Engineer.Armor");
-		engineer.armor = this.getArmorFromString(engineerArmor);
-		this.combatClasses.put("engineer",engineer);
-		CombatClass medic = new CombatClass("medic",WeaponType.MEDIGUN);
-		String medicKit = configuration.config.getString("CombatClass.Medic.Kit");
-		medic.kit = this.getKitFromString(medicKit);
-		String medicArmor = configuration.config.getString("CombatClass.Medic.Armor");
-		medic.armor = this.getArmorFromString(medicArmor);
-		this.combatClasses.put("medic",medic);
-		CombatClass pyro = new CombatClass("pyro",WeaponType.FLAMETHROWER);
-		String pyroKit = configuration.config.getString("CombatClass.Pyro.Kit");
-		pyro.kit = this.getKitFromString(pyroKit);
-		String pyroArmor = configuration.config.getString("CombatClass.Pyro.Armor");
-		pyro.armor = this.getArmorFromString(pyroArmor);
-		this.combatClasses.put("pyro",pyro);
-	}
-	
-	public List<ItemStack> getKitFromString(String s)
-	{
-		List<ItemStack> kitItems = new ArrayList<ItemStack>();
-		for(String kitItem : s.split(";"))
-		{
-			try
-			{
-				String[] kitItemParts = kitItem.split(",");
-				int amount = Integer.parseInt(kitItemParts[1]);
-				String[] itemWithSubId = kitItemParts[0].split(":");
-				String matname = itemWithSubId[0];
-				short subId = Short.parseShort(itemWithSubId[1]);
-				ItemStack is = new ItemStack(Material.getMaterial(matname),amount,subId);
-				kitItems.add(is);
-			}
-			catch(Exception ex)
-			{
-				Error error = new Error("Error parsing combat-class information!","Check your mineFight.conf! Problem: "+ex.getMessage(),"There will be problems with the player-equipment untilthis is fixed.",this.getClass().getCanonicalName(),ErrorSeverity.ERROR);
-				ErrorReporter.reportError(error);
-			}	
-		}
-		return kitItems;
-	}
-	
-	public ItemStack[] getArmorFromString(String s)
-	{
-		ItemStack[] armor = new ItemStack[4];
-		int i=0;
-		String[] ids = s.split(",");
-		for(String id : ids)
-		{
-			if(i >= 4)
-			{
-				break;
-			}
-			armor[i] = new ItemStack(Material.getMaterial(id),1);
-			i++;
-		}
-		return armor;
+		this.configuration.read();
+		this.dict.loadLanguageFile(configuration.getLangFile());
+		this.stathandler.reload(this);
+		this.weapons = WeaponConfig.getConfigs(Main.main.getDataFolder());
+		Main.logger.log(Level.INFO, String.format("Loaded %d weapons.", weapons.count()));
+		this.combatClasses = this.configuration.getCombatClasses(this.weapons);
+		Main.logger.log(Level.INFO, String.format("Loaded %d kits.", this.combatClasses.size()));
 	}
 	
 	public void doUpdate()
@@ -147,13 +78,13 @@ public class GameEngine
 		}
 	}
 	
-	public void startNewMatch(World w,Gamemode g,String name,boolean hardcore)
+	public void startNewMatch(World w, Gamemode g, String name, boolean hardcore)
 	{
 		List<Sign> signs = configuration.getInfoSigns(w, g);
 		List<FlagContainer> flags = configuration.getFlags(w);
 		List<RadioStationContainer> radioStations = configuration.getRadioStations(w);
-		Match match = new Match(w,g,name,hardcore,signs,flags,radioStations,this.stathandler);
-		matches.add(match);
+		Match match = new Match(w, g, name, hardcore, this.weapons, signs, flags, radioStations, this.stathandler);
+		this.matches.add(match);
 	}
 	
 	public PVPPlayer getPlayerByName(String name)

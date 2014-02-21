@@ -28,7 +28,6 @@ import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.Protection.ProtectedArea;
-import TobleMiner.MineFight.Weapon.Projectile.ProjectileType;
 
 public class WorldConfig
 {
@@ -134,8 +133,7 @@ public class WorldConfig
 					config.set(gmpref+".attackerOuterSpawnRadius",70d);
 					config.set(gmpref+".attackerInnerSpawnRadius",30d);
 				}
-				config.set(gmpref+".projectile.damage."+ProjectileType.SNIPER.toString(),10d);					
-				config.set(gmpref+".projectile.damage."+ProjectileType.GENERAL.toString(),5d);					
+				config.set(gmpref+".projectile.damage",5d);					
 				config.set(gmpref+".weapon.headshotMultiplier",2d);					
 				config.set(gmpref+".weapon.legshotMultiplier",0.5d);					
 				config.set(gmpref+".weapon.critProbability",0.02d);					
@@ -522,9 +520,9 @@ public class WorldConfig
 		return config.getBoolean("minimapEnabled",true);	
 	}
 
-	public double getProjectileDamage(Gamemode g, ProjectileType pt) 
+	public double getProjectileDamage(Gamemode g) 
 	{
-		return config.getDouble("gamemodes."+g.toString().toLowerCase()+".projectile.damage."+pt.toString(),10d);					
+		return config.getDouble("gamemodes."+g.toString().toLowerCase()+".projectile.damage",0.1d);					
 	}
 
 	public double getHeadshotDamageMultiplier(Gamemode g) 

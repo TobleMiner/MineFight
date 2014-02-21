@@ -1,0 +1,11 @@
+name: medigun
+translate: true
+cadence: 120
+speed: 0
+item: GOLD_SWORD
+itemdmg: 0
+usetype: block
+dmgtype: medigun
+damage:
+  3: -50
+  15: 0

@@ -7,9 +7,12 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.ClaymoreContainer;
@@ -17,13 +20,15 @@ import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
 import TobleMiner.MineFight.Configuration.Container.PlayerSeekerContainer;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponIndex;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
+import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.Protection.ProtectedArea;
-import TobleMiner.MineFight.Weapon.Projectile.ProjectileType;
 
 public class Config
 {
@@ -33,7 +38,7 @@ public class Config
 	
 	private final File file;
 	
-	public Config(Main mane,FileConfiguration config)
+	public Config(Main mane, FileConfiguration config)
 	{
 		this.file = new File(mane.getPluginDir(),"mineFight.conf");
 		this.config = config;
@@ -52,16 +57,21 @@ public class Config
 		boolean makeConfig = config.getBoolean("config.reset",true);
 		if(makeConfig)
 		{
-			config.set("CombatClass.Sniper.Kit","BOW:0,1;ARROW:0,64;CLAY_BALL:0,4;IRON_INGOT:0,2;WOOD_SWORD:0,1;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
+			config.set("CombatClass.Sniper.Kit","sniper:0,1;ARROW:0,64;CLAY_BALL:0,4;IRON_INGOT:0,2;WOOD_SWORD:0,1;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Sniper.Armor","LEATHER_HELMET,LEATHER_CHESTPLATE,LEATHER_LEGGINGS,LEATHER_BOOTS");
+			config.set("CombatClass.Sniper.Name","sniper");
 			config.set("CombatClass.Heavy.Kit","IRON_SWORD:0,1;DIAMOND:0,1;INK_SACK:4,5;IRON_INGOT:0,2;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32;BONE:0,3");
 			config.set("CombatClass.Heavy.Armor","DIAMOND_HELMET,DIAMOND_CHESTPLATE,DIAMOND_LEGGINGS,DIAMOND_BOOTS");
+			config.set("CombatClass.Heavy.Name","heavy");
 			config.set("CombatClass.Engineer.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;IRON_INGOT:0,2;DISPENSER:0,1;ARROW:0,64;SULPHUR:0,16;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Engineer.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
-			config.set("CombatClass.Medic.Kit","IRON_SWORD:0,1;GOLD_SWORD:0,1;IRON_INGOT:0,2;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
+			config.set("CombatClass.Engineer.Name","engineer");
+			config.set("CombatClass.Medic.Kit","IRON_SWORD:0,1;medigun:0,1;IRON_INGOT:0,2;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Medic.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
-			config.set("CombatClass.Pyro.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;IRON_INGOT:0,2;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;BLAZE_POWDER:0,64;BLAZE_POWDER:0,64;DIRT:0,64;LADDER:0,32");
+			config.set("CombatClass.Medic.Name","medic");
+			config.set("CombatClass.Pyro.Kit","flamethrower:0,1;WOOD_SWORD:0,1;IRON_INGOT:0,2;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;BLAZE_POWDER:0,64;BLAZE_POWDER:0,64;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Pyro.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
+			config.set("CombatClass.Pyro.Name","pyro");
 			config.set("GameControl.Sign.joinCmd","Join game");
 			config.set("GameProps.C4.exploStr",4.0d);
 			config.set("GameProps.C4.throwSpeed",0.5d);
@@ -74,7 +84,6 @@ public class Config
 			config.set("GameProps.sentry.missileSpeed",2.0d);
 			config.set("GameProps.sentry.missileExploStr",3.0d);
 			config.set("GameProps.sentry.missileKillRangeMod",0.5d);
-			config.set("GameProps.sniperRifle.projectileSpeed",5.0d);
 			config.set("GameProps.handGrenade.exploStr",4.0d);
 			config.set("GameProps.handGrenade.fuse",3.0d);
 			config.set("GameProps.handGrenade.throwSpeed",1.5d);
@@ -95,10 +104,6 @@ public class Config
 			config.set("GameProps.ammoResupply.range", 4.0d);
 			config.set("GameProps.ammoResupply.speed", 4.0d);
 			config.set("GameProps.ammoResupply.amount", 20);
-			config.set("GameProps.flamethrower.ignitionDist", 6.0d);
-			config.set("GameProps.flamethrower.directDamage", 10d);
-			config.set("GameProps.medigun.healingDist", 4.0d);
-			config.set("GameProps.medigun.healingRate", 10d);
 			config.set("GameProps.killassist.pointsPerPercent", 1d);
 			config.set("GameProps.lang","EN_us.lang");
 			config.set("GameProps.statistics.local.enabled",false);
@@ -119,7 +124,7 @@ public class Config
 		}
 		catch(Exception ex)
 		{
-			Error error = new Error("Failed loading configuration! This is normal if you start the plugin for the first time.","The pluginconfiguration could not be loaded: "+ex.getMessage(),"The plugin won't work until this error is fixed!",this.getClass().getCanonicalName(),ErrorSeverity.SEVERE);
+			Error error = new Error("Failed loading configuration! This is normal if you start the plugin for the first time.","The pluginconfiguration could not be loaded: "+ex.getMessage(),"The plugin won't work until this error is fixed!",this.getClass().getName(),ErrorSeverity.SEVERE);
 			ErrorReporter.reportError(error);
 		}
 	}
@@ -136,7 +141,7 @@ public class Config
 		}
 		catch(Exception ex)
 		{
-			Error error = new Error("Failed saving configuration!","The pluginconfiguration could not be saved: "+ex.getMessage(),"The plugin won't work until this error is fixed!",this.getClass().getCanonicalName(),ErrorSeverity.SEVERE);
+			Error error = new Error("Failed saving configuration!","The pluginconfiguration could not be saved: "+ex.getMessage(),"The plugin won't work until this error is fixed!",this.getClass().getName(),ErrorSeverity.SEVERE);
 			ErrorReporter.reportError(error);
 		}
 		
@@ -214,12 +219,7 @@ public class Config
 	{
 		return (float)config.getDouble("GameProps.sentry.projectileSpeed");
 	}
-	
-	public float getSniperMuzzleVelocity()
-	{
-		return (float)config.getDouble("GameProps.sniperRifle.projectileSpeed");
-	}
-	
+		
 	public float getHandGrenadeExploStr()
 	{
 		return (float)config.getDouble("GameProps.handGrenade.exploStr");
@@ -673,27 +673,7 @@ public class Config
 	{
 		return config.getInt("GameProps.ammoResupply.amount", 20);
 	}
-	
-	public double getFlamethrowerIgnitionDist()
-	{
-		return config.getDouble("GameProps.flamethrower.ignitionDist", 4.0d);
-	}
-	
-	public int getFlamethrowerDirectDamage()
-	{
-		return config.getInt("GameProps.flamethrower.directDamage",3);
-	}
-	
-	public double getMedigunHealingDist()
-	{
-		return config.getDouble("GameProps.medigun.healingDist", 12.0d);
-	}
-	
-	public double getMedigunHealingRate()
-	{
-		return config.getDouble("GameProps.medigun.healingRate",1.0d);
-	}
-	
+		
 	public boolean isMpvpEnabled(World w)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
@@ -733,12 +713,12 @@ public class Config
 		return false;
 	}
 	
-	public double getProjectileDamage(World w, Gamemode g, ProjectileType pt)
+	public double getProjectileDamage(World w, Gamemode g)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
 		if(wcfg != null)
 		{
-			return wcfg.getProjectileDamage(g, pt);
+			return wcfg.getProjectileDamage(g);
 		}
 		Error err = new Error("Tried to get projectile damage for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
@@ -907,6 +887,91 @@ public class Config
 		Error err = new Error("Tried to get killstreaks for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return new KillstreakConfig();
+	}
+
+	public HashMap<String, CombatClass> getCombatClasses(WeaponIndex wi)
+	{
+		HashMap<String, CombatClass> ccs = new HashMap<String,CombatClass>();
+		ConfigurationSection cs = this.config.getConfigurationSection("CombatClass");
+		for(String key : cs.getKeys(false))
+		{
+			String kitstr = cs.getString(key+".Kit",null);
+			String armorstr = cs.getString(key+".Armor",null);
+			String name = cs.getString(key+".Name",null);
+			if(kitstr == null || armorstr == null  || name == null)
+			{
+				Error err = new Error(String.format("The combat class '%s' couldn't be loaded!", key), String.format("The combat class '%s' isn't set up correctly.", key), "Check your configuration.", this.getClass().getName(), ErrorSeverity.ERROR);
+				ErrorReporter.reportError(err);
+				continue;
+			}
+			CombatClass cc = new CombatClass(name);
+			cc.kit = this.getKitFromString(kitstr, wi);
+			cc.armor = this.getArmorFromString(armorstr);
+			ccs.put(name.toLowerCase().trim(),cc);			
+		}
+		return ccs;
+	}
+	
+	public List<ItemStack> getKitFromString(String s, WeaponIndex wi)
+	{
+		List<ItemStack> kitItems = new ArrayList<ItemStack>();
+		for(String kitItem : s.split(";"))
+		{
+			try
+			{
+				String[] kitItemParts = kitItem.split(",");
+				int amount = Integer.parseInt(kitItemParts[1]);
+				String[] itemWithSubId = kitItemParts[0].split(":");
+				String matname = itemWithSubId[0];
+				WeaponDescriptor wd = wi.get(matname);
+				ItemStack is = null;
+				if(wd != null)
+				{
+					is = new ItemStack(wd.material, amount, wd.itemdmg);
+				}
+				else
+				{
+					is = new ItemStack(Material.getMaterial(matname),amount);
+					if(itemWithSubId.length > 1)
+					{
+						short subId = Short.parseShort(itemWithSubId[1]);
+						is = new ItemStack(Material.getMaterial(matname), amount, subId);
+					}
+				}
+				kitItems.add(is);
+			}
+			catch(Exception ex)
+			{
+				Error error = new Error("Error parsing combat-class information!","Check your mineFight.conf! Problem: "+ex.getMessage(),"There will be problems with the player-equipment until this is fixed.",this.getClass().getName(),ErrorSeverity.ERROR);
+				ErrorReporter.reportError(error);
+			}	
+		}
+		return kitItems;
+	}
+	
+	public ItemStack[] getArmorFromString(String s)
+	{
+		ItemStack[] armor = new ItemStack[4];
+		int i=0;
+		String[] ids = s.split(",");
+		for(String id : ids)
+		{
+			if(i >= 4)
+			{
+				break;
+			}
+			try
+			{
+				armor[i] = new ItemStack(Material.getMaterial(id),1);
+			}
+			catch(Exception ex)
+			{
+				Error error = new Error("Error parsing combat-class information!","Check your mineFight.conf! Problem: "+ex.getMessage(),"There will be problems with the player-equipment untilthis is fixed.",this.getClass().getName(),ErrorSeverity.ERROR);
+				ErrorReporter.reportError(error);
+			}
+			i++;
+		}
+		return armor;
 	}
 
 }
