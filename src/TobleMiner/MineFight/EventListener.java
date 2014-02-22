@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -329,5 +330,11 @@ public class EventListener implements Listener
 		{
 			event.setCancelled(Main.gameEngine.foodLevelChange((Player)event.getEntity()));
 		}
+	}
+	
+	@EventHandler
+	public void onEntityExplode(EntityExplodeEvent event)
+	{
+		event.setCancelled(Main.gameEngine.entityExplosion(event));
 	}
 }

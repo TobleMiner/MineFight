@@ -17,9 +17,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -54,6 +57,7 @@ import TobleMiner.MineFight.GameEngine.Player.PVPPlayer.HitZone;
 import TobleMiner.MineFight.GameEngine.Player.Resupply.ResupplyStation;
 import TobleMiner.MineFight.Protection.ProtectedArea;
 import TobleMiner.MineFight.Util.Location.TeleportUtil;
+import TobleMiner.MineFight.Util.Protection.ProtectionUtil;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
 import TobleMiner.MineFight.Util.SyncDerp.EntitySyncCalls;
 import TobleMiner.MineFight.Util.SyncDerp.InventorySyncCalls;
@@ -113,6 +117,7 @@ public class Match
 	public final boolean damageEnviron;
 	private final boolean exploDamageEnviron;
 	public final WeaponIndex weapons;
+	private final ProtectionUtil protection = new ProtectionUtil();
 	
 	public Match(World world, Gamemode gmode, String name, boolean hardcore, WeaponIndex weapons, List<Sign> infoSigns, List<FlagContainer> flags, List<RadioStationContainer> radioStations, StatHandler sh)
 	{
@@ -1851,5 +1856,17 @@ public class Match
 				new PlayerSeeker(this, arr, player, null, Main.gameEngine.configuration);
 			}
 		}
+	}
+
+	public boolean entityExplosion(EntityExplodeEvent event)
+	{
+		for(Block b : event.blockList())
+		{
+			if(this.protection.isBlockProtected(b))
+			{
+				return true;
+			}
+		}
+		return false;
 	}	
 }
