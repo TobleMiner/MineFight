@@ -623,11 +623,15 @@ public class Match
 			}
 			else if(is.getItemStack().getType().equals(Material.REDSTONE))
 			{
-				double triggerDist = Main.gameEngine.configuration.getIMSTriggerDist();
-				int grenades = Main.gameEngine.configuration.getIMSShots();
-				IMS ims = new IMS(this, is, triggerDist, grenades, player);
-				this.imss.put(is, ims);
-				return false;
+				if(player.killstreaks.contains(Killstreak.IMS))
+				{
+					player.killstreaks.remove(Killstreak.IMS);
+					double triggerDist = Main.gameEngine.configuration.getIMSTriggerDist();
+					int grenades = Main.gameEngine.configuration.getIMSShots();
+					IMS ims = new IMS(this, is, triggerDist, grenades, player);
+					this.imss.put(is, ims);
+					return false;
+				}
 			}
 			else if(is.getItemStack().getType().equals(Material.INK_SACK) && (is.getItemStack().getDurability() == (short)4))
 			{
