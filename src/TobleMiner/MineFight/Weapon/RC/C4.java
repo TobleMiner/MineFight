@@ -17,13 +17,12 @@ public class C4
 	public final float exploStr;
 	public final PVPPlayer owner;
 	private final Match match;
-	private final float killRangeMod;
 	private Material blockIdStore;
 	private MaterialData blockDataStore;
 	private final boolean damageEnviron;
 	private boolean exploded = false;
 	
-	public C4(Block b,Item i,float f,PVPPlayer owner,Match match,float killRangeMod)
+	public C4(Block b, Item i, float f, PVPPlayer owner, Match match)
 	{
 		this.block = b;
 		this.exploStr = f;
@@ -35,7 +34,6 @@ public class C4
 			this.block.setType(Material.LAPIS_ORE);
 		}
 		this.match = match;
-		this.killRangeMod = killRangeMod;
 		this.item = i;
 		this.damageEnviron = match.canEnvironmentBeDamaged();
 	}
@@ -48,7 +46,7 @@ public class C4
 		{
 			if(this.block.getType().equals(Material.LAPIS_ORE))
 			{
-				match.createExplosion(owner, this.block.getLocation(), exploStr, exploStr*killRangeMod,"C4");
+				match.createExplosion(owner, this.block.getLocation(), exploStr, "C4");
 				if(damageEnviron)
 				{
 					this.block.setType(Material.AIR);
@@ -64,7 +62,7 @@ public class C4
 		{
 			Location loc = this.item.getLocation().clone();
 			EntitySyncCalls.removeEntity(item);
-			match.createExplosion(owner, loc, exploStr, exploStr*killRangeMod,"C4");
+			match.createExplosion(owner, loc, exploStr,"C4");
 		}
 	}	
 }

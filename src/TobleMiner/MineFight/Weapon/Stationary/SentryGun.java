@@ -20,9 +20,8 @@ public class SentryGun
 	private final Match match;
 	private final double missileSpeed;
 	private final float missileExploStr;
-	private final float missilekKillRangeMod;
 	
-	public SentryGun(Match match, Dispenser disp,PVPPlayer owner,float arrowSpeed, double missileSpeed, float missileExploStr, float missileKillRangeMod)
+	public SentryGun(Match match, Dispenser disp,PVPPlayer owner,float arrowSpeed, double missileSpeed, float missileExploStr)
 	{
 		this.dispenser = disp;
 		this.owner = owner;
@@ -30,7 +29,6 @@ public class SentryGun
 		this.match = match;
 		this.missileSpeed = missileSpeed;
 		this.missileExploStr = missileExploStr;
-		this.missilekKillRangeMod = missileKillRangeMod;
 	}		
 	
 	public Arrow shoot(Location target)
@@ -68,7 +66,7 @@ public class SentryGun
 			Vector dir = target.clone().subtract(shootLoc.clone()).toVector();
 			Vector vel = dir.clone().multiply(arrowSpeed/dir.length());
 			Arrow arr = dispenser.getWorld().spawnArrow(shootLoc, vel,arrowSpeed,1.0F);
-			SentryMissile missile = new SentryMissile(match, dir, this, missileExploStr, arr, missileSpeed, missilekKillRangeMod);
+			SentryMissile missile = new SentryMissile(match, dir, this, missileExploStr, arr, missileSpeed);
 			inv.removeItem(new ItemStack(Material.SULPHUR,1));
 			return missile;
 		}

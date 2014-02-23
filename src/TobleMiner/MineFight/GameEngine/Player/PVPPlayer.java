@@ -268,7 +268,11 @@ public class PVPPlayer
 					{
 						if(wd.cadence > 0 && (timer % ((int)Math.round(1200d / (double)wd.cadence))) == 0)
 						{
-							if(wd.dmgType == DamageType.FLAMETHROWER)
+							if(wd.dmgType == DamageType.PROJECTILEHIT)
+							{
+								
+							}
+							else if(wd.dmgType == DamageType.FLAMETHROWER)
 							{
 								if(pi.contains(Material.BLAZE_POWDER))
 								{

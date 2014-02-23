@@ -18,12 +18,11 @@ public class SentryMissile extends TickControlledWeapon
 	private final float exploStr;
 	private final Arrow arr;
 	private final double speed;
-	private final float killRangeMod;
 	private int timer = 1;
 	private double time = 0d;
 	private double lifeTime = 40d;
 	
-	public SentryMissile(Match match, Vector dir, SentryGun sentry, float exploStr, Arrow arr, double speed, float killRangeMod)
+	public SentryMissile(Match match, Vector dir, SentryGun sentry, float exploStr, Arrow arr, double speed)
 	{
 		super(match);
 		this.dir = dir;
@@ -31,7 +30,6 @@ public class SentryMissile extends TickControlledWeapon
 		this.exploStr = exploStr;
 		this.arr = arr;
 		this.speed = speed;
-		this.killRangeMod = killRangeMod;
 	}
 
 	@Override
@@ -59,7 +57,7 @@ public class SentryMissile extends TickControlledWeapon
 	{
 		match.unregisterSentryMissile(this);
 		this.unregisterTickControlled();
-		match.createExplosion(sentry.getOwner(),arr.getLocation(), exploStr, exploStr*killRangeMod,"SENTRY");
+		match.createExplosion(sentry.getOwner(), arr.getLocation(), exploStr, "SENTRY");
 		EntitySyncCalls.removeEntity(this.arr);
 	}
 	

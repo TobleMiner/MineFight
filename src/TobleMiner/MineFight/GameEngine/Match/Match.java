@@ -596,8 +596,7 @@ public class Match
 		{
 			if(is.getItemStack().getType().equals(Material.CLAY_BALL))
 			{
-				float mod = Main.gameEngine.configuration.getM18KillRangeMod();
-				Claymore clay = new Claymore(is, player,Main.gameEngine.configuration.getM18ExploStr(),this,mod);
+				Claymore clay = new Claymore(is, player,Main.gameEngine.configuration.getM18ExploStr(),this);
 				claymoreRegistry.put(is, clay);
 				List<Claymore> clays = this.claymors.get(player);
 				if(clays == null) clays = new ArrayList<Claymore>();
@@ -614,13 +613,12 @@ public class Match
 			}
 			else if(is.getItemStack().getType().equals(Material.IRON_INGOT))
 			{
-				float mod = Main.gameEngine.configuration.getHandGrenadeKillRangeMod();
 				float throwSpeed = Main.gameEngine.configuration.getHandGrenadeThrowSpeed();
 				if(p.isSprinting())
 				{
 					throwSpeed *= 2.0f;
 				}
-				HandGrenade grenade = new HandGrenade(is, player, this, Main.gameEngine.configuration.getHandGrenadeExploStr(), Main.gameEngine.configuration.getHandGrenadeFuse(), throwSpeed, mod);
+				HandGrenade grenade = new HandGrenade(is, player, this, Main.gameEngine.configuration.getHandGrenadeExploStr(), Main.gameEngine.configuration.getHandGrenadeFuse(), throwSpeed);
 				this.handGrenades.put(is, grenade);
 				return false;
 			}
@@ -651,8 +649,7 @@ public class Match
 				{
 					c4s = new ArrayList<C4>();
 				}
-				float mod = Main.gameEngine.configuration.getC4KillRangeMod();
-				C4 explosive = new C4(null,is,Main.gameEngine.configuration.getC4ExploStr(),player,this,mod);
+				C4 explosive = new C4(null, is, Main.gameEngine.configuration.getC4ExploStr(), player, this);
 				c4s.add(explosive);
 				c4explosives.put(player, c4s);			
 				c4registry.put(is,explosive);
@@ -1079,8 +1076,7 @@ public class Match
 			{
 				c4s = new ArrayList<C4>();
 			}
-			float mod = Main.gameEngine.configuration.getC4KillRangeMod();
-			C4 explosive = new C4(clickedBlock,null,Main.gameEngine.configuration.getC4ExploStr(),player,this,mod);
+			C4 explosive = new C4(clickedBlock, null, Main.gameEngine.configuration.getC4ExploStr(), player, this);
 			c4s.add(explosive);
 			c4explosives.put(player, c4s);
 			InventorySyncCalls.removeItemStack(playerInventory, new ItemStack(Material.INK_SACK,1,(short)4));
@@ -1121,7 +1117,7 @@ public class Match
 		{
 			if(b.getType().equals(Material.DISPENSER))
 			{
-				SentryGun sg = new SentryGun(this,(Dispenser)b.getState(), player, Main.gameEngine.configuration.getSentryArrowSpeed(), Main.gameEngine.configuration.getSentryMissileSpeed(),Main.gameEngine.configuration.getSentryMissileExploStr(),Main.gameEngine.configuration.getSentryMissileKillRangeMod());
+				SentryGun sg = new SentryGun(this, (Dispenser)b.getState(), player, Main.gameEngine.configuration.getSentryArrowSpeed(), Main.gameEngine.configuration.getSentryMissileSpeed(), Main.gameEngine.configuration.getSentryMissileExploStr());
 				this.sentries.put(player, sg);
 			}
 			else if(gmode.equals(Gamemode.Rush) && (b.getType().equals(Material.REDSTONE_TORCH_ON) || b.getType().equals(Material.REDSTONE_TORCH_OFF)))
@@ -1491,8 +1487,7 @@ public class Match
 				double lifeTime = Main.gameEngine.configuration.getRPGLifeTime();
 				double exploStr = Main.gameEngine.configuration.getRPGExploStr();
 				Arrow arr = this.world.spawnArrow(launchLoc, locHelp.multiply(accel*maxSpeed/locHelp.length()), 1f, 1f);
-				float mod = Main.gameEngine.configuration.getRPGKillRangeMod();
-				RPG rpg = new RPG(this, arr, (float)exploStr, lifeTime, maxSpeed, accel, vec, throtle, player,mod);
+				RPG rpg = new RPG(this, arr, (float)exploStr, lifeTime, maxSpeed, accel, vec, throtle, player);
 				rpgs.put(arr, rpg);
 				p.getInventory().removeItem(new ItemStack(Material.BONE, 1));
 			}
@@ -1722,7 +1717,7 @@ public class Match
 					double radius = 1.24d*exploStr;
 					if(dist < radius)
 					{
-						double expo = 0.8d; //TODO
+						double expo = 0.8d; //Nice constant for pretty fair damage
 						double impact = (1d - dist/radius) * expo;
 						double dmg = (Math.pow(impact, 2) + impact) * 8d * exploStr + 1d;
 						p.normalDeathBlocked = true;
@@ -1743,7 +1738,7 @@ public class Match
 		}
 	}
 
-	public void createExplosion(PVPPlayer issuer, Location loc,float exploStr, float deathRange, String weapon)
+	public void createExplosion(PVPPlayer issuer, Location loc, float exploStr, String weapon)
 	{
 		boolean isProtected = false;
 		if(this.canExplosionsDamageEnvironment())
@@ -1774,14 +1769,6 @@ public class Match
 		{
 			this.createFakeExplosion(issuer,loc, exploStr, true, true, weapon);
 		}
-		/*List<PVPPlayer> players = this.getSpawnedPlayersNearLocation(loc,deathRange);
-		for(PVPPlayer p : players)
-		{
-			if(this.canKill(issuer,p))
-			{
-				this.kill(issuer,p,weapon,p.thePlayer.get0d() > 0);
-			}
-		}*/
 	}
 
 	public boolean itemDamage(Item is, DamageCause cause)

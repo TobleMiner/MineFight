@@ -24,9 +24,8 @@ public class RPG extends TickControlledWeapon
 	private final Vector launchVec;
 	private double speed = 0d;
 	private final PVPPlayer owner;
-	private final float killRangeMod;
 	
-	public RPG(Match match,Arrow arr,float exploStr,double lifeTime,double maxSpeed,double accel,Vector launchVec, double throtle, PVPPlayer owner,float killRangeMod)
+	public RPG(Match match, Arrow arr, float exploStr, double lifeTime, double maxSpeed, double accel, Vector launchVec, double throtle, PVPPlayer owner)
 	{
 		super(match);
 		this.arr = arr;
@@ -36,7 +35,6 @@ public class RPG extends TickControlledWeapon
 		this.launchVec = launchVec;
 		this.accel = accel;
 		this.owner = owner;
-		this.killRangeMod = killRangeMod;
 	}
 
 	@Override
@@ -78,7 +76,7 @@ public class RPG extends TickControlledWeapon
 	{
 		match.unregisterRPG(this);
 		this.unregisterTickControlled();
-		match.createExplosion(owner, arr.getLocation(), exploStr, exploStr*killRangeMod, "RPG");
+		match.createExplosion(owner, arr.getLocation(), exploStr, "RPG");
 		EntitySyncCalls.removeEntity(this.arr);
 	}
 }

@@ -81,7 +81,7 @@ public class PlayerSeeker extends Missile
 	public void explode()
 	{
 		PlayerSeekerContainer psc = this.cfg.getPlayerSeekerConf(this.match.getWorld(), this.match.gmode);
-		this.match.createExplosion(this.shooter, this.arr.getLocation().clone(), psc.exploStr, psc.exploStr, "PLAYER SEEKER");
+		this.match.createExplosion(this.shooter, this.arr.getLocation().clone(), psc.exploStr, "PLAYER SEEKER");
 		super.explode();
 	}
 }

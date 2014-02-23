@@ -16,9 +16,8 @@ public class HandGrenade extends TickControlledWeapon
 	private int timer = 0;
 	private final float exploStr;
 	private final float fuse;
-	private final float killRangeMod;
 	
-	public HandGrenade(Item item,PVPPlayer owner,Match match,float exploStr,float fuse,float throwSpeed,float killRangeMod)
+	public HandGrenade(Item item, PVPPlayer owner, Match match, float exploStr, float fuse, float throwSpeed)
 	{
 		super(match);
 		this.match = match;
@@ -28,7 +27,6 @@ public class HandGrenade extends TickControlledWeapon
 		this.fuse = fuse;
 		double fact = throwSpeed/item.getVelocity().clone().length();
 		item.setVelocity(item.getVelocity().clone().multiply(fact));
-		this.killRangeMod = killRangeMod;
 	}
 
 	@Override
@@ -39,7 +37,7 @@ public class HandGrenade extends TickControlledWeapon
 		{
 			Location loc = item.getLocation();
 			EntitySyncCalls.removeEntity(item);
-			this.match.createExplosion(owner, loc, exploStr, exploStr*killRangeMod,"M67 GRENADE");
+			this.match.createExplosion(owner, loc, exploStr,"GRENADE");
 			this.unregisterTickControlled();
 			match.unregisterHandGrenade(this.item);
 		}

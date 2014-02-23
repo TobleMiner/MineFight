@@ -980,5 +980,4 @@ public class Config
 		}
 		return armor;
 	}
-
 }

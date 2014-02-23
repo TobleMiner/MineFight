@@ -83,7 +83,7 @@ public class IMSProjectile extends Missile
 		{
 			match.kill(ims.getOwner(), target, "IMS", target.thePlayer.getHealth() > 0);
 		}
-		match.createExplosion(ims.getOwner(), this.arr.getLocation(), exploStr, exploStr,"IMS");
+		match.createExplosion(ims.getOwner(), this.arr.getLocation(), exploStr, "IMS");
 		EntitySyncCalls.removeEntity(arr);
 		ims.release(this.target);
 		super.explode();
