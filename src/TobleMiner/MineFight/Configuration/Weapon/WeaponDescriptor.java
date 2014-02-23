@@ -96,6 +96,7 @@ public class WeaponDescriptor
 		HIT("hit"),
 		FLAMETHROWER("flamethrower","flame"),
 		MEDIGUN("medigun","medi"),
+		PROJECTILEHIT("projectilehit","projhit","phit"),
 		NONE("applejack");
 		
 		public final String[] names;
@@ -126,7 +127,6 @@ public class WeaponDescriptor
 	{
 		HIT("hit"),
 		BLOCK("block","blocking"),
-		PROJECTILEHIT("projectilehit","projhit","phit"),
 		NONE("fluttershy");
 		
 		public final String[] names;

@@ -4,8 +4,8 @@ cadence: 0
 speed: 112
 item: BOW
 itemdmg: 0
-usetype: projectilehit
-dmgtype: hit
+usetype: hit
+dmgtype: projectilehit
 hitzones:
   head: 2.0
   torso: 1.06

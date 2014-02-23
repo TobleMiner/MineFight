@@ -17,8 +17,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -35,9 +33,9 @@ import TobleMiner.MineFight.Configuration.Container.Killstreak;
 import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
 import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor;
-import TobleMiner.MineFight.Configuration.Weapon.WeaponIndex;
 import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor.DamageType;
 import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor.WeaponUseType;
+import TobleMiner.MineFight.Configuration.Weapon.WeaponIndex;
 import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
@@ -51,9 +49,9 @@ import TobleMiner.MineFight.GameEngine.Match.Team.Team;
 import TobleMiner.MineFight.GameEngine.Match.Team.TeamBlue;
 import TobleMiner.MineFight.GameEngine.Match.Team.TeamRed;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
+import TobleMiner.MineFight.GameEngine.Player.PVPPlayer.HitZone;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.GameEngine.Player.Info.InformationSign;
-import TobleMiner.MineFight.GameEngine.Player.PVPPlayer.HitZone;
 import TobleMiner.MineFight.GameEngine.Player.Resupply.ResupplyStation;
 import TobleMiner.MineFight.Protection.ProtectedArea;
 import TobleMiner.MineFight.Util.Location.TeleportUtil;
@@ -1216,7 +1214,7 @@ public class Match
 				ItemStack is = player.thePlayer.getItemInHand();
 				if(is != null)
 				{
-					WeaponIndex wi = this.weapons.get(WeaponUseType.PROJECTILEHIT);
+					WeaponIndex wi = this.weapons.get(DamageType.PROJECTILEHIT);
 					if(wi != null)
 					{
 						WeaponDescriptor wd = wi.get(is.getType());

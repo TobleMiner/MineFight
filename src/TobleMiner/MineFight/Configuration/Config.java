@@ -13,6 +13,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Configuration.Container.ClaymoreContainer;
@@ -28,6 +29,7 @@ import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
+import TobleMiner.MineFight.Language.Langfile;
 import TobleMiner.MineFight.Protection.ProtectedArea;
 
 public class Config
@@ -928,10 +930,13 @@ public class Config
 				if(wd != null)
 				{
 					is = new ItemStack(wd.material, amount, wd.itemdmg);
+					ItemMeta im = is.getItemMeta();
+					im.setDisplayName(wd.getName());
+					is.setItemMeta(im);
 				}
 				else
 				{
-					is = new ItemStack(Material.getMaterial(matname),amount);
+					is = new ItemStack(Material.getMaterial(matname), amount);
 					if(itemWithSubId.length > 1)
 					{
 						short subId = Short.parseShort(itemWithSubId[1]);
@@ -966,7 +971,7 @@ public class Config
 			}
 			catch(Exception ex)
 			{
-				Error error = new Error("Error parsing combat-class information!","Check your mineFight.conf! Problem: "+ex.getMessage(),"There will be problems with the player-equipment untilthis is fixed.",this.getClass().getName(),ErrorSeverity.ERROR);
+				Error error = new Error("Error parsing combat-class information!","Check your mineFight.conf! Problem: "+ex.getMessage(),"There will be problems with the player-equipment until this is fixed.",this.getClass().getName(),ErrorSeverity.ERROR);
 				ErrorReporter.reportError(error);
 			}
 			i++;

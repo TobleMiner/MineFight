@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.bukkit.Material;
 
+import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor.DamageType;
 import TobleMiner.MineFight.Configuration.Weapon.WeaponDescriptor.WeaponUseType;
 
 public class WeaponIndex 
@@ -11,6 +12,7 @@ public class WeaponIndex
 	private HashMap<String, WeaponDescriptor> byName = new HashMap<String, WeaponDescriptor>();
 	private HashMap<Material, WeaponDescriptor> byMaterial = new HashMap<Material, WeaponDescriptor>();
 	private HashMap<WeaponUseType, WeaponIndex> byUseType = new HashMap<WeaponUseType, WeaponIndex>();
+	private HashMap<DamageType, WeaponIndex> byDmgType = new HashMap<DamageType, WeaponIndex>();
 	private int num = 0;
 	
 	public void add(WeaponDescriptor wd)
@@ -24,10 +26,14 @@ public class WeaponIndex
 		this.byMaterial.put(wd.material, wd);
 		if(createSub)
 		{
-			WeaponIndex wi = this.byUseType.get(wd.wut);
-			if(wi == null) wi = new WeaponIndex();
-			wi.add(wd, false);
-			this.byUseType.put(wd.wut, wi);
+			WeaponIndex wi_ut = this.byUseType.get(wd.wut);
+			if(wi_ut == null) wi_ut = new WeaponIndex();
+			wi_ut.add(wd, false);
+			this.byUseType.put(wd.wut, wi_ut);
+			WeaponIndex wi_dt = this.byDmgType.get(wd.dmgType);
+			if(wi_dt == null) wi_dt = new WeaponIndex();
+			wi_dt.add(wd, false);
+			this.byDmgType.put(wd.dmgType, wi_dt);
 		}
 		num++;
 	}
@@ -47,6 +53,11 @@ public class WeaponIndex
 		return this.byUseType.get(wut);
 	}
 	
+	public WeaponIndex get(DamageType dt) 
+	{
+		return this.byDmgType.get(dt);
+	}
+
 	public int count()
 	{
 		return this.num;

@@ -51,7 +51,8 @@ public class GameEngine
 		this.configuration = new Config(mane, config);
 		this.dict = new Langfile(mane.getPluginDir());
 		this.stathandler = new StatHandler(mane.getDatabase());
-		this.init();
+		this.configuration.read();
+		this.dict.loadLanguageFile(configuration.getLangFile());
 	}
 	
 	public void reload()
@@ -61,8 +62,6 @@ public class GameEngine
 	
 	private void init()
 	{
-		this.configuration.read();
-		this.dict.loadLanguageFile(configuration.getLangFile());
 		this.stathandler.reload(this);
 		this.weapons = WeaponConfig.getConfigs(Main.main.getDataFolder());
 		Main.logger.log(Level.INFO, String.format("Loaded %d weapons.", weapons.count()));

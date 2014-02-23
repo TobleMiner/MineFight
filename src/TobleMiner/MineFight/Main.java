@@ -52,6 +52,7 @@ public class Main extends JavaPlugin
 		Main.logger = new Logger(this);
 		Main.util = new Util();
 		Main.gameEngine = new GameEngine(this);
+		Main.gameEngine.reload();
 		logger.log(Level.INFO,gameEngine.dict.get("preEnable"));
 		Bukkit.getPluginManager().registerEvents(eventListener, this);
 		if(!(new LicenseHandler().init(this)))
