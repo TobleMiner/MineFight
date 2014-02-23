@@ -75,23 +75,29 @@ public class WorldConfig
 	
 	public void load()
 	{
-		try
+		if(this.conffl.exists())
 		{
-			if(!this.conffl.exists())
+			try
 			{
-				this.conffl.createNewFile();
+				this.config.load(this.conffl);
 			}
-			this.config.load(this.conffl);
-			if(!this.regionfl.exists())
+			catch(Exception ex)
 			{
-				this.regionfl.createNewFile();
+				Error error = new Error("Failed loading world configuration!",String.format("The configuration for the world '%s' could not be loaded: ", this.world.getName()) + ex.getMessage(),"The plugin won't work for this particular world until this problem is fixed!",this.getClass().getCanonicalName(),ErrorSeverity.SEVERE);
+				ErrorReporter.reportError(error);
 			}
-			this.regions.load(this.regionfl);
 		}
-		catch(Exception ex)
+		if(this.regionfl.exists())
 		{
-			Error error = new Error("Failed loading configuration! This is normal if you start the plugin for the first time.","The worldconfiguration could not be loaded: "+ex.getMessage(),"The plugin won't work until this error is fixed!",this.getClass().getCanonicalName(),ErrorSeverity.SEVERE);
-			ErrorReporter.reportError(error);
+			try
+			{
+				this.regions.load(this.regionfl);
+			}
+			catch(Exception ex)
+			{
+				Error error = new Error("Failed loading world regions!",String.format("The regions for the world '%s' could not be loaded: ", this.world.getName()) + ex.getMessage(),"The protection won't work for this particular world until this problem is fixed!",this.getClass().getCanonicalName(),ErrorSeverity.SEVERE);
+				ErrorReporter.reportError(error);
+			}
 		}
 		boolean makeConfig = config.getBoolean("config.reset",true);
 		Location spawn = this.world.getSpawnLocation();

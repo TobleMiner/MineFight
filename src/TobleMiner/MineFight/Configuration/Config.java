@@ -119,14 +119,17 @@ public class Config
 	
 	public void load()
 	{
-		try
+		if(this.file.exists())
 		{
-			config.load(file.getAbsoluteFile());
-		}
-		catch(Exception ex)
-		{
-			Error error = new Error("Failed loading configuration! This is normal if you start the plugin for the first time.","The pluginconfiguration could not be loaded: "+ex.getMessage(),"The plugin won't work until this error is fixed!",this.getClass().getName(),ErrorSeverity.SEVERE);
-			ErrorReporter.reportError(error);
+			try
+			{
+				this.config.load(this.file);
+			}
+			catch(Exception ex)
+			{
+				Error error = new Error("Failed loading configuration!","The pluginconfiguration could not be loaded: "+ex.getMessage(),"The plugin won't work until this error is fixed!",this.getClass().getName(),ErrorSeverity.SEVERE);
+				ErrorReporter.reportError(error);
+			}
 		}
 	}
 	
@@ -134,7 +137,7 @@ public class Config
 	{
 		try
 		{
-			config.save(file.getAbsoluteFile());
+			this.config.save(this.file);
 			for(WorldConfig wcfg : this.configByWorldName.values())
 			{
 				wcfg.save();
