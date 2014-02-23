@@ -18,12 +18,13 @@ public class WeaponDescriptor
 	public final WeaponUseType wut;
 	public final DamageType dmgType;
 	public final Material material;
+	public final Material ammomat;
 	public final short itemdmg;
 	public final HashMap<Double, Double> damage = new HashMap<Double, Double>();
 	public final HashMap<HitZone, Double> multipliers = new HashMap<HitZone, Double>();
 	public final double maxDist;
 	
-	public WeaponDescriptor(String name, boolean doTranslate, double cadence, double speed, String useType, String dmgType, Material material, short itemdmg, List<Entry<Double ,Double>> damage, List<Entry<HitZone ,Double>> multipliers)
+	public WeaponDescriptor(String name, boolean doTranslate, double cadence, double speed, String useType, String dmgType, Material material, short itemdmg, List<Entry<Double ,Double>> damage, List<Entry<HitZone ,Double>> multipliers, Material ammomat)
 	{
 		this.name = name;
 		this.translate = doTranslate;
@@ -33,6 +34,7 @@ public class WeaponDescriptor
 		this.dmgType = DamageType.get(dmgType);
 		this.material = material;
 		this.itemdmg = itemdmg;
+		this.ammomat = ammomat;
 		double maxDist = Double.MAX_VALUE;
 		for(Entry<Double, Double> entry : damage)
 		{

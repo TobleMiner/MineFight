@@ -820,10 +820,6 @@ public class Match
 			}
 			String weapon = Main.gameEngine.dict.get("killed");
 			deathMessage = deathMessage.toLowerCase();
-			/*if((deathMessage.contains("shot") || deathMessage.contains("bow")) && PVPkiller != null && PVPkiller.getCombatClass().wt == WeaponType.SNIPER)
-			{
-				weapon = "M82A1";
-			}*/
 			if(this.canKill(PVPkiller, player))
 			{
 				kill(PVPkiller, player, weapon, false);
@@ -1219,12 +1215,6 @@ public class Match
 							Debugger.writeDebugOut(String.format("Projectile '%s' fired.",wd.name));
 							sp = new WeaponProjectile(player, arrow, wd, rand.nextDouble() < critpProbab);
 							double speed = wd.speed;
-							/*double len = arrow.getVelocity().length();
-							if(len != 0)
-							{
-								Vector vel = arrow.getVelocity().clone().multiply(speed/len);
-								arrow.setVelocity(vel);
-							}*/
 							arrow.setVelocity(arrow.getVelocity().clone().multiply(speed));
 						}
 					}
@@ -1853,5 +1843,12 @@ public class Match
 			}
 		}
 		return false;
-	}	
+	}
+	
+	public void createWeaponProjectile(PVPPlayer shooter, Location launchLoc, Vector velocity, WeaponDescriptor wd, boolean crit)
+	{
+		Arrow arr = this.world.spawnArrow(launchLoc, velocity.clone(), 1f, 1f);
+		arr.setVelocity(velocity.clone());
+		this.projectiles.put(arr, new WeaponProjectile(shooter, arr, wd, crit));
+	}
 }

@@ -6,6 +6,7 @@ item: IRON_SWORD
 itemdmg: 0
 usetype: block
 dmgtype: flame
+ammoitem: BLAZE_POWDER
 damage:
   3: 30
   15: 0

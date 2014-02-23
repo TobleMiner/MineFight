@@ -61,7 +61,7 @@ public class Config
 			config.set("CombatClass.Sniper.Kit","sniper:0,1;ARROW:0,64;CLAY_BALL:0,4;IRON_INGOT:0,2;WOOD_SWORD:0,1;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
 			config.set("CombatClass.Sniper.Armor","LEATHER_HELMET,LEATHER_CHESTPLATE,LEATHER_LEGGINGS,LEATHER_BOOTS");
 			config.set("CombatClass.Sniper.Name","sniper");
-			config.set("CombatClass.Heavy.Kit","IRON_SWORD:0,1;DIAMOND:0,1;INK_SACK:4,5;IRON_INGOT:0,2;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32;BONE:0,3");
+			config.set("CombatClass.Heavy.Kit","lmg:0,1;ARROW:0,64;ARROW:0,64;DIAMOND:0,1;INK_SACK:4,5;IRON_INGOT:0,2;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32;BONE:0,3");
 			config.set("CombatClass.Heavy.Armor","DIAMOND_HELMET,DIAMOND_CHESTPLATE,DIAMOND_LEGGINGS,DIAMOND_BOOTS");
 			config.set("CombatClass.Heavy.Name","heavy");
 			config.set("CombatClass.Engineer.Kit","IRON_SWORD:0,1;WOOD_SWORD:0,1;IRON_INGOT:0,2;DISPENSER:0,1;ARROW:0,64;SULPHUR:0,16;IRON_PICKAXE:0,1;IRON_SPADE:0,1;IRON_AXE:0,1;DIRT:0,64;LADDER:0,32");
@@ -897,7 +897,7 @@ public class Config
 				int amount = Integer.parseInt(kitItemParts[1]);
 				String[] itemWithSubId = kitItemParts[0].split(":");
 				String matname = itemWithSubId[0];
-				WeaponDescriptor wd = wi.get(matname);
+				WeaponDescriptor wd = wi.get(matname.toLowerCase().trim());
 				ItemStack is = null;
 				if(wd != null)
 				{
@@ -919,7 +919,7 @@ public class Config
 			}
 			catch(Exception ex)
 			{
-				Error error = new Error("Error parsing combat-class information!","Check your mineFight.conf! Problem: "+ex.getMessage(),"There will be problems with the player-equipment until this is fixed.",this.getClass().getName(),ErrorSeverity.ERROR);
+				Error error = new Error("Error parsing combat-class information!", String.format("Check your mineFight.conf! Problem: '%s': ", kitItem)+ex.getMessage(),"There will be problems with the player-equipment until this is fixed.",this.getClass().getName(),ErrorSeverity.ERROR);
 				ErrorReporter.reportError(error);
 			}	
 		}

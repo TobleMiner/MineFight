@@ -1,0 +1,15 @@
+name: LMG
+cadence: 480
+speed: 50
+item: DIAMOND_SWORD
+itemdmg: 0
+usetype: block
+dmgtype: projectilehit
+ammoitem: ARROW
+hitzones:
+  head: 1.3
+  torso: 1.0
+  leg: 0.7
+damage:
+  3: 15
+  30: 6

@@ -22,7 +22,7 @@ public class WeaponIndex
 	
 	private void add(WeaponDescriptor wd, boolean createSub)
 	{
-		this.byName.put(wd.name, wd);
+		this.byName.put(wd.name.toLowerCase().trim(), wd);
 		this.byMaterial.put(wd.material, wd);
 		if(createSub)
 		{

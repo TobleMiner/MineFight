@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -268,13 +269,25 @@ public class PVPPlayer
 					{
 						if(wd.cadence > 0 && (timer % ((int)Math.round(1200d / (double)wd.cadence))) == 0)
 						{
-							if(wd.dmgType == DamageType.PROJECTILEHIT)
+							if(wd.ammomat == null || pi.contains(wd.ammomat))
 							{
-								
-							}
-							else if(wd.dmgType == DamageType.FLAMETHROWER)
-							{
-								if(pi.contains(Material.BLAZE_POWDER))
+								if(wd.ammomat != null) InventorySyncCalls.removeItemStack(pi, new ItemStack(wd.ammomat,1));
+								if(wd.dmgType == DamageType.PROJECTILEHIT)
+								{
+									Block b = this.thePlayer.getTargetBlock(null, 200);
+									if(b != null)
+									{
+										Location playerEyeLoc = this.thePlayer.getLocation().add(0d,2.0d,0d); 
+										Vector locHelp = b.getLocation().subtract(playerEyeLoc).toVector();
+										if(locHelp.length() > 0)
+										{
+											double speed = wd.speed;
+											Vector velocity = locHelp.clone().multiply(speed / locHelp.length());
+											match.createWeaponProjectile(this, playerEyeLoc.clone().add(velocity.clone().multiply(1.5d/velocity.length())), velocity, wd, false);
+										}
+									}
+								}
+								else if(wd.dmgType == DamageType.FLAMETHROWER)
 								{
 									HashSet<Byte> trans = new HashSet<Byte>();
 									trans.add((byte)31);
@@ -312,7 +325,6 @@ public class PVPPlayer
 											}
 											target.normalDeathBlocked = false;
 										}
-										InventorySyncCalls.removeItemStack(pi, new ItemStack(Material.BLAZE_POWDER,1));
 									}
 									List<Block> potIgniBlocks = this.thePlayer.getLineOfSight(null,(int)Math.round(wd.maxDist));
 									for(Block block : potIgniBlocks)
@@ -323,36 +335,36 @@ public class PVPPlayer
 										}
 									}
 								}
-							}
-							else if(wd.dmgType == DamageType.MEDIGUN)
-							{
-								List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(), (int)Math.round(wd.maxDist));
-								PVPPlayer target = null;
-								for(PVPPlayer p : players)
+								else if(wd.dmgType == DamageType.MEDIGUN)
 								{
-									if(p.getTeam() == this.getTeam() && p != this && p.thePlayer.getHealth() < p.thePlayer.getMaxHealth())
+									List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(), (int)Math.round(wd.maxDist));
+									PVPPlayer target = null;
+									for(PVPPlayer p : players)
 									{
-										target = p;
-										break;
-									}
-								}
-								if(target != null)
-								{
-									Vector dir = target.thePlayer.getLocation().clone().subtract(this.thePlayer.getLocation().clone()).toVector();
-									int len = (int)Math.round(dir.length());
-									if(len != 0)
-									{
-										for(int i=0;i<=len;i++)
+										if(p.getTeam() == this.getTeam() && p != this && p.thePlayer.getHealth() < p.thePlayer.getMaxHealth())
 										{
-											this.thePlayer.getWorld().playEffect(this.thePlayer.getLocation().clone().add(0d,1d,0d).add(dir.clone().multiply(((double)i)/((double)len))),Effect.ENDER_SIGNAL,0);
+											target = p;
+											break;
 										}
 									}
-									double health = target.thePlayer.getHealth() - wd.getDamage(this.thePlayer.getLocation().distance(target.thePlayer.getLocation())) * target.thePlayer.getMaxHealth();
-									if(health > target.thePlayer.getMaxHealth())
+									if(target != null)
 									{
-										health = target.thePlayer.getMaxHealth();
+										Vector dir = target.thePlayer.getLocation().clone().subtract(this.thePlayer.getLocation().clone()).toVector();
+										int len = (int)Math.round(dir.length());
+										if(len != 0)
+										{
+											for(int i=0;i<=len;i++)
+											{
+												this.thePlayer.getWorld().playEffect(this.thePlayer.getLocation().clone().add(0d,1d,0d).add(dir.clone().multiply(((double)i)/((double)len))),Effect.ENDER_SIGNAL,0);
+											}
+										}
+										double health = target.thePlayer.getHealth() - wd.getDamage(this.thePlayer.getLocation().distance(target.thePlayer.getLocation())) * target.thePlayer.getMaxHealth();
+										if(health > target.thePlayer.getMaxHealth())
+										{
+											health = target.thePlayer.getMaxHealth();
+										}
+										target.thePlayer.setHealth(health);
 									}
-									target.thePlayer.setHealth(health);
 								}
 							}
 						}

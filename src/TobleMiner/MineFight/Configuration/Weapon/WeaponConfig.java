@@ -37,7 +37,7 @@ public class WeaponConfig
 		if(!folder.exists())
 		{
 			folder.mkdirs();
-			String[] files = {"medigun.wpconf","sniper.wpconf","flamethrower.wpconf"};
+			String[] files = {"medigun.wpconf","sniper.wpconf","flamethrower.wpconf","lmg.wpconf"};
 			for(String file : files)
 			{
 				File f = new File(folder,file);
@@ -73,12 +73,24 @@ public class WeaponConfig
 		String matname = this.conf.getString("item","Twilight Sparkle");
 		short itemdmg = (short)this.conf.getInt("itemdmg",0);
 		boolean doTranslate = this.conf.getBoolean("translate",false);
+		String ammo = this.conf.getString("ammoitem","null");
 		Material mat = Material.getMaterial(matname);
 		if(mat == null)
 		{
 			Error error = new Error("Error in weapon configuration!",String.format("The weapon descriptor '%s' contains an error. The item material doesn't exist.",this.confFile.getPath()),"The specified weapon won't be displayed correctly until this error is fixed!",this.getClass().getName(),ErrorSeverity.ERROR);
 			ErrorReporter.reportError(error);
 			mat = Material.IRON_FENCE;
+		}
+		Material ammomat = null;
+		if(ammo != "null")
+		{
+			ammomat = Material.getMaterial(ammo);
+			if(ammomat == null)
+			{
+				Error error = new Error("Error in weapon configuration!",String.format("The weapon descriptor '%s' contains an error. The ammo material doesn't exist.",this.confFile.getPath()),"The specified weapon won't use ammo until this error is fixed!",this.getClass().getName(),ErrorSeverity.ERROR);
+				ErrorReporter.reportError(error);
+				mat = null;
+			}
 		}
 		ConfigurationSection sec = this.conf.getConfigurationSection("damage");
 		List<Entry<Double, Double>> entries = new ArrayList<Entry<Double, Double>>();
@@ -120,7 +132,7 @@ public class WeaponConfig
 				}
 			}
 		}
-		return new WeaponDescriptor(name, doTranslate, cadence, speed, useType, dmgType, mat, itemdmg, entries, multipliers);
+		return new WeaponDescriptor(name, doTranslate, cadence, speed, useType, dmgType, mat, itemdmg, entries, multipliers, ammomat);
 	}
 
 	public void load()
