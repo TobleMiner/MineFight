@@ -29,7 +29,6 @@ import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
-import TobleMiner.MineFight.Language.Langfile;
 import TobleMiner.MineFight.Protection.ProtectedArea;
 
 public class Config
