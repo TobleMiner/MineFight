@@ -76,26 +76,21 @@ public class Config
 			config.set("GameControl.Sign.joinCmd","Join game");
 			config.set("GameProps.C4.exploStr",4.0d);
 			config.set("GameProps.C4.throwSpeed",0.5d);
-			config.set("GameProps.C4.killRangeMod",0.5d);
 			config.set("GameProps.C4.allowedInsideProtection",false);
 			config.set("GameProps.M18.exploStr",4.0d);
-			config.set("GameProps.M18.killRangeMod",0.5d);
 			config.set("GameProps.M18.allowedInsideProtection",false);
 			config.set("GameProps.sentry.projectileSpeed",4.5d);
 			config.set("GameProps.sentry.missileSpeed",2.0d);
 			config.set("GameProps.sentry.missileExploStr",3.0d);
-			config.set("GameProps.sentry.missileKillRangeMod",0.5d);
 			config.set("GameProps.handGrenade.exploStr",4.0d);
 			config.set("GameProps.handGrenade.fuse",3.0d);
 			config.set("GameProps.handGrenade.throwSpeed",1.5d);
-			config.set("GameProps.handGrenade.killRangeMod",0.5d);
 			config.set("GameProps.handGrenade.allowedInsideProtection",true);
 			config.set("GameProps.rpg.speed",1.5d);
 			config.set("GameProps.rpg.accel",0.1d);
 			config.set("GameProps.rpg.throtle",0.1d);
 			config.set("GameProps.rpg.exploStr",3.0d);
 			config.set("GameProps.rpg.lifeTime",10.0d);
-			config.set("GameProps.rpg.killRangeMod",0.5d);
 			config.set("GameProps.ims.triggerDist",12.0d);
 			config.set("GameProps.ims.shots",2);
 			config.set("GameProps.ims.allowedInsideProtection",false);
@@ -203,20 +198,10 @@ public class Config
 	{
 		return (float)config.getDouble("GameProps.C4.exploStr");
 	}
-	
-	public float getC4KillRangeMod()
-	{
-		return (float)config.getDouble("GameProps.C4.killRangeMod");
-	}
-	
+		
 	public float getM18ExploStr()
 	{
 		return (float)config.getDouble("GameProps.M18.exploStr");
-	}
-
-	public float getM18KillRangeMod()
-	{
-		return (float)config.getDouble("GameProps.M18.killRangeMod");
 	}
 
 	public float getSentryArrowSpeed()
@@ -238,12 +223,7 @@ public class Config
 	{
 		return (float)config.getDouble("GameProps.handGrenade.throwSpeed");
 	}
-	
-	public float getHandGrenadeKillRangeMod()
-	{
-		return (float)config.getDouble("GameProps.handGrenade.killRangeMod");
-	}
-	
+		
 	public boolean isGamemodeEnabledInWorld(World w, Gamemode gmode)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
@@ -460,11 +440,6 @@ public class Config
 	{
 		return config.getDouble("GameProps.rpg.lifeTime",10.0d);
 	}
-
-	public float getRPGKillRangeMod()
-	{
-		return (float)config.getDouble("GameProps.rpg.killRangeMod",0.5d);
-	}
 	
 	public double getIMSTriggerDist()
 	{
@@ -593,11 +568,6 @@ public class Config
 	public float getSentryMissileExploStr()
 	{
 		return (float)config.getDouble("GameProps.sentry.missileExploStr",3.0d);
-	}
-	
-	public float getSentryMissileKillRangeMod()
-	{
-		return (float)config.getDouble("GameProps.sentry.missileKillRangeMod",0.5d);
 	}
 	
 	public double getC4ThrowSpeed()
