@@ -64,9 +64,9 @@ public class GameEngine
 	{
 		this.stathandler.reload(this);
 		this.weapons = WeaponConfig.getConfigs(Main.main.getDataFolder());
-		Main.logger.log(Level.INFO, String.format("Loaded %d weapons.", weapons.count()));
+		Main.logger.log(Level.INFO, String.format(this.dict.get("weaponconfloaded"), weapons.count()));
 		this.combatClasses = this.configuration.getCombatClasses(this.weapons);
-		Main.logger.log(Level.INFO, String.format("Loaded %d kits.", this.combatClasses.size()));
+		Main.logger.log(Level.INFO, String.format(this.dict.get("kitconfloaded"), this.combatClasses.size()));
 	}
 	
 	public void doUpdate()
