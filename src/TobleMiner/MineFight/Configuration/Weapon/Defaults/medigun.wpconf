@@ -6,6 +6,7 @@ item: GOLD_SWORD
 itemdmg: 0
 usetype: block
 dmgtype: medigun
+firemode: auto
 damage:
   3: -50
   15: 0
