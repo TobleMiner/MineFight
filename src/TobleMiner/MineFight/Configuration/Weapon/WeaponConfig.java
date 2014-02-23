@@ -74,6 +74,28 @@ public class WeaponConfig
 		short itemdmg = (short)this.conf.getInt("itemdmg",0);
 		boolean doTranslate = this.conf.getBoolean("translate",false);
 		String ammo = this.conf.getString("ammoitem","null");
+		String firemode = this.conf.getString("firemode","0").toLowerCase().trim();
+		int mode = 0;
+		if(firemode.equals("auto"))
+		{
+			mode = -42;
+		}
+		else if(firemode.equals("single"))
+		{
+			mode = 1;
+		}
+		else
+		{
+			try
+			{
+				mode = Integer.parseInt(firemode);
+			}
+			catch(Exception ex)
+			{
+				Error error = new Error("Error in weapon configuration!",String.format("The weapon descriptor '%s' contains an error. The firemode '%s' is invalid.", this.confFile.getPath(), firemode),"The specified weapon won't work until this error is fixed!",this.getClass().getName(),ErrorSeverity.ERROR);
+				ErrorReporter.reportError(error);
+			}
+		}
 		Material mat = Material.getMaterial(matname);
 		if(mat == null)
 		{
@@ -132,7 +154,7 @@ public class WeaponConfig
 				}
 			}
 		}
-		return new WeaponDescriptor(name, doTranslate, cadence, speed, useType, dmgType, mat, itemdmg, entries, multipliers, ammomat);
+		return new WeaponDescriptor(name, doTranslate, cadence, speed, useType, dmgType, mat, itemdmg, entries, multipliers, ammomat, mode);
 	}
 
 	public void load()

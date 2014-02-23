@@ -6,6 +6,7 @@ itemdmg: 0
 usetype: block
 dmgtype: projectilehit
 ammoitem: ARROW
+firemode: auto
 hitzones:
   head: 1.3
   torso: 1.0

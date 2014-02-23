@@ -7,6 +7,7 @@ itemdmg: 0
 usetype: block
 dmgtype: flame
 ammoitem: BLAZE_POWDER
+firemode: auto
 damage:
   3: 30
   15: 0

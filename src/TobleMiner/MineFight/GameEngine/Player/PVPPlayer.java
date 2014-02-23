@@ -68,6 +68,7 @@ public class PVPPlayer
 	private ItemStack bootBackup; //hehe
 	public boolean hasMap;
 	public final List<Killstreak> killstreaks = new ArrayList<Killstreak>();
+	private int shotcnt = 0;
 	
 	public PVPPlayer(Player thePlayer,Team team,Match match, MapView mv)
 	{
@@ -272,40 +273,79 @@ public class PVPPlayer
 							if(wd.ammomat == null || pi.contains(wd.ammomat))
 							{
 								if(wd.ammomat != null) InventorySyncCalls.removeItemStack(pi, new ItemStack(wd.ammomat,1));
-								if(wd.dmgType == DamageType.PROJECTILEHIT)
+								if(wd.firemode == -42 || (wd.firemode > 0 && this.shotcnt < wd.firemode))
 								{
-									Block b = this.thePlayer.getTargetBlock(null, 200);
-									if(b != null)
+									this.shotcnt++;
+									if(wd.dmgType == DamageType.PROJECTILEHIT)
 									{
-										Location playerEyeLoc = this.thePlayer.getLocation().add(0d,2.0d,0d); 
-										Vector locHelp = b.getLocation().subtract(playerEyeLoc).toVector();
-										if(locHelp.length() > 0)
+										Block b = this.thePlayer.getTargetBlock(null, 200);
+										if(b != null)
 										{
-											double speed = wd.speed;
-											Vector velocity = locHelp.clone().multiply(speed / locHelp.length());
-											match.createWeaponProjectile(this, playerEyeLoc.clone().add(velocity.clone().multiply(1.5d/velocity.length())), velocity, wd, false);
+											Location playerEyeLoc = this.thePlayer.getLocation().add(0d,2.0d,0d); 
+											Vector locHelp = b.getLocation().subtract(playerEyeLoc).toVector();
+											if(locHelp.length() > 0)
+											{
+												double speed = wd.speed;
+												Vector velocity = locHelp.clone().multiply(speed / locHelp.length());
+												match.createWeaponProjectile(this, playerEyeLoc.clone().add(velocity.clone().multiply(1.5d/velocity.length())), velocity, wd, false);
+											}
 										}
 									}
-								}
-								else if(wd.dmgType == DamageType.FLAMETHROWER)
-								{
-									HashSet<Byte> trans = new HashSet<Byte>();
-									trans.add((byte)31);
-									trans.add((byte)0);
-									trans.add((byte)20);
-									trans.add((byte)102);
-									Block b = this.thePlayer.getTargetBlock(trans, 200);
-									if(b != null)
+									else if(wd.dmgType == DamageType.FLAMETHROWER)
 									{
-										Location playerEyeLoc = this.thePlayer.getLocation().add(0d,1.0d,0d); 
-										Vector locHelp = b.getLocation().subtract(playerEyeLoc).toVector();
-										Location launchLoc = playerEyeLoc.add(locHelp.multiply(1.5d/locHelp.length()));
-										launchLoc.getWorld().playEffect(launchLoc, Effect.MOBSPAWNER_FLAMES, 5);
+										HashSet<Byte> trans = new HashSet<Byte>();
+										trans.add((byte)31);
+										trans.add((byte)0);
+										trans.add((byte)20);
+										trans.add((byte)102);
+										Block b = this.thePlayer.getTargetBlock(trans, 200);
+										if(b != null)
+										{
+											Location playerEyeLoc = this.thePlayer.getLocation().add(0d,1.0d,0d); 
+											Vector locHelp = b.getLocation().subtract(playerEyeLoc).toVector();
+											Location launchLoc = playerEyeLoc.add(locHelp.multiply(1.5d/locHelp.length()));
+											launchLoc.getWorld().playEffect(launchLoc, Effect.MOBSPAWNER_FLAMES, 5);
+											List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(), (int)Math.round(wd.maxDist));
+											PVPPlayer target = null;
+											for(PVPPlayer p : players)
+											{
+												if(match.canKill(this,p) && p != this)
+												{
+													target = p;
+													break;
+												}
+											}
+											if(target != null)
+											{
+												target.normalDeathBlocked = true;
+												target.thePlayer.damage(wd.getDamage(this.thePlayer.getLocation().distance(target.thePlayer.getLocation())) * target.thePlayer.getMaxHealth());
+												if(target.thePlayer.getHealth() <= 0)
+												{
+													this.match.kill(this, target, wd.getName(), target.thePlayer.getHealth() > 0);
+												}
+												else
+												{
+													target.thePlayer.setFireTicks(100);
+												}
+												target.normalDeathBlocked = false;
+											}
+										}
+										List<Block> potIgniBlocks = this.thePlayer.getLineOfSight(null,(int)Math.round(wd.maxDist));
+										for(Block block : potIgniBlocks)
+										{
+											if(block.getType().isFlammable() && (!Util.protect.isBlockProtected(block)) && this.match.damageEnviron)
+											{
+												Util.block.ignite(block);
+											}
+										}
+									}
+									else if(wd.dmgType == DamageType.MEDIGUN)
+									{
 										List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(), (int)Math.round(wd.maxDist));
 										PVPPlayer target = null;
 										for(PVPPlayer p : players)
 										{
-											if(match.canKill(this,p) && p != this)
+											if(p.getTeam() == this.getTeam() && p != this && p.thePlayer.getHealth() < p.thePlayer.getMaxHealth())
 											{
 												target = p;
 												break;
@@ -313,57 +353,22 @@ public class PVPPlayer
 										}
 										if(target != null)
 										{
-											target.normalDeathBlocked = true;
-											target.thePlayer.damage(wd.getDamage(this.thePlayer.getLocation().distance(target.thePlayer.getLocation())) * target.thePlayer.getMaxHealth());
-											if(target.thePlayer.getHealth() <= 0)
+											Vector dir = target.thePlayer.getLocation().clone().subtract(this.thePlayer.getLocation().clone()).toVector();
+											int len = (int)Math.round(dir.length());
+											if(len != 0)
 											{
-												this.match.kill(this, target, wd.getName(), target.thePlayer.getHealth() > 0);
+												for(int i=0;i<=len;i++)
+												{
+													this.thePlayer.getWorld().playEffect(this.thePlayer.getLocation().clone().add(0d,1d,0d).add(dir.clone().multiply(((double)i)/((double)len))),Effect.ENDER_SIGNAL,0);
+												}
 											}
-											else
+											double health = target.thePlayer.getHealth() - wd.getDamage(this.thePlayer.getLocation().distance(target.thePlayer.getLocation())) * target.thePlayer.getMaxHealth();
+											if(health > target.thePlayer.getMaxHealth())
 											{
-												target.thePlayer.setFireTicks(100);
+												health = target.thePlayer.getMaxHealth();
 											}
-											target.normalDeathBlocked = false;
+											target.thePlayer.setHealth(health);
 										}
-									}
-									List<Block> potIgniBlocks = this.thePlayer.getLineOfSight(null,(int)Math.round(wd.maxDist));
-									for(Block block : potIgniBlocks)
-									{
-										if(block.getType().isFlammable() && (!Util.protect.isBlockProtected(block)) && this.match.damageEnviron)
-										{
-											Util.block.ignite(block);
-										}
-									}
-								}
-								else if(wd.dmgType == DamageType.MEDIGUN)
-								{
-									List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(), (int)Math.round(wd.maxDist));
-									PVPPlayer target = null;
-									for(PVPPlayer p : players)
-									{
-										if(p.getTeam() == this.getTeam() && p != this && p.thePlayer.getHealth() < p.thePlayer.getMaxHealth())
-										{
-											target = p;
-											break;
-										}
-									}
-									if(target != null)
-									{
-										Vector dir = target.thePlayer.getLocation().clone().subtract(this.thePlayer.getLocation().clone()).toVector();
-										int len = (int)Math.round(dir.length());
-										if(len != 0)
-										{
-											for(int i=0;i<=len;i++)
-											{
-												this.thePlayer.getWorld().playEffect(this.thePlayer.getLocation().clone().add(0d,1d,0d).add(dir.clone().multiply(((double)i)/((double)len))),Effect.ENDER_SIGNAL,0);
-											}
-										}
-										double health = target.thePlayer.getHealth() - wd.getDamage(this.thePlayer.getLocation().distance(target.thePlayer.getLocation())) * target.thePlayer.getMaxHealth();
-										if(health > target.thePlayer.getMaxHealth())
-										{
-											health = target.thePlayer.getMaxHealth();
-										}
-										target.thePlayer.setHealth(health);
 									}
 								}
 							}
@@ -372,6 +377,10 @@ public class PVPPlayer
 				}
 			}
 			timer++;	
+		}
+		else
+		{
+			shotcnt = 0;
 		}
 	}
 	
