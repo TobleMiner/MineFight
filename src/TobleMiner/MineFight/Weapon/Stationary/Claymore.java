@@ -1,4 +1,4 @@
-package TobleMiner.MineFight.Weapon.TickControlled;
+package TobleMiner.MineFight.Weapon.Stationary;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
