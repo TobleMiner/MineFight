@@ -40,13 +40,18 @@ public class C4
 	
 	public void explode()
 	{
+		this.explode(this.owner);
+	}
+	
+	public void explode(PVPPlayer exploder)
+	{
 		if(exploded) return;
 		exploded = true;
 		if(this.block != null)
 		{
 			if(this.block.getType().equals(Material.LAPIS_ORE))
 			{
-				match.createExplosion(owner, this.block.getLocation(), exploStr, "C4");
+				match.createExplosion(exploder, this.block.getLocation(), exploStr, "C4");
 				if(damageEnviron)
 				{
 					this.block.setType(Material.AIR);
@@ -62,7 +67,7 @@ public class C4
 		{
 			Location loc = this.item.getLocation().clone();
 			EntitySyncCalls.removeEntity(item);
-			match.createExplosion(owner, loc, exploStr,"C4");
+			match.createExplosion(exploder, loc, exploStr,"C4");
 		}
 	}	
 }

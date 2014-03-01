@@ -21,6 +21,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -63,8 +64,8 @@ import TobleMiner.MineFight.Weapon.Projectile.Projectile;
 import TobleMiner.MineFight.Weapon.Projectile.SimpleProjectile;
 import TobleMiner.MineFight.Weapon.Projectile.WeaponProjectile;
 import TobleMiner.MineFight.Weapon.RC.C4;
+import TobleMiner.MineFight.Weapon.Stationary.Claymore;
 import TobleMiner.MineFight.Weapon.Stationary.SentryGun;
-import TobleMiner.MineFight.Weapon.TickControlled.Claymore;
 import TobleMiner.MineFight.Weapon.TickControlled.HandGrenade;
 import TobleMiner.MineFight.Weapon.TickControlled.IMS;
 import TobleMiner.MineFight.Weapon.TickControlled.RPG;
@@ -1850,5 +1851,14 @@ public class Match
 		Arrow arr = this.world.spawnArrow(launchLoc, velocity.clone(), 1f, 1f);
 		arr.setVelocity(velocity.clone());
 		this.projectiles.put(arr, new WeaponProjectile(shooter, arr, wd, crit));
+	}
+
+	public void playerInteract(PlayerInteractEvent event) 
+	{
+		PVPPlayer player = this.getPlayerExact(event.getPlayer());
+		if(player != null)
+		{
+
+		}
 	}
 }

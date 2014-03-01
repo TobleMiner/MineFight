@@ -16,6 +16,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -463,5 +464,14 @@ public class GameEngine
 			return m.entityExplosion(event);
 		}
 		return false;
+	}
+
+	public void playerInteract(PlayerInteractEvent event) 
+	{
+		Match m = this.getMatch(event.getPlayer().getWorld());
+		if(m != null)
+		{
+			m.playerInteract(event);
+		}
 	}
 }

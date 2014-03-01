@@ -49,7 +49,10 @@ public class LicenseHandler
 			}
 			return false;
 		}
-		catch(Exception ex){ex.printStackTrace();}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return false;
 	}
 }
