@@ -11,7 +11,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -21,17 +20,15 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import TobleMiner.MineFight.Main;
@@ -46,7 +43,6 @@ import TobleMiner.MineFight.GameEngine.Match.Statistics.StatHandler;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.Language.Langfile;
-import TobleMiner.MineFight.Protection.ProtectedArea;
 import TobleMiner.MineFight.Util.Protection.ProtectionUtil;
 
 public class GameEngine
@@ -57,6 +53,7 @@ public class GameEngine
 	private final List<Match> matches = new ArrayList<Match>();
 	public final Langfile dict;
 	public final StatHandler stathandler;
+	public final WeaponRegistry weaponRegistry;
 	private final ProtectionUtil protection;
 	private WeaponIndex weapons;
 	
@@ -71,6 +68,7 @@ public class GameEngine
 		this.configuration.read();
 		this.dict.loadLanguageFile(configuration.getLangFile());
 		this.protection = new ProtectionUtil();
+		this.weaponRegistry = new WeaponRegistry();
 	}
 	
 	public void reload()

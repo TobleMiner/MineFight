@@ -13,7 +13,7 @@ public abstract class Weapon
 	public Material material;
 	public short subId;
 	
-	public abstract List<Event> getRequiredEvents();
+	public abstract List<String> getRequiredEvents();
 	public abstract void onEvent(Match m, Event event);
 	
 	public abstract String onKill(Match m, PVPPlayer killer, PVPPlayer killed);
