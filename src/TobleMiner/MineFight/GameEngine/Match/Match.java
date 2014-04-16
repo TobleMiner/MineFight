@@ -19,6 +19,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -1855,10 +1856,48 @@ public class Match
 
 	public void playerInteract(PlayerInteractEvent event) 
 	{
-		PVPPlayer player = this.getPlayerExact(event.getPlayer());
-		if(player != null)
+		Player p = event.getPlayer();
+		ItemStack is = p.getInventory().getItemInHand();
+		if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 		{
-
+			Material material = event.getClickedBlock().getType();
+			if(material.equals(Material.SIGN) || material.equals(Material.SIGN_POST) || material.equals(Material.WALL_SIGN))
+			{
+				Main.gameEngine.rightClickSign(p,event.getClickedBlock());
+			}
+			if(is != null && is.getType().equals(Material.INK_SACK) && is.getDurability() == (short)4)
+			{
+				Main.gameEngine.rightClickBlockWithLapis(p,event.getClickedBlock(),p.getInventory());
+			}
 		}
+		if(is != null)
+		{
+			if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+			{
+				if(is.getType().equals(Material.STICK))
+				{
+					Main.gameEngine.rightClickWithStick(p);
+				}
+				if(is.getType().equals(Material.DIAMOND))
+				{
+					Main.gameEngine.rightClickWithDiamond(p);					
+				}
+				else if(is.getType().equals(Material.BONE))
+				{
+					Main.gameEngine.rightClickWithBone(p);										
+				}
+			}
+			if(is.getType().equals(Material.WOOD_SWORD))
+			{
+				if(event.getAction().equals(Action.RIGHT_CLICK_AIR))
+				{
+					Main.gameEngine.ClickWithWoodenSword(p,true);
+				}
+				else if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+				{
+					Main.gameEngine.ClickWithWoodenSword(p,false);
+				}
+			}
+		}	
 	}
 }
