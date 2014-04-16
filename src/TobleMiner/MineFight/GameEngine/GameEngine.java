@@ -15,6 +15,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -445,14 +446,19 @@ public class GameEngine
 		return false;
 	}
 
-	public boolean projectleLaunched(ProjectileLaunchEvent event) 
+	public boolean projectileLaunched(ProjectileLaunchEvent event) 
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
 		if(m != null)
 		{
-			return m.projectleLaunched(event);
+			return m.projectileLaunched(event);
 		}
+		return false;		
+	}
+
+	public boolean blockDamage(BlockDamageEvent event)
+	{
+		// TODO Auto-generated method stub
 		return false;
-		
 	}
 }

@@ -102,7 +102,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onProjectileLaunch(ProjectileLaunchEvent event)
 	{
-		event.setCancelled(Main.gameEngine.projectleLaunched(event));
+		event.setCancelled(Main.gameEngine.projectileLaunched(event));
 	}
 	
 	@EventHandler
@@ -120,7 +120,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onBlockDamage(BlockDamageEvent event)
 	{
-		event.setCancelled(Main.gameEngine.blockBreak(event.getPlayer(),event.getBlock()));
+		event.setCancelled(Main.gameEngine.blockDamage(event));
 	}
 		
 	@EventHandler
@@ -128,7 +128,7 @@ public class EventListener implements Listener
 	{
 		if(event.getEntity() instanceof Player)
 		{
-			event.setCancelled(Main.gameEngine.blockBreak((Player)event.getEntity(),event.getBlock()));
+			event.setCancelled(Main.gameEngine.entityChangeBlock(event));
 		}
 	}
 	

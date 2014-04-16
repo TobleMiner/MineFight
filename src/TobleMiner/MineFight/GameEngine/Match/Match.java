@@ -1919,7 +1919,7 @@ public class Match
 		return cancel;
 	}
 
-	public boolean projectleLaunched(ProjectileLaunchEvent event) 
+	public boolean projectileLaunched(ProjectileLaunchEvent event) 
 	{
 		boolean cancel = false;
 		org.bukkit.entity.Projectile proj = event.getEntity();
