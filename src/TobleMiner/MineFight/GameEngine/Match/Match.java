@@ -1049,20 +1049,7 @@ public class Match
 
 	public void rightClickBlockWithLapis(Player p, Block clickedBlock,PlayerInventory playerInventory)
 	{
-		List<ProtectedArea> lpa = Main.gameEngine.configuration.getProtectedAreasByWorld(clickedBlock.getWorld());
-		boolean isProtected = false;
-		if(lpa != null)
-		{
-			for(ProtectedArea pa : lpa)
-			{
-				isProtected = pa.isBlockInsideRegion(clickedBlock);
-				if(isProtected)
-				{
-					break;
-				}
-			}
-		}
-		if(clickedBlock.getType().equals(Material.BEDROCK) || isProtected)
+		if(clickedBlock.getType().equals(Material.BEDROCK) || protection.isBlockProtected(clickedBlock))
 		{
 			return;
 		}
@@ -1732,27 +1719,7 @@ public class Match
 
 	public void createExplosion(PVPPlayer issuer, Location loc, float exploStr, String weapon)
 	{
-		boolean isProtected = false;
-		if(this.canExplosionsDamageEnvironment())
-		{
-			List<ProtectedArea> lpa = Main.gameEngine.configuration.getProtectedAreasByWorld(loc.getWorld());
-			if(lpa != null)
-			{
-				for(ProtectedArea pa : lpa)
-				{
-					isProtected = pa.isCoordInsideRegion(loc);
-					if(isProtected)
-					{
-						break;
-					}
-				}
-			}
-		}
-		else
-		{
-			isProtected = true;
-		}
-		if(!isProtected)
+		if(!protection.isLocProtected(loc))
 		{
 			this.createFakeExplosion(issuer,loc, exploStr, false, true, weapon);
 			EffectSyncCalls.createExplosion(loc, exploStr);
