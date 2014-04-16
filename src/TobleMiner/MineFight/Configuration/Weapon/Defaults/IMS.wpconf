@@ -1,0 +1,5 @@
+useType: drop
+item: REDSTONE
+triggerDist: 10.0
+projNum: 3
+class: MineFight.TobleMiner.MineFight.Weapon.TickControlled.IMS
