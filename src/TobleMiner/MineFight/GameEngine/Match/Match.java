@@ -21,6 +21,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -1108,11 +1109,12 @@ public class Match
 		}
 	}
 
-	public int blockPlace(Player p, Block b)
+	public int blockPlace(BlockPlaceEvent event)
 	{
-		PVPPlayer player = this.getPlayerExact(p);
+		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
 		{
+			Block b = event.getBlock();
 			if(b.getType().equals(Material.DISPENSER))
 			{
 				SentryGun sg = new SentryGun(this, (Dispenser)b.getState(), player, Main.gameEngine.configuration.getSentryArrowSpeed(), Main.gameEngine.configuration.getSentryMissileSpeed(), Main.gameEngine.configuration.getSentryMissileExploStr());

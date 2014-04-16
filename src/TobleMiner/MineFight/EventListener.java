@@ -108,9 +108,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
-		Player p = event.getPlayer();
-		Block b = event.getBlock();
-		event.setCancelled(Main.gameEngine.blockPlace(p,b));
+		event.setCancelled(Main.gameEngine.blockPlace(event));
 	}
 	
 	@EventHandler

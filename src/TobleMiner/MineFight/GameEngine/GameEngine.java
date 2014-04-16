@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -39,6 +40,7 @@ import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.Language.Langfile;
 import TobleMiner.MineFight.Protection.ProtectedArea;
+import TobleMiner.MineFight.Util.Protection.ProtectionUtil;
 
 public class GameEngine
 {
@@ -48,6 +50,7 @@ public class GameEngine
 	private final List<Match> matches = new ArrayList<Match>();
 	public final Langfile dict;
 	public final StatHandler stathandler;
+	private final ProtectionUtil protection;
 	private WeaponIndex weapons;
 	
 	public static double tps = 20.0d;
@@ -60,6 +63,7 @@ public class GameEngine
 		this.stathandler = new StatHandler(mane.getDatabase());
 		this.configuration.read();
 		this.dict.loadLanguageFile(configuration.getLangFile());
+		this.protection = new ProtectionUtil();
 	}
 	
 	public void reload()
@@ -260,28 +264,15 @@ public class GameEngine
 		}		
 	}
 
-	public boolean blockPlace(Player p, Block b)
+	public boolean blockPlace(BlockPlaceEvent event)
 	{
-		Match m = this.getMatch(p.getWorld());
+		Match m = this.getMatch(event.getBlock().getWorld());
 		int veto = 1;
-		List<ProtectedArea> lpa = Main.gameEngine.configuration.getProtectedAreasByWorld(p.getWorld());
-		boolean isBlockProtected = false;
-		if(lpa != null)
-		{
-			for(ProtectedArea pa : lpa)
-			{
-				isBlockProtected = pa.isBlockInsideRegion(b);
-				if(isBlockProtected)
-				{
-					break;
-				}
-			}
-		}
 		if(m != null)
 		{
-			veto = m.blockPlace(p,b);
+			veto = m.blockPlace(event);
 		}
-		return (isBlockProtected && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(p.getWorld());
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
 	public void endAllMatches() 
