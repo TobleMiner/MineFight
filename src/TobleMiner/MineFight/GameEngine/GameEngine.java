@@ -26,6 +26,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -362,14 +363,14 @@ public class GameEngine
 		return false;
 	}
 
-	public String playerChat(String format, Player p)
+	public String playerChat(AsyncPlayerChatEvent event)
 	{
-		Match m = this.getMatch(p.getWorld());
+		Match m = this.getMatch(event.getPlayer().getWorld());
 		if(m != null)
 		{
-			return m.playerChat(format,p);
+			return m.playerChat(event);
 		}
-		return format;
+		return event.getFormat();
 	}
 
 	public boolean foodLevelChange(Player p)

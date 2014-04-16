@@ -152,7 +152,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onAsyncPlayerChat(AsyncPlayerChatEvent apce)
 	{
-		apce.setFormat(Main.gameEngine.playerChat(apce.getFormat(),apce.getPlayer()));
+		apce.setFormat(Main.gameEngine.playerChat(apce));
 	}
 	
 	@EventHandler

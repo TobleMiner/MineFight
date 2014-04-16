@@ -33,6 +33,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -1657,9 +1658,10 @@ public class Match
 		return true;
 	}
 
-	public String playerChat(String format, Player p)
+	public String playerChat(AsyncPlayerChatEvent event)
 	{
-		PVPPlayer player = this.getPlayerExact(p);
+		PVPPlayer player = this.getPlayerExact(event.getPlayer());
+		String format = event.getFormat();
 		if(player != null)
 		{
 			format = "<"+player.getName()+"> %2$s";
