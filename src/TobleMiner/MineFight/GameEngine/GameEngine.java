@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -456,9 +457,25 @@ public class GameEngine
 		return false;		
 	}
 
-	public boolean blockDamage(BlockDamageEvent event)
+	public boolean blockDamaged(BlockDamageEvent event)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		Match m = this.getMatch(event.getBlock().getWorld());
+		int veto = 1;
+		if(m != null)
+		{
+			veto = m.blockDamaged(event);
+		}
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(event.getBlock().getWorld());
+	}
+
+	public boolean entityChangeBlock(EntityChangeBlockEvent event)
+	{
+		Match m = this.getMatch(event.getBlock().getWorld());
+		int veto = 1;
+		if(m != null)
+		{
+			veto = m.blockChanged(event);
+		}
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(event.getBlock().getWorld());
 	}
 }

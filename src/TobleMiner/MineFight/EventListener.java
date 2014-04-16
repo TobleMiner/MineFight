@@ -120,16 +120,13 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onBlockDamage(BlockDamageEvent event)
 	{
-		event.setCancelled(Main.gameEngine.blockDamage(event));
+		event.setCancelled(Main.gameEngine.blockDamaged(event));
 	}
 		
 	@EventHandler
 	public void onEntityChangeBlock(EntityChangeBlockEvent event)
 	{
-		if(event.getEntity() instanceof Player)
-		{
-			event.setCancelled(Main.gameEngine.entityChangeBlock(event));
-		}
+		event.setCancelled(Main.gameEngine.entityChangeBlock(event));
 	}
 	
 	@EventHandler

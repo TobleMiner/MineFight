@@ -22,7 +22,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -1935,5 +1937,62 @@ public class Match
 			}
 		}
 		return cancel;
+	}
+
+	public int blockDamaged(BlockDamageEvent event) 
+	{
+		PVPPlayer player = this.getPlayerExact(event.getPlayer());
+		if(player != null && player.isSpawned())
+		{
+			Block b = event.getBlock();
+			if(gmode.equals(Gamemode.Rush) && (b.getType().equals(Material.REDSTONE_TORCH_ON) || b.getType().equals(Material.REDSTONE_TORCH_OFF)))
+			{
+				if(activeRadioStation != null && activeRadioStation.getLocation().distance(b.getLocation()) < 3d)
+				{
+					if(player.getTeam() == this.teamBlue)
+					{
+						activeRadioStation.defender = player;
+						return 0;
+					}
+				}
+				return 2;
+			}
+			else if(!Main.gameEngine.configuration.canEvironmentBeDamaged(gmode, world))
+			{
+				return 2;
+			}
+			return 1;
+		}
+		return 2;
+	}
+
+	public int blockChanged(EntityChangeBlockEvent event) 
+	{
+		if(event.getEntity() instanceof Player)
+		{
+			PVPPlayer player = this.getPlayerExact((Player)event.getEntity());
+			if(player != null && player.isSpawned())
+			{
+				Block b = event.getBlock();
+				if(gmode.equals(Gamemode.Rush) && (b.getType().equals(Material.REDSTONE_TORCH_ON) || b.getType().equals(Material.REDSTONE_TORCH_OFF)))
+				{
+					if(activeRadioStation != null && activeRadioStation.getLocation().distance(b.getLocation()) < 3d)
+					{
+						if(player.getTeam() == this.teamBlue)
+						{
+							activeRadioStation.defender = player;
+							return 0;
+						}
+					}
+					return 2;
+				}
+				else if(!Main.gameEngine.configuration.canEvironmentBeDamaged(gmode, world))
+				{
+					return 2;
+				}
+				return 1;
+			}
+		}
+		return 2;
 	}
 }
