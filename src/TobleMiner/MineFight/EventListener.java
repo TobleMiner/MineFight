@@ -49,58 +49,49 @@ public class EventListener implements Listener
 	public void onPlayerInteract(PlayerInteractEvent event)
 	{
 		Main.gameEngine.playerInteract(event);
-		try
+		Player p = event.getPlayer();
+		ItemStack is = p.getInventory().getItemInHand();
+		if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 		{
-			Player p = event.getPlayer();
-			ItemStack is = p.getInventory().getItemInHand();
-			if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+			Material material = event.getClickedBlock().getType();
+			if(material.equals(Material.SIGN) || material.equals(Material.SIGN_POST) || material.equals(Material.WALL_SIGN))
 			{
-				Material material = event.getClickedBlock().getType();
-				if(material.equals(Material.SIGN) || material.equals(Material.SIGN_POST) || material.equals(Material.WALL_SIGN))
-				{
-					Main.gameEngine.rightClickSign(p,event.getClickedBlock());
-				}
-				if(is != null && is.getType().equals(Material.INK_SACK) && is.getDurability() == (short)4)
-				{
-					Main.gameEngine.rightClickBlockWithLapis(p,event.getClickedBlock(),p.getInventory());
-				}
+				Main.gameEngine.rightClickSign(p,event.getClickedBlock());
 			}
-			if(is != null)
+			if(is != null && is.getType().equals(Material.INK_SACK) && is.getDurability() == (short)4)
 			{
-				if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
-				{
-					if(is.getType().equals(Material.STICK))
-					{
-						Main.gameEngine.rightClickWithStick(p);
-					}
-					if(is.getType().equals(Material.DIAMOND))
-					{
-						Main.gameEngine.rightClickWithDiamond(p);					
-					}
-					else if(is.getType().equals(Material.BONE))
-					{
-						Main.gameEngine.rightClickWithBone(p);										
-					}
-				}
-				if(is.getType().equals(Material.WOOD_SWORD))
-				{
-					if(event.getAction().equals(Action.RIGHT_CLICK_AIR))
-					{
-						Main.gameEngine.ClickWithWoodenSword(p,true);
-					}
-					else if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK))
-					{
-						Main.gameEngine.ClickWithWoodenSword(p,false);
-					}
-				}
+				Main.gameEngine.rightClickBlockWithLapis(p,event.getClickedBlock(),p.getInventory());
 			}
 		}
-		catch(Exception e)
+		if(is != null)
 		{
-			//:D Sunshine Sunshine Ladybugs awake...
-			e.printStackTrace();
-		}
-		
+			if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+			{
+				if(is.getType().equals(Material.STICK))
+				{
+					Main.gameEngine.rightClickWithStick(p);
+				}
+				if(is.getType().equals(Material.DIAMOND))
+				{
+					Main.gameEngine.rightClickWithDiamond(p);					
+				}
+				else if(is.getType().equals(Material.BONE))
+				{
+					Main.gameEngine.rightClickWithBone(p);										
+				}
+			}
+			if(is.getType().equals(Material.WOOD_SWORD))
+			{
+				if(event.getAction().equals(Action.RIGHT_CLICK_AIR))
+				{
+					Main.gameEngine.ClickWithWoodenSword(p,true);
+				}
+				else if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+				{
+					Main.gameEngine.ClickWithWoodenSword(p,false);
+				}
+			}
+		}	
 	}
 	
 	@EventHandler
