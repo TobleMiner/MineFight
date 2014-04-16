@@ -16,6 +16,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -158,12 +159,12 @@ public class GameEngine
 		matches.remove(m);
 	}
 	
-	public boolean playerDroppedItem(Item is,Player p)
+	public boolean playerDroppedItem(PlayerDropItemEvent pdie)
 	{
-		Match m = this.getMatch(p.getWorld());
+		Match m = this.getMatch(pdie.getPlayer().getWorld());
 		if(m != null)
 		{
-			return m.playerDroppedItem(is,p);
+			return m.playerDroppedItem(pdie);
 		}
 		return false;
 	}

@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -56,6 +57,7 @@ import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.GameEngine.Player.Info.InformationSign;
 import TobleMiner.MineFight.GameEngine.Player.Resupply.ResupplyStation;
 import TobleMiner.MineFight.Protection.ProtectedArea;
+import TobleMiner.MineFight.Util.Util;
 import TobleMiner.MineFight.Util.Location.TeleportUtil;
 import TobleMiner.MineFight.Util.Protection.ProtectionUtil;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
@@ -591,9 +593,10 @@ public class Match
 		}		
 	}
 
-	public boolean playerDroppedItem(Item is, Player p)
+	public boolean playerDroppedItem(PlayerDropItemEvent pdie)
 	{
-		PVPPlayer player = this.getPlayerExact(p);
+		PVPPlayer player = this.getPlayerExact(pdie.getPlayer());
+		Item is = pdie.getItemDrop();
 		if(player != null && player.isSpawned())
 		{
 			if(is.getItemStack().getType().equals(Material.CLAY_BALL))
@@ -616,7 +619,7 @@ public class Match
 			else if(is.getItemStack().getType().equals(Material.IRON_INGOT))
 			{
 				float throwSpeed = Main.gameEngine.configuration.getHandGrenadeThrowSpeed();
-				if(p.isSprinting())
+				if(player.thePlayer.isSprinting())
 				{
 					throwSpeed *= 2.0f;
 				}
@@ -1824,45 +1827,52 @@ public class Match
 	public void playerInteract(PlayerInteractEvent event) 
 	{
 		Player p = event.getPlayer();
-		ItemStack is = p.getInventory().getItemInHand();
 		if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 		{
 			Material material = event.getClickedBlock().getType();
 			if(material.equals(Material.SIGN) || material.equals(Material.SIGN_POST) || material.equals(Material.WALL_SIGN))
 			{
-				Main.gameEngine.rightClickSign(p,event.getClickedBlock());
-			}
-			if(is != null && is.getType().equals(Material.INK_SACK) && is.getDurability() == (short)4)
-			{
-				Main.gameEngine.rightClickBlockWithLapis(p,event.getClickedBlock(),p.getInventory());
+				this.rightClickSign(p, event.getClickedBlock());
 			}
 		}
-		if(is != null)
+		PVPPlayer player = this.getPlayerExact(p);
+		if(player != null)
 		{
-			if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+			ItemStack is = p.getInventory().getItemInHand();
+			if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 			{
-				if(is.getType().equals(Material.STICK))
+				if(is != null && is.getType().equals(Material.INK_SACK) && is.getDurability() == (short)4)
 				{
-					Main.gameEngine.rightClickWithStick(p);
-				}
-				if(is.getType().equals(Material.DIAMOND))
-				{
-					Main.gameEngine.rightClickWithDiamond(p);					
-				}
-				else if(is.getType().equals(Material.BONE))
-				{
-					Main.gameEngine.rightClickWithBone(p);										
+					Main.gameEngine.rightClickBlockWithLapis(p,event.getClickedBlock(),p.getInventory());
 				}
 			}
-			if(is.getType().equals(Material.WOOD_SWORD))
+			if(is != null)
 			{
-				if(event.getAction().equals(Action.RIGHT_CLICK_AIR))
+				if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 				{
-					Main.gameEngine.ClickWithWoodenSword(p,true);
+					if(is.getType().equals(Material.STICK))
+					{
+						Main.gameEngine.rightClickWithStick(p);
+					}
+					if(is.getType().equals(Material.DIAMOND))
+					{
+						Main.gameEngine.rightClickWithDiamond(p);					
+					}
+					else if(is.getType().equals(Material.BONE))
+					{
+						Main.gameEngine.rightClickWithBone(p);										
+					}
 				}
-				else if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+				if(is.getType().equals(Material.WOOD_SWORD))
 				{
-					Main.gameEngine.ClickWithWoodenSword(p,false);
+					if(event.getAction().equals(Action.RIGHT_CLICK_AIR))
+					{
+						Main.gameEngine.ClickWithWoodenSword(p,true);
+					}
+					else if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+					{
+						Main.gameEngine.ClickWithWoodenSword(p,false);
+					}
 				}
 			}
 		}	

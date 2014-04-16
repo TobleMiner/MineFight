@@ -54,35 +54,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event)
 	{
-		if(Main.gameEngine.configuration.isMpvpEnabled(event.getPlayer().getWorld()))
-		{
-			Location l = event.getItemDrop().getLocation();
-			boolean isItemAllowed = false;
-			if(event.getItemDrop().getItemStack().getType().equals(Material.IRON_INGOT))
-			{
-				isItemAllowed = Main.gameEngine.configuration.getHandGrenadeAllowedInsideProtection();
-			}
-			else if(event.getItemDrop().getItemStack().getType().equals(Material.REDSTONE))
-			{
-				isItemAllowed = Main.gameEngine.configuration.getIMSAllowedInsideProtection();
-			}
-			else if(event.getItemDrop().getItemStack().getType().equals(Material.INK_SACK))
-			{
-				isItemAllowed = Main.gameEngine.configuration.getC4allowedInsideProtection();
-			}
-			else if(event.getItemDrop().getItemStack().getType().equals(Material.CLAY_BALL))
-			{
-				isItemAllowed = Main.gameEngine.configuration.getM18allowedInsideProtection();
-			}
-			if(Util.protect.isLocProtected(l) && (!isItemAllowed))
-			{
-				event.setCancelled(true);
-			}
-			else
-			{
-				event.setCancelled(Main.gameEngine.playerDroppedItem(event.getItemDrop(),event.getPlayer()));
-			}
-		}
+		event.setCancelled(Main.gameEngine.playerDroppedItem(event));
 	}
 	
 	@EventHandler

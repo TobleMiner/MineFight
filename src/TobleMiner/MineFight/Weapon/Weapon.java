@@ -14,12 +14,14 @@ public abstract class Weapon
 	public short subId;
 	
 	public abstract List<Event> getRequiredEvents();
-	public abstract void onEvent(Event event);
+	public abstract void onEvent(Match m, Event event);
 	
 	public abstract String onKill(Match m, PVPPlayer killer, PVPPlayer killed);
 	public abstract String onDeath(Match m, PVPPlayer killed, PVPPlayer killer);
 	public abstract void onSpawn(Match m, PVPPlayer player);
 	
+	public abstract void matchCreated(Match m);
+	public abstract void matchEnded(Match m);
 	public abstract void onTick();
 	
 }
