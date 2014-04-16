@@ -20,4 +20,6 @@ public abstract class Weapon
 	public abstract String onDeath(Match m, PVPPlayer killed, PVPPlayer killer);
 	public abstract void onSpawn(Match m, PVPPlayer player);
 	
+	public abstract void onTick();
+	
 }

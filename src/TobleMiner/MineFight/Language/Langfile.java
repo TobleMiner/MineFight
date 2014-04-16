@@ -50,13 +50,11 @@ public class Langfile
 			ex.printStackTrace();
 		}
 	}
-	
-	public void loadLanguageFile(String name)
+
+	public void loadLanguageFileExt(File langFile)
 	{
-		File langFile = new File(this.langDir,name);
 		if(langFile.exists() && langFile.isFile())
 		{
-			this.dictionary.clear();
 			try
 			{
 				FileReader fr = new FileReader(langFile);
@@ -133,6 +131,12 @@ public class Langfile
 		}
 	}
 	
+	public void loadLanguageFile(String name)
+	{
+		File langFile = new File(this.langDir,name);
+		this.loadLanguageFileExt(langFile);
+	}
+		
 	public String get(String key)
 	{
 		List<String> vals = this.dictionary.get(key);
