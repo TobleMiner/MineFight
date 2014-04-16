@@ -114,7 +114,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event)
 	{
-		event.setCancelled(Main.gameEngine.blockBreak(event.getPlayer(),event.getBlock()));
+		event.setCancelled(Main.gameEngine.blockBreak(event));
 		/*Block b = event.getBlock();
 		List<ProtectedArea> lpa = Main.gameEngine.configuration.protectionRegions.get(b.getWorld());
 		if(lpa != null)

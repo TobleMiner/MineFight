@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -355,32 +356,15 @@ public class GameEngine
 		}		
 	}
 
-	public boolean blockBreak(Player p, Block b)
+	public boolean blockBreak(BlockBreakEvent event)
 	{
-		if(p != null)
+		Match m = this.getMatch(event.getBlock().getWorld());
+		int veto = 1;
+		if(m != null)
 		{
-			Match m = this.getMatch(p.getWorld());
-			int veto = 1;
-			List<ProtectedArea> lpa = Main.gameEngine.configuration.getProtectedAreasByWorld(p.getWorld());
-			boolean isBlockProtected = false;
-			if(lpa != null)
-			{
-				for(ProtectedArea pa : lpa)
-				{
-					isBlockProtected = pa.isBlockInsideRegion(b);
-					if(isBlockProtected)
-					{
-						break;
-					}
-				}
-			}
-			if(m != null)
-			{
-				veto = m.blockBreak(p,b);
-			}
-			return (isBlockProtected && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(p.getWorld());
+			veto = m.blockBreak(event);
 		}
-		return false;
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
 	public boolean playerDamagePlayer(Player damager, Player damaged, double d)

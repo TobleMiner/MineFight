@@ -21,6 +21,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -1576,11 +1577,12 @@ public class Match
 		return 0d;
 	}
 
-	public int blockBreak(Player p, Block b)
+	public int blockBreak(BlockBreakEvent event)
 	{
-		PVPPlayer player = this.getPlayerExact(p);
+		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
 		{
+			Block b = event.getBlock();
 			if(gmode.equals(Gamemode.Rush) && (b.getType().equals(Material.REDSTONE_TORCH_ON) || b.getType().equals(Material.REDSTONE_TORCH_OFF)))
 			{
 				if(activeRadioStation != null && activeRadioStation.getLocation().distance(b.getLocation()) < 3d)
