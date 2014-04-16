@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -282,16 +283,6 @@ public class GameEngine
 		return (isBlockProtected && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(p.getWorld());
 	}
 
-	public boolean arrowLaunchedByPlayer(Player p, Arrow arrow)
-	{
-		Match m = this.getMatch(p.getWorld());
-		if(m != null)
-		{
-			return m.arrowLaunchedByPlayer(p,arrow);
-		}
-		return false;
-	}
-
 	public void endAllMatches() 
 	{
 		for(int i=0;i<matches.size();i++)
@@ -476,5 +467,16 @@ public class GameEngine
 			return m.entityCombust(event);
 		}
 		return false;
+	}
+
+	public boolean projectleLaunched(ProjectileLaunchEvent event) 
+	{
+		Match m = this.getMatch(event.getEntity().getWorld());
+		if(m != null)
+		{
+			return m.projectleLaunched(event);
+		}
+		return false;
+		
 	}
 }

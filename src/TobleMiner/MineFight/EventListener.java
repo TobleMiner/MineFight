@@ -102,17 +102,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onProjectileLaunch(ProjectileLaunchEvent event)
 	{
-		Projectile proj = event.getEntity();
-		if(proj instanceof Arrow)
-		{
-			Arrow arrow = (Arrow)proj;
-			LivingEntity shooter = arrow.getShooter();
-			if(shooter instanceof Player)
-			{
-				Player p = (Player)shooter;
-				event.setCancelled(Main.gameEngine.arrowLaunchedByPlayer(p,arrow));
-			}
-		}
+		event.setCancelled(Main.gameEngine.projectleLaunched(event));
 	}
 	
 	@EventHandler
