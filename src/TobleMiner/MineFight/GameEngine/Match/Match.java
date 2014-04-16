@@ -26,6 +26,7 @@ import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -1994,5 +1995,21 @@ public class Match
 			}
 		}
 		return 2;
+	}
+
+	public boolean entityDamageByEntity(EntityDamageByEntityEvent event)
+	{
+		boolean cancel = false;
+		if(event.getDamager() instanceof Arrow && event.getEntity() instanceof Player)
+		{
+			if(Main.gameEngine.arrowHitPlayer((Arrow)event.getDamager(),(Player)event.getEntity(),event.getDamage()))				
+				cancel = true;
+		}
+		else if(event.getDamager() instanceof Player && event.getEntity() instanceof Player)
+		{
+			if(Main.gameEngine.playerDamagePlayer((Player)event.getDamager(),(Player)event.getEntity(),event.getDamage()))
+				cancel = true;
+		}
+		return cancel;
 	}
 }

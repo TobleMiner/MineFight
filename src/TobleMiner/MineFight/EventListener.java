@@ -132,16 +132,9 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event)
 	{
-		if(event.getDamager() instanceof Arrow && event.getEntity() instanceof Player)
-		{
-			event.setCancelled(Main.gameEngine.arrowHitPlayer((Arrow)event.getDamager(),(Player)event.getEntity(),event.getDamage()));
-			if(event.isCancelled()) event.setDamage(0d);
-		}
-		else if(event.getDamager() instanceof Player && event.getEntity() instanceof Player)
-		{
-			event.setCancelled(Main.gameEngine.playerDamagePlayer((Player)event.getDamager(),(Player)event.getEntity(),event.getDamage()));
-			if(event.isCancelled()) event.setDamage(0d);
-		}
+		event.setCancelled(Main.gameEngine.entityDamageByEntity(event));
+		if(event.isCancelled())
+			event.setDamage(0d);
 	}
 	
 	@EventHandler
