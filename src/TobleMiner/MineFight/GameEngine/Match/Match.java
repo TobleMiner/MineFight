@@ -20,6 +20,8 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -1878,5 +1880,37 @@ public class Match
 				}
 			}
 		}	
+	}
+
+	public boolean entityDamage(EntityDamageEvent ede)
+	{
+		boolean cancel = false;
+		if(ede.getEntity() instanceof Item)
+		{
+			if(this.itemDamage((Item)ede.getEntity(), ede.getCause()))
+				cancel = true;
+		}
+		else if(ede.getEntity() instanceof Player)
+		{
+			if(this.playerDamage((Player)ede.getEntity(), ede.getCause()))
+				cancel = true;
+		}
+		return cancel;
+	}
+
+	public boolean entityCombust(EntityCombustEvent event)
+	{
+		boolean cancel = false;
+		if(event.getEntity() instanceof Item)
+		{
+			Material mat = ((Item)event.getEntity()).getItemStack().getType();
+			if(mat.equals(Material.REDSTONE) || mat.equals(Material.CLAY_BALL) || mat.equals(Material.INK_SACK))
+			{
+				if(this.entityDamage(new EntityDamageEvent(event.getEntity(), DamageCause.MELTING, 1d)))
+					cancel = true;
+					
+			}
+		}
+		return cancel;
 	}
 }

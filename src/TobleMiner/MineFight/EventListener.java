@@ -66,41 +66,19 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onItemDespawn(ItemDespawnEvent event)
 	{
-		Material mat = event.getEntity().getItemStack().getType();
-		if(mat.equals(Material.REDSTONE) || mat.equals(Material.CLAY_BALL))
-		{
-			event.setCancelled(Main.gameEngine.itemDespawn(event.getEntity()));
-		}
+		event.setCancelled(Main.gameEngine.itemDespawn(event.getEntity()));
 	}
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event)
 	{
-		if(event.getEntity() instanceof Item)
-		{
-			Material mat = ((Item)event.getEntity()).getItemStack().getType();
-			if(mat.equals(Material.REDSTONE) || mat.equals(Material.CLAY_BALL) || mat.equals(Material.INK_SACK))
-			{
-				event.setCancelled(Main.gameEngine.itemDamage((Item)event.getEntity(),event.getCause()));
-			}
-		}
-		else if(event.getEntity() instanceof Player)
-		{
-			event.setCancelled(Main.gameEngine.playerDamage((Player)event.getEntity(),event.getCause()));
-		}
+		event.setCancelled(Main.gameEngine.entityDamage(event));
 	}
 	
 	@EventHandler
 	public void onEntityCombust(EntityCombustEvent event)
 	{
-		if(event.getEntity() instanceof Item)
-		{
-			Material mat = ((Item)event.getEntity()).getItemStack().getType();
-			if(mat.equals(Material.REDSTONE) || mat.equals(Material.CLAY_BALL) || mat.equals(Material.INK_SACK))
-			{
-				event.setCancelled(Main.gameEngine.itemDamage((Item)event.getEntity(),DamageCause.MELTING));
-			}
-		}
+		event.setCancelled(Main.gameEngine.entityCombust(event));
 	}
 	
 	@EventHandler

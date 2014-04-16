@@ -14,6 +14,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -190,16 +192,6 @@ public class GameEngine
 		return false;
 	}
 
-	public boolean itemDamage(Item is, DamageCause cause)
-	{
-		Match m = this.getMatch(is.getWorld());
-		if(m != null)
-		{
-			return m.itemDamage(is, cause);
-		}
-		return false;
-	}
-
 	public String playerDeath(Player entity, String deathMessage, List<ItemStack> drops)
 	{
 		World w = entity.getWorld();
@@ -209,17 +201,6 @@ public class GameEngine
 			return m.playerDeath(entity,deathMessage,drops);
 		}
 		return deathMessage;
-	}
-
-	public boolean playerDamage(Player entity, DamageCause damageCause)
-	{
-		World w = entity.getWorld();
-		Match m = this.getMatch(w);
-		if(m != null)
-		{
-			return m.playerDamage(entity, damageCause);
-		}
-		return false;
 	}
 
 	public void rightClickSign(Player p, Block clickedBlock)
@@ -475,5 +456,25 @@ public class GameEngine
 		{
 			m.playerInteract(event);
 		}
+	}
+
+	public boolean entityDamage(EntityDamageEvent ede) 
+	{
+		Match m = this.getMatch(ede.getEntity().getWorld());
+		if(m != null)
+		{
+			return m.entityDamage(ede);
+		}
+		return false;
+	}
+
+	public boolean entityCombust(EntityCombustEvent event) 
+	{
+		Match m = this.getMatch(event.getEntity().getWorld());
+		if(m != null)
+		{
+			return m.entityCombust(event);
+		}
+		return false;
 	}
 }
