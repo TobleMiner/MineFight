@@ -31,6 +31,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -1496,28 +1497,6 @@ public class Match
 	{
 		this.rpgs.remove(rpg.getProjectile());
 	}
-
-	public void arrowHit(Arrow arr) 
-	{
-		RPG rpg = this.rpgs.get(arr);
-		if(rpg != null)
-		{
-			rpg.explode();
-			return;
-		}
-		SentryMissile sm = this.sentryMissiles.get(arr);
-		if(sm != null)
-		{
-			sm.explode();
-			return;
-		}
-		Missile missile = this.missiles.get(arr);
-		if(missile != null)
-		{
-			missile.explode();
-			return;
-		}
-	}
 	
 	public List<PVPPlayer> getSpawnedPlayersNearLocation(Location loc, double dist)
 	{
@@ -2002,14 +1981,40 @@ public class Match
 		boolean cancel = false;
 		if(event.getDamager() instanceof Arrow && event.getEntity() instanceof Player)
 		{
-			if(Main.gameEngine.arrowHitPlayer((Arrow)event.getDamager(),(Player)event.getEntity(),event.getDamage()))				
+			if(this.arrowHitPlayer((Player)event.getEntity(), (Arrow)event.getDamager(), event.getDamage()))				
 				cancel = true;
 		}
 		else if(event.getDamager() instanceof Player && event.getEntity() instanceof Player)
 		{
-			if(Main.gameEngine.playerDamagePlayer((Player)event.getDamager(),(Player)event.getEntity(),event.getDamage()))
+			if(this.playerDamagePlayer((Player)event.getDamager(),(Player)event.getEntity(),event.getDamage()))
 				cancel = true;
 		}
 		return cancel;
+	}
+
+	public void projectileHit(ProjectileHitEvent event) 
+	{
+		if(event.getEntity() instanceof Arrow)
+		{
+			Arrow arr = (Arrow)event.getEntity();
+			RPG rpg = this.rpgs.get(arr);
+			if(rpg != null)
+			{
+				rpg.explode();
+				return;
+			}
+			SentryMissile sm = this.sentryMissiles.get(arr);
+			if(sm != null)
+			{
+				sm.explode();
+				return;
+			}
+			Missile missile = this.missiles.get(arr);
+			if(missile != null)
+			{
+				missile.explode();
+				return;
+			}
+		}
 	}
 }

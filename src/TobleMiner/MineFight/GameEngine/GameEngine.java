@@ -24,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -298,16 +299,6 @@ public class GameEngine
 		return false;
 	}
 
-	public boolean arrowHitPlayer(Arrow a, Player p, double d)
-	{
-		Match m = this.getMatch(p.getWorld());
-		if(m != null)
-		{
-			return m.arrowHitPlayer(p,a,d);
-		}		
-		return false;
-	}
-
 	public String playerChangeTeam(Player p)
 	{
 		PVPPlayer player = getPlayerExact(p);
@@ -347,15 +338,6 @@ public class GameEngine
 		if(m != null)
 		{
 			m.rightClickWithBone(p);
-		}		
-	}
-
-	public void arrowHit(Arrow arr)
-	{
-		Match m = this.getMatch(arr.getWorld());
-		if(m != null)
-		{
-			m.arrowHit(arr);
 		}		
 	}
 
@@ -488,5 +470,14 @@ public class GameEngine
 			return m.entityDamageByEntity(event);
 		}
 		return false;		
+	}
+
+	public void projectileHit(ProjectileHitEvent event)
+	{
+		Match m = this.getMatch(event.getEntity().getWorld());
+		if(m != null)
+		{
+			m.projectileHit(event);
+		}		
 	}
 }

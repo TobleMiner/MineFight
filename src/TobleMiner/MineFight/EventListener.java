@@ -146,10 +146,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent event)
 	{
-		if(event.getEntity() instanceof Arrow)
-		{
-			Main.gameEngine.arrowHit((Arrow)event.getEntity());
-		}
+		Main.gameEngine.projectileHit(event);
 	}
 	
 	@EventHandler
