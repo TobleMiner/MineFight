@@ -30,6 +30,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -1669,12 +1670,15 @@ public class Match
 		return format;
 	}
 
-	public boolean foodLevelChange(Player p) 
+	public boolean foodLevelChange(FoodLevelChangeEvent event) 
 	{
-		PVPPlayer player = this.getPlayerExact(p);
-		if(player != null)
+		if(event.getEntity() instanceof Player)
 		{
-			return !Main.gameEngine.configuration.isHungerActive(world, gmode);
+			PVPPlayer player = this.getPlayerExact((Player)event.getEntity());
+			if(player != null && player.isSpawned())
+			{
+				return !Main.gameEngine.configuration.isHungerActive(world, gmode);
+			}
 		}
 		return true;
 	}

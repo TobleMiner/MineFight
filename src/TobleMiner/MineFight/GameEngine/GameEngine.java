@@ -21,6 +21,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -373,12 +374,12 @@ public class GameEngine
 		return event.getFormat();
 	}
 
-	public boolean foodLevelChange(Player p)
+	public boolean foodLevelChange(FoodLevelChangeEvent event)
 	{
-		Match m = this.getMatch(p.getWorld());
+		Match m = this.getMatch(event.getEntity().getWorld());
 		if(m != null)
 		{
-			return m.foodLevelChange(p);
+			return m.foodLevelChange(event);
 		}
 		return false;
 	}

@@ -158,10 +158,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event)
 	{
-		if(event.getEntity() instanceof Player)
-		{
-			event.setCancelled(Main.gameEngine.foodLevelChange((Player)event.getEntity()));
-		}
+		event.setCancelled(Main.gameEngine.foodLevelChange(event));
 	}
 	
 	@EventHandler
