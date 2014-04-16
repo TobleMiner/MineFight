@@ -16,6 +16,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -193,15 +194,15 @@ public class GameEngine
 		return false;
 	}
 
-	public String playerDeath(Player entity, String deathMessage, List<ItemStack> drops)
+	public String playerDeath(PlayerDeathEvent event)
 	{
-		World w = entity.getWorld();
+		World w = event.getEntity().getWorld();
 		Match m = this.getMatch(w);
 		if(m != null)
 		{
-			return m.playerDeath(entity,deathMessage,drops);
+			return m.playerDeath(event);
 		}
-		return deathMessage;
+		return event.getDeathMessage();
 	}
 
 	public void rightClickSign(Player p, Block clickedBlock)

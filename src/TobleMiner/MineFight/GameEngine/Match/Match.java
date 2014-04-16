@@ -25,6 +25,7 @@ import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -805,8 +806,11 @@ public class Match
 		Main.gameEngine.removeMatch(this);
 	}
 
-	public String playerDeath(Player entity, String deathMessage, List<ItemStack> drops)
+	public String playerDeath(PlayerDeathEvent event)
 	{
+		Player entity = event.getEntity();
+		List<ItemStack> drops = event.getDrops();
+		String deathMessage = event.getDeathMessage();
 		PVPPlayer player = this.getPlayerExact(entity);
 		if(player != null)
 		{

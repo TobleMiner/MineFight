@@ -84,7 +84,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event)
 	{
-		event.setDeathMessage(Main.gameEngine.playerDeath(event.getEntity(),event.getDeathMessage(),event.getDrops()));
+		event.setDeathMessage(Main.gameEngine.playerDeath(event));
 	}
 	
 	@EventHandler
@@ -110,26 +110,7 @@ public class EventListener implements Listener
 	{
 		Player p = event.getPlayer();
 		Block b = event.getBlock();
-		/*List<ProtectedArea> lpa = Main.gameEngine.configuration.protectionRegions.get(b.getWorld());
-		boolean isBlockProtected = false;
-		if(lpa != null)
-		{
-			for(ProtectedArea pa : lpa)
-			{
-				isBlockProtected = pa.isBlockInsideRegion(b);
-			}
-		}
-		if(!isBlockProtected)
-		{
-			if(p != null && b != null)
-			{
-				if(b.getType().equals(Material.DISPENSER))
-				{*/
-					event.setCancelled(Main.gameEngine.blockPlace(p,b));
-				/*}
-			}
-		}
-		event.setCancelled(isBlockProtected);*/
+		event.setCancelled(Main.gameEngine.blockPlace(p,b));
 	}
 	
 	@EventHandler
