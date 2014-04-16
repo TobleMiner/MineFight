@@ -60,11 +60,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent event)
 	{
-		Material mat = event.getItem().getItemStack().getType();
-		if(mat.equals(Material.REDSTONE) || mat.equals(Material.CLAY_BALL) || mat.equals(Material.IRON_INGOT) || mat.equals(Material.INK_SACK))
-		{
-			event.setCancelled(Main.gameEngine.playerPickUpItem(event.getItem(),event.getPlayer()));
-		}
+		event.setCancelled(Main.gameEngine.playerPickUpItem(event));
 	}
 	
 	@EventHandler

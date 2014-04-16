@@ -24,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -675,9 +676,10 @@ public class Match
 		this.claymoreRegistry.remove(clay.claymore);
 	}
 	
-	public boolean playerPickUpItem(Item is, Player p)
+	public boolean playerPickUpItem(PlayerPickupItemEvent ppie)
 	{
-		PVPPlayer player = this.getPlayerExact(p);
+		Item is = ppie.getItem();
+		PVPPlayer player = this.getPlayerExact(ppie.getPlayer());
 		if(player != null && player.isSpawned())
 		{
 			if(is.getItemStack().getType().equals(Material.CLAY_BALL))
