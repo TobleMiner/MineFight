@@ -605,10 +605,10 @@ public class Match
 		}		
 	}
 
-	public boolean playerDroppedItem(PlayerDropItemEvent pdie)
+	public void playerDroppedItem(PlayerDropItemEvent event)
 	{
-		PVPPlayer player = this.getPlayerExact(pdie.getPlayer());
-		Item is = pdie.getItemDrop();
+		PVPPlayer player = this.getPlayerExact(event.getPlayer());
+		Item is = event.getItemDrop();
 		if(player != null && player.isSpawned())
 		{
 			if(is.getItemStack().getType().equals(Material.CLAY_BALL))
@@ -626,7 +626,6 @@ public class Match
 					EntitySyncCalls.removeEntity(c.claymore);
 				}
 				this.claymors.put(player, clays);
-				return false;
 			}
 			else if(is.getItemStack().getType().equals(Material.IRON_INGOT))
 			{
@@ -637,7 +636,6 @@ public class Match
 				}
 				HandGrenade grenade = new HandGrenade(is, player, this, Main.gameEngine.configuration.getHandGrenadeExploStr(), Main.gameEngine.configuration.getHandGrenadeFuse(), throwSpeed);
 				this.handGrenades.put(is, grenade);
-				return false;
 			}
 			else if(is.getItemStack().getType().equals(Material.REDSTONE))
 			{
@@ -648,7 +646,6 @@ public class Match
 					int grenades = Main.gameEngine.configuration.getIMSShots();
 					IMS ims = new IMS(this, is, triggerDist, grenades, player);
 					this.imss.put(is, ims);
-					return false;
 				}
 			}
 			else if(is.getItemStack().getType().equals(Material.INK_SACK) && (is.getItemStack().getDurability() == (short)4))
@@ -670,10 +667,17 @@ public class Match
 				c4s.add(explosive);
 				c4explosives.put(player, c4s);			
 				c4registry.put(is,explosive);
-				return false;
+			}
+			else
+			{
+				event.setCancelled(Main.gameEngine.configuration.getPreventItemDrop(world, gmode));
 			}
 		}
-		return Main.gameEngine.configuration.getPreventItemDrop(world, gmode);
+		else
+		{
+			event.setCancelled(Main.gameEngine.configuration.getPreventItemDrop(world, gmode));
+		}
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
 	private void unregisterClaymore(Claymore clay)
@@ -687,10 +691,10 @@ public class Match
 		this.claymoreRegistry.remove(clay.claymore);
 	}
 	
-	public boolean playerPickUpItem(PlayerPickupItemEvent ppie)
+	public void playerPickUpItem(PlayerPickupItemEvent event)
 	{
-		Item is = ppie.getItem();
-		PVPPlayer player = this.getPlayerExact(ppie.getPlayer());
+		Item is = event.getItem();
+		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
 		{
 			if(is.getItemStack().getType().equals(Material.CLAY_BALL))
@@ -702,7 +706,10 @@ public class Match
 					if((clay.owner == player && player.thePlayer.isSneaking() && cc.canPickup))
 					{
 						this.unregisterClaymore(clay);
-						return false;
+					}
+					else
+					{
+						event.setCancelled(true);
 					}
 					if(this.canKill(clay.owner,player) && !(player.thePlayer.isSneaking() && cc.canAvoid))
 					{
@@ -710,16 +717,15 @@ public class Match
 						this.kill(clay.owner,player,"M18 CLAYMORE",player.thePlayer.getHealth() > 0d);
 						clay.explode();
 					}
-					return true;
+					event.setCancelled(true);
 				}
-				return false;
 			}
 			else if(is.getItemStack().getType().equals(Material.IRON_INGOT))
 			{
 				HandGrenade hg = handGrenades.get(is);
 				if(hg != null)
 				{
-					return true;
+					event.setCancelled(true);
 				}
 			}
 			else if(is.getItemStack().getType().equals(Material.REDSTONE))
@@ -727,19 +733,20 @@ public class Match
 				IMS ims = imss.get(is);
 				if(ims != null)
 				{
-					return true;
+					event.setCancelled(true);
 				}
 			}
 			else if(is.getItemStack().getType().equals(Material.INK_SACK))
 			{
 				if(c4registry.get(is) != null)
 				{
-					return true;
+					event.setCancelled(true);
 				}
 			}
-			return false;
 		}
-		return true;
+		else
+			event.setCancelled(true);
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
 	public boolean itemDespawn(Item is)
@@ -812,7 +819,7 @@ public class Match
 		Main.gameEngine.removeMatch(this);
 	}
 
-	public String playerDeath(PlayerDeathEvent event)
+	public void playerDeath(PlayerDeathEvent event)
 	{
 		Player entity = event.getEntity();
 		List<ItemStack> drops = event.getDrops();
@@ -831,23 +838,30 @@ public class Match
 			}
 			if(player.normalDeathBlocked)
 			{
-				return "";
+				event.setDeathMessage("");
 			}
-			Player killer = entity.getKiller();
-			PVPPlayer PVPkiller = null;
-			if(killer != null)
+			else
 			{
-				PVPkiller = this.getPlayerExact(killer);
+				Player killer = entity.getKiller();
+				PVPPlayer PVPkiller = null;
+				if(killer != null)
+				{
+					PVPkiller = this.getPlayerExact(killer);
+				}
+				String weapon = Main.gameEngine.dict.get("killed");
+				deathMessage = deathMessage.toLowerCase();
+				if(this.canKill(PVPkiller, player))
+				{
+					kill(PVPkiller, player, weapon, false);
+				}
+				event.setDeathMessage("");
 			}
-			String weapon = Main.gameEngine.dict.get("killed");
-			deathMessage = deathMessage.toLowerCase();
-			if(this.canKill(PVPkiller, player))
-			{
-				kill(PVPkiller, player, weapon, false);
-			}
-			return "";
 		}
-		return deathMessage;
+		else
+		{
+			event.setDeathMessage(deathMessage);
+		}
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
 	public boolean playerDamage(Player entity, DamageCause damageCause)
@@ -1116,6 +1130,7 @@ public class Match
 
 	public int blockPlace(BlockPlaceEvent event)
 	{
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
 		{
@@ -1322,7 +1337,7 @@ public class Match
 		}
 	}
 
-	public boolean arrowHitPlayer(Player p, Arrow a,double damage)
+	public boolean arrowHitPlayer(Player p, Arrow a, double damage)
 	{
 		Debugger.writeDebugOut("Player hit by arrow called!");
 		PVPPlayer player = this.getPlayerExact(p);
@@ -1561,6 +1576,7 @@ public class Match
 
 	public int blockBreak(BlockBreakEvent event)
 	{
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
 		{
@@ -1657,7 +1673,7 @@ public class Match
 		return true;
 	}
 
-	public String playerChat(AsyncPlayerChatEvent event)
+	public void playerChat(AsyncPlayerChatEvent event)
 	{
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		String format = event.getFormat();
@@ -1665,20 +1681,29 @@ public class Match
 		{
 			format = "<"+player.getName()+"> %2$s";
 		}
-		return format;
+		event.setFormat(format);
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
-	public boolean foodLevelChange(FoodLevelChangeEvent event) 
+	public void foodLevelChange(FoodLevelChangeEvent event) 
 	{
 		if(event.getEntity() instanceof Player)
 		{
 			PVPPlayer player = this.getPlayerExact((Player)event.getEntity());
 			if(player != null && player.isSpawned())
 			{
-				return !Main.gameEngine.configuration.isHungerActive(world, gmode);
+				event.setCancelled(!Main.gameEngine.configuration.isHungerActive(world, gmode));
+			}
+			else
+			{
+				event.setCancelled(true);
 			}
 		}
-		return true;
+		else
+		{
+			event.setCancelled(true);
+		}
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
 	public void unregisterResupply(ResupplyStation resupplyStation) 
@@ -1805,16 +1830,16 @@ public class Match
 		}
 	}
 
-	public boolean entityExplosion(EntityExplodeEvent event)
+	public void entityExplosion(EntityExplodeEvent event)
 	{
 		for(Block b : event.blockList())
 		{
 			if(this.protection.isBlockProtected(b))
 			{
-				return true;
+				event.setCancelled(true);;
 			}
 		}
-		return false;
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 	
 	public void createWeaponProjectile(PVPPlayer shooter, Location launchLoc, Vector velocity, WeaponDescriptor wd, boolean crit)
@@ -1875,39 +1900,27 @@ public class Match
 					}
 				}
 			}
-		}	
+		}
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
-	public boolean entityDamage(EntityDamageEvent ede)
+	public void entityDamage(EntityDamageEvent event)
 	{
-		boolean cancel = false;
-		if(ede.getEntity() instanceof Item)
+		if(event.getEntity() instanceof Player)
 		{
-			if(this.itemDamage((Item)ede.getEntity(), ede.getCause()))
-				cancel = true;
+			if(this.playerDamage((Player)event.getEntity(), event.getCause()))
+				event.setCancelled(true);
 		}
-		else if(ede.getEntity() instanceof Player)
-		{
-			if(this.playerDamage((Player)ede.getEntity(), ede.getCause()))
-				cancel = true;
-		}
-		return cancel;
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
-	public boolean entityCombust(EntityCombustEvent event)
+	public void entityCombust(EntityCombustEvent event)
 	{
-		boolean cancel = false;
-		if(event.getEntity() instanceof Item)
-		{
-			if(this.entityDamage(new EntityDamageEvent(event.getEntity(), DamageCause.MELTING, 1d)))
-				cancel = true;
-		}
-		return cancel;
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
-	public boolean projectileLaunched(ProjectileLaunchEvent event) 
+	public void projectileLaunched(ProjectileLaunchEvent event) 
 	{
-		boolean cancel = false;
 		org.bukkit.entity.Projectile proj = event.getEntity();
 		if(proj instanceof Arrow)
 		{
@@ -1917,14 +1930,15 @@ public class Match
 			{
 				Player p = (Player)shooter;
 				if(this.arrowLaunchedByPlayer(p,arrow))
-					cancel = true;
+					event.setCancelled(true);;
 			}
 		}
-		return cancel;
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
 	public int blockDamaged(BlockDamageEvent event) 
 	{
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
 		{
@@ -1952,6 +1966,7 @@ public class Match
 
 	public int blockChanged(EntityChangeBlockEvent event) 
 	{
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		if(event.getEntity() instanceof Player)
 		{
 			PVPPlayer player = this.getPlayerExact((Player)event.getEntity());
@@ -1980,24 +1995,24 @@ public class Match
 		return 2;
 	}
 
-	public boolean entityDamageByEntity(EntityDamageByEntityEvent event)
+	public void entityDamageByEntity(EntityDamageByEntityEvent event)
 	{
-		boolean cancel = false;
 		if(event.getDamager() instanceof Arrow && event.getEntity() instanceof Player)
 		{
 			if(this.arrowHitPlayer((Player)event.getEntity(), (Arrow)event.getDamager(), event.getDamage()))				
-				cancel = true;
+				event.setCancelled(true);
 		}
 		else if(event.getDamager() instanceof Player && event.getEntity() instanceof Player)
 		{
 			if(this.playerDamagePlayer((Player)event.getDamager(),(Player)event.getEntity(),event.getDamage()))
-				cancel = true;
+				event.setCancelled(true);
 		}
-		return cancel;
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
 	public void projectileHit(ProjectileHitEvent event) 
 	{
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		if(event.getEntity() instanceof Arrow)
 		{
 			Arrow arr = (Arrow)event.getEntity();

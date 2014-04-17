@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.event.Event;
+import org.bukkit.event.entity.ProjectileHitEvent;
 
+import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.Weapon.Weapon;
 
 public class WeaponRegistry 
@@ -45,5 +48,13 @@ public class WeaponRegistry
 			}
 		}
 		return true;
+	}
+
+	public void executeEvent(Match m, Event event) 
+	{
+		List<Weapon> weapons = this.events.get(event.getClass().getSimpleName());
+		if(weapons == null) return;
+		for(Weapon weapon : weapons)
+			weapon.onEvent(m, event);
 	}
 }
