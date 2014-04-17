@@ -67,7 +67,7 @@ public abstract class CommandHandler
 					}
 				}
 			}
-			if(argsComp.size() < 2) return false;
+			if(argsComp.size() < 1) return false;
 			String[] argsShort = new String[argsComp.size()-1];
 			System.arraycopy(argsComp.toArray(new String[0]), 1, argsShort, 0, argsShort.length);
 			if(args[0].equalsIgnoreCase("help"))
