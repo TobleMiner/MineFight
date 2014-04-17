@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.ErrorHandling.Logger;
+import TobleMiner.MineFight.Weapon.Weapon;
 
 public class MineFightAPI 
 {
@@ -26,8 +27,8 @@ public class MineFightAPI
 		Main.gameEngine.dict.loadLanguageFileExt(langFile);
 	}
 	
-	public boolean registerWeapon()
+	public boolean registerWeapon(Weapon weapon)
 	{
-		return false;
+		return Main.gameEngine.weaponRegistry.registerWeapon(weapon);
 	}
 }
