@@ -22,6 +22,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -173,45 +174,41 @@ public class GameEngine
 		matches.remove(m);
 	}
 	
-	public boolean playerDroppedItem(PlayerDropItemEvent pdie)
+	public void playerDroppedItem(PlayerDropItemEvent pdie)
 	{
 		Match m = this.getMatch(pdie.getPlayer().getWorld());
 		if(m != null)
 		{
-			return m.playerDroppedItem(pdie);
+			m.playerDroppedItem(pdie);
 		}
-		return false;
 	}
 
-	public boolean playerPickUpItem(PlayerPickupItemEvent ppie)
+	public void playerPickUpItem(PlayerPickupItemEvent ppie)
 	{
 		Match m = this.getMatch(ppie.getPlayer().getWorld());
 		if(m != null)
 		{
-			return m.playerPickUpItem(ppie);
+			m.playerPickUpItem(ppie);
 		}
-		return false;
 	}
 
-	public boolean itemDespawn(Item is)
+	public void itemDespawn(ItemDespawnEvent event)
 	{
-		Match m = this.getMatch(is.getWorld());
+		Match m = this.getMatch(event.getEntity().getWorld());
 		if(m != null)
 		{
-			return m.itemDespawn(is);
+			m.itemDespawn(event);
 		}
-		return false;
 	}
 
-	public String playerDeath(PlayerDeathEvent event)
+	public void playerDeath(PlayerDeathEvent event)
 	{
 		World w = event.getEntity().getWorld();
 		Match m = this.getMatch(w);
 		if(m != null)
 		{
-			return m.playerDeath(event);
+			m.playerDeath(event);
 		}
-		return event.getDeathMessage();
 	}
 
 	public void rightClickSign(Player p, Block clickedBlock)
@@ -362,24 +359,22 @@ public class GameEngine
 		return false;
 	}
 
-	public String playerChat(AsyncPlayerChatEvent event)
+	public void playerChat(AsyncPlayerChatEvent event)
 	{
 		Match m = this.getMatch(event.getPlayer().getWorld());
 		if(m != null)
 		{
-			return m.playerChat(event);
+			m.playerChat(event);
 		}
-		return event.getFormat();
 	}
 
-	public boolean foodLevelChange(FoodLevelChangeEvent event)
+	public void foodLevelChange(FoodLevelChangeEvent event)
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
 		if(m != null)
 		{
-			return m.foodLevelChange(event);
+			m.foodLevelChange(event);
 		}
-		return false;
 	}
 
 	public void rightClickWithStick(Player p) 
@@ -391,14 +386,13 @@ public class GameEngine
 		}
 	}
 
-	public boolean entityExplosion(EntityExplodeEvent event)
+	public void entityExplosion(EntityExplodeEvent event)
 	{
 		Match m = this.getMatch(event.getLocation().getWorld());
 		if(m != null)
 		{
-			return m.entityExplosion(event);
+			m.entityExplosion(event);
 		}
-		return false;
 	}
 
 	public void playerInteract(PlayerInteractEvent event) 
@@ -410,34 +404,31 @@ public class GameEngine
 		}
 	}
 
-	public boolean entityDamage(EntityDamageEvent ede) 
+	public void entityDamage(EntityDamageEvent ede) 
 	{
 		Match m = this.getMatch(ede.getEntity().getWorld());
 		if(m != null)
 		{
-			return m.entityDamage(ede);
+			m.entityDamage(ede);
 		}
-		return false;
 	}
 
-	public boolean entityCombust(EntityCombustEvent event) 
+	public void entityCombust(EntityCombustEvent event) 
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
 		if(m != null)
 		{
-			return m.entityCombust(event);
+			m.entityCombust(event);
 		}
-		return false;
 	}
 
-	public boolean projectileLaunched(ProjectileLaunchEvent event) 
+	public void projectileLaunched(ProjectileLaunchEvent event) 
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
 		if(m != null)
 		{
-			return m.projectileLaunched(event);
+			m.projectileLaunched(event);
 		}
-		return false;		
 	}
 
 	public boolean blockDamaged(BlockDamageEvent event)
@@ -462,14 +453,13 @@ public class GameEngine
 		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
-	public boolean entityDamageByEntity(EntityDamageByEntityEvent event)
+	public void entityDamageByEntity(EntityDamageByEntityEvent event)
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
 		if(m != null)
 		{
-			return m.entityDamageByEntity(event);
+			m.entityDamageByEntity(event);
 		}
-		return false;		
 	}
 
 	public void projectileHit(ProjectileHitEvent event)

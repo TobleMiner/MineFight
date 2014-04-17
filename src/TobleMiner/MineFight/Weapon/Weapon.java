@@ -18,7 +18,7 @@ public abstract class Weapon
 	
 	public abstract String onKill(Match m, PVPPlayer killer, PVPPlayer killed);
 	public abstract String onDeath(Match m, PVPPlayer killed, PVPPlayer killer);
-	public abstract void onSpawn(Match m, PVPPlayer player);
+	public abstract void onRespawn(Match m, PVPPlayer player);
 	
 	public abstract void matchCreated(Match m);
 	public abstract void matchEnded(Match m);

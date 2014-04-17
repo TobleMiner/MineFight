@@ -165,7 +165,7 @@ public class PVPPlayer
 	public void leaveMatch()
 	{
 		this.mv.removeRenderer(this.mir);
-		match.anouncePlayerLeave(this);
+		this.match.anouncePlayerLeave(this);
 		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("matchLeaveMsg"),points,((double)kills)/((double)deaths)));
 	}
 	

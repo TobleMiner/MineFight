@@ -31,6 +31,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -349,6 +350,7 @@ public class Match
 			Main.plsl.sendNamechange(player, watcher, true);
 			Main.plsl.sendNamechange(watcher, player, true);
 		}
+		
 	}
 	
 	public boolean isHardcore()
@@ -749,9 +751,11 @@ public class Match
 		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
-	public boolean itemDespawn(Item is)
+	public void itemDespawn(ItemDespawnEvent event)
 	{
-		return this.itemDamage(is, DamageCause.CUSTOM);
+		
+		//return this.itemDamage(event, DamageCause.CUSTOM);
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 	
 	private void checkKillstreak(PVPPlayer player)

@@ -41,37 +41,37 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event)
 	{
-		event.setCancelled(Main.gameEngine.playerDroppedItem(event));
+		Main.gameEngine.playerDroppedItem(event);
 	}
 	
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent event)
 	{
-		event.setCancelled(Main.gameEngine.playerPickUpItem(event));
+		Main.gameEngine.playerPickUpItem(event);
 	}
 	
 	@EventHandler
 	public void onItemDespawn(ItemDespawnEvent event)
 	{
-		event.setCancelled(Main.gameEngine.itemDespawn(event.getEntity()));
+		Main.gameEngine.itemDespawn(event);
 	}
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event)
 	{
-		event.setCancelled(Main.gameEngine.entityDamage(event));
+		Main.gameEngine.entityDamage(event);
 	}
 	
 	@EventHandler
 	public void onEntityCombust(EntityCombustEvent event)
 	{
-		event.setCancelled(Main.gameEngine.entityCombust(event));
+		Main.gameEngine.entityCombust(event);
 	}
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event)
 	{
-		event.setDeathMessage(Main.gameEngine.playerDeath(event));
+		Main.gameEngine.playerDeath(event);
 	}
 	
 	@EventHandler
@@ -89,7 +89,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onProjectileLaunch(ProjectileLaunchEvent event)
 	{
-		event.setCancelled(Main.gameEngine.projectileLaunched(event));
+		Main.gameEngine.projectileLaunched(event);
 	}
 	
 	@EventHandler
@@ -119,7 +119,7 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event)
 	{
-		event.setCancelled(Main.gameEngine.entityDamageByEntity(event));
+		Main.gameEngine.entityDamageByEntity(event);
 		if(event.isCancelled())
 			event.setDamage(0d);
 	}
@@ -139,18 +139,18 @@ public class EventListener implements Listener
 	@EventHandler
 	public void onAsyncPlayerChat(AsyncPlayerChatEvent apce)
 	{
-		apce.setFormat(Main.gameEngine.playerChat(apce));
+		Main.gameEngine.playerChat(apce);
 	}
 	
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event)
 	{
-		event.setCancelled(Main.gameEngine.foodLevelChange(event));
+		Main.gameEngine.foodLevelChange(event);
 	}
 	
 	@EventHandler
 	public void onEntityExplode(EntityExplodeEvent event)
 	{
-		event.setCancelled(Main.gameEngine.entityExplosion(event));
+		Main.gameEngine.entityExplosion(event);
 	}
 }
