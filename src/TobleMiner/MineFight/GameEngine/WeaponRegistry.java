@@ -37,16 +37,15 @@ public class WeaponRegistry
 
 		wpBySubId.put(weapon.subId, weapon);
 		this.weaponsByMaterial.put(weapon.material, wpBySubId);
-		if(weapon.getRequiredEvents() != null)
+		List<Class<?>> events = new ArrayList<>();
+		weapon.getRequiredEvents(events);
+		for(Class<?> event : events)
 		{
-			for(String event : weapon.getRequiredEvents())
-			{
-				List<Weapon> weaponsByMaterial = this.events.get(event);
-				if(weaponsByMaterial == null)
-					weaponsByMaterial = new ArrayList<Weapon>();
-				weaponsByMaterial.add(weapon);
-				this.events.put(event, weaponsByMaterial);
-			}
+			List<Weapon> weaponsByMaterial = this.events.get(event);
+			if(weaponsByMaterial == null)
+				weaponsByMaterial = new ArrayList<Weapon>();
+			weaponsByMaterial.add(weapon);
+			this.events.put(event.getSimpleName(), weaponsByMaterial);
 		}
 		weapons.add(weapon);
 		return true;
@@ -59,7 +58,25 @@ public class WeaponRegistry
 		for(Weapon weapon : weapons)
 			weapon.onEvent(m, event);
 	}
-	
+
+	public void playerJoined(Match m, PVPPlayer player)
+	{
+		for(Weapon weapon : this.weapons)
+			weapon.onJoin(m, player);
+	}
+
+	public void playerLeft(Match m, PVPPlayer player)
+	{
+		for(Weapon weapon : this.weapons)
+			weapon.onLeave(m, player);
+	}
+
+	public void playerChangedTeam(Match m, PVPPlayer player)
+	{
+		for(Weapon weapon : this.weapons)
+			weapon.onTeamchange(m, player);
+	}
+
 	public void playerKilled(Match m, PVPPlayer killer, PVPPlayer killed)
 	{
 		for(Weapon weapon : this.weapons)

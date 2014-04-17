@@ -88,6 +88,7 @@ public class GameEngine
 	
 	public void doUpdate()
 	{
+		this.weaponRegistry.onTick();
 		for(int i=0;i<matches.size();i++)
 		{
 			Match m = matches.get(i);
@@ -102,6 +103,7 @@ public class GameEngine
 		List<RadioStationContainer> radioStations = configuration.getRadioStations(w);
 		Match match = new Match(w, g, name, hardcore, this.weapons, signs, flags, radioStations, this.stathandler);
 		this.matches.add(match);
+		this.weaponRegistry.matchCreated(match);
 	}
 	
 	public PVPPlayer getPlayerByName(String name)

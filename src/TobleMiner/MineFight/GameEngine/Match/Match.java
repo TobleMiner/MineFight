@@ -254,7 +254,8 @@ public class Match
 		p.teleport(classSelectLoc);
 		Main.plsl.registerPlayer(p, player);
 		player.storeInventory();
-		return ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("persJoinMsg"),this.name);
+		Main.gameEngine.weaponRegistry.playerJoined(this, player);
+		return ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("persJoinMsg"), this.name);
 	}
 	
 	public PVPPlayer getPlayerByName(String name)
@@ -309,6 +310,7 @@ public class Match
 		{
 			Main.plsl.sendNamechange(player, watcher, false);
 		}
+		Main.gameEngine.weaponRegistry.playerChangedTeam(this, player);
 		if(from == teamRed)
 		{
 			playersRed.remove(player);
@@ -350,7 +352,7 @@ public class Match
 			Main.plsl.sendNamechange(player, watcher, true);
 			Main.plsl.sendNamechange(watcher, player, true);
 		}
-		
+		Main.gameEngine.weaponRegistry.playerLeft(this, player);
 	}
 	
 	public boolean isHardcore()
@@ -385,7 +387,7 @@ public class Match
 		kill(killer, victim, weapon, doKill, false);
 	}
 	
-	public void kill(PVPPlayer killer,PVPPlayer victim,String weapon, boolean doKill, boolean headshot)
+	public void kill(PVPPlayer killer,PVPPlayer victim, String weapon, boolean doKill, boolean headshot)
 	{
 		if(doKill)
 		{
@@ -444,6 +446,8 @@ public class Match
 				victim.getTeam().subPoints(1);
 			}
 		}
+		Main.gameEngine.weaponRegistry.playerKilled(this, killer, victim);
+		Main.gameEngine.weaponRegistry.playerDied(this, victim, killer);
 		victim.normalDeathBlocked = false;
 	}
 	
@@ -820,6 +824,7 @@ public class Match
 		rpgs.clear();
 		sentries.clear();
 		sentryArrows.clear();
+		Main.gameEngine.weaponRegistry.matchEnded(this);
 		Main.gameEngine.removeMatch(this);
 	}
 
@@ -856,7 +861,7 @@ public class Match
 				deathMessage = deathMessage.toLowerCase();
 				if(this.canKill(PVPkiller, player))
 				{
-					kill(PVPkiller, player, weapon, false);
+					this.kill(PVPkiller, player, weapon, false);
 				}
 				event.setDeathMessage("");
 			}
@@ -972,6 +977,7 @@ public class Match
 			if(ks == Killstreak.PLAYERSEEKER) InventorySyncCalls.addItemStack(i, new ItemStack(Material.STICK,1));
 		}
 		player.teleport(loc);
+		Main.gameEngine.weaponRegistry.playerRespawned(this, player);
 	}
 
 	private Location getSpawnLoc(PVPPlayer p)
