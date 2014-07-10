@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.event.Event;
 
 import TobleMiner.MineFight.GameEngine.Match.Match;
@@ -13,41 +14,52 @@ import TobleMiner.MineFight.Weapon.Weapon;
 
 public class WeaponRegistry 
 {
-	private HashMap<Material, HashMap<Short, Object>> weaponsByMaterial = new HashMap<>();
+	private HashMap<World, HashMap<Material, HashMap<Short, Object>>> weaponsByWorld = new HashMap<>();
 	private HashMap<String, List<Weapon>> events = new HashMap<>();
 	private List<Weapon> weapons = new ArrayList<Weapon>();
 	
-	public void preregisterMaterial(Material mat, short subId) //Used internally to block materials that are essential for gameplay
+	public void preregisterMaterial(Material mat, short subId, World w) //Used internally to block materials that are essential for gameplay
 	{
-		HashMap<Short, Object> wpBySubId = this.weaponsByMaterial.get(mat);
+		HashMap<Material, HashMap<Short, Object>> wpByMat= this.weaponsByWorld.get(w);
+		if(wpByMat == null)
+			wpByMat = new HashMap<Material, HashMap<Short, Object>>();
+		HashMap<Short, Object> wpBySubId = wpByMat.get(mat);
 		if(wpBySubId == null)
 			wpBySubId = new HashMap<Short, Object>();
 		wpBySubId.put(subId, new Object());
-		this.weaponsByMaterial.put(mat, wpBySubId);
+		wpByMat.put(mat, wpBySubId);
+		this.weaponsByWorld.put(w, wpByMat);
 	}
 	
-	public boolean registerWeapon(Weapon weapon)
+	public boolean registerWeapon(Weapon weapon, World w)
 	{
-		HashMap<Short, Object> wpBySubId = this.weaponsByMaterial.get(weapon.material);
+		short subId = weapon.getSubId(w);
+		Material mat = weapon.getMaterial(w);
+		HashMap<Material, HashMap<Short, Object>> wpByMat = this.weaponsByWorld.get(w);
+		if(wpByMat == null)
+			wpByMat = new HashMap<Material, HashMap<Short, Object>>();
+		HashMap<Short, Object> wpBySubId = wpByMat.get(subId);
 		if(wpBySubId == null)
 			wpBySubId = new HashMap<Short, Object>();
 		else
-			if(wpBySubId.get(weapon.subId) != null)
+			if(wpBySubId.get(subId) != null)
 				return false;
-
-		wpBySubId.put(weapon.subId, weapon);
-		this.weaponsByMaterial.put(weapon.material, wpBySubId);
+		wpBySubId.put(subId, weapon);
+		wpByMat.put(mat, wpBySubId);
+		this.weaponsByWorld.put(w, wpByMat);
 		List<Class<?>> events = new ArrayList<>();
 		weapon.getRequiredEvents(events);
 		for(Class<?> event : events)
 		{
-			List<Weapon> weaponsByMaterial = this.events.get(event);
-			if(weaponsByMaterial == null)
-				weaponsByMaterial = new ArrayList<Weapon>();
-			weaponsByMaterial.add(weapon);
-			this.events.put(event.getSimpleName(), weaponsByMaterial);
+			List<Weapon> weaponsByEvent = this.events.get(event);
+			if(weaponsByEvent == null)
+				weaponsByEvent = new ArrayList<Weapon>();
+			if(!weaponsByEvent.contains(weapon)) 
+				weaponsByEvent.add(weapon);
+			this.events.put(event.getSimpleName(), weaponsByEvent);
 		}
-		weapons.add(weapon);
+		if(!weapons.contains(weapon))
+			weapons.add(weapon);
 		return true;
 	}
 

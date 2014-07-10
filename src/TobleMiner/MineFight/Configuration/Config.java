@@ -35,6 +35,7 @@ public class Config
 {
 	public final HashMap<String,WorldConfig> configByWorldName = new HashMap<String,WorldConfig>();
 	public final FileConfiguration config;
+	private List<World> worlds;
 	private final Main mane;
 	
 	private final File file;
@@ -49,7 +50,7 @@ public class Config
 	public void read()
 	{
 		this.load();
-		List<World> worlds = Bukkit.getServer().getWorlds();
+		this.worlds = Bukkit.getServer().getWorlds();
 		this.configByWorldName.clear();
 		for(World world : worlds)
 		{
@@ -667,7 +668,7 @@ public class Config
 	
 	public boolean isDebuging()
 	{
-		return config.getBoolean("debug",true);
+		return config.getBoolean("debug", true);
 	}
 	
 	public double getKillassistPointModifier()
@@ -949,5 +950,10 @@ public class Config
 			i++;
 		}
 		return armor;
+	}
+	
+	public List<World> getLoadtimeWorlds()
+	{
+		return this.worlds;
 	}
 }

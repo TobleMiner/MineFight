@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
@@ -60,6 +61,8 @@ public class Langfile
 				FileReader fr = new FileReader(langFile);
 				BufferedReader br = new BufferedReader(fr);
 				String line = br.readLine();
+				int cnt = 0;
+				String alltrans = "";
 				while(line != null)
 				{
 					int i = line.indexOf("#");
@@ -107,6 +110,12 @@ public class Langfile
 							}
 						}
 						this.dictionary.put(key, alternatives);
+						alltrans += key+"=";
+						for(String alt : alternatives)
+							alltrans += "\""+alt+"\",";
+						alltrans = alltrans.substring(0, alltrans.length() - 1);
+						alltrans += "\n";
+						cnt++;
 					}
 					else
 					{
@@ -117,10 +126,12 @@ public class Langfile
 				}
 				fr.close();
 				br.close();
+				Debugger.writeDebugOut(String.format("Added %d translations:\n", cnt) + alltrans);
 			}
 			catch(Exception ex)
 			{
 				Error error = new Error("Failed loading languagefile!","An error occured while loading languagefile from '"+langFile.getAbsoluteFile()+"' : "+ex.getMessage(),"Most messages will be missing until this problem is fixed!",this.getClass().getCanonicalName(),ErrorSeverity.ETERNALCHAOS);
+				ex.printStackTrace();
 				ErrorReporter.reportError(error);
 			}
 		}

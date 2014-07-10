@@ -45,7 +45,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
-import TobleMiner.MineFight.Configuration.Container.ClaymoreContainer;
+//import TobleMiner.MineFight.Configuration.Container.ClaymoreContainer;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.Killstreak;
 import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
@@ -80,7 +80,7 @@ import TobleMiner.MineFight.Weapon.Projectile.Projectile;
 import TobleMiner.MineFight.Weapon.Projectile.SimpleProjectile;
 import TobleMiner.MineFight.Weapon.Projectile.WeaponProjectile;
 import TobleMiner.MineFight.Weapon.RC.C4;
-import TobleMiner.MineFight.Weapon.Stationary.Claymore;
+//import TobleMiner.MineFight.Weapon.Stationary.Claymore;
 import TobleMiner.MineFight.Weapon.Stationary.SentryGun;
 import TobleMiner.MineFight.Weapon.TickControlled.HandGrenade;
 import TobleMiner.MineFight.Weapon.TickControlled.IMS;
@@ -116,7 +116,7 @@ public class Match
 	public final StatHandler sh;
 	private final KillstreakConfig kcconf;
 	
-	private final HashMap<PVPPlayer,List<Claymore>> claymors = new HashMap<PVPPlayer,List<Claymore>>();
+	//private final HashMap<PVPPlayer,List<Claymore>> claymors = new HashMap<PVPPlayer,List<Claymore>>();
 	private final HashMap<PVPPlayer,List<C4>> c4explosives = new HashMap<PVPPlayer,List<C4>>();
 	private final HashMap<PVPPlayer,SentryGun> sentries = new HashMap<PVPPlayer,SentryGun>();
 	private final HashMap<Item,HandGrenade> handGrenades = new HashMap<Item,HandGrenade>();
@@ -126,7 +126,7 @@ public class Match
 	private final HashMap<Arrow, SentryMissile> sentryMissiles = new HashMap<Arrow,SentryMissile>();
 	private final HashMap<Arrow,RPG> rpgs = new HashMap<Arrow,RPG>();
 	private final HashMap<Item,C4> c4registry = new HashMap<Item,C4>();
-	private final HashMap<Item,Claymore> claymoreRegistry = new HashMap<Item,Claymore>();
+	//private final HashMap<Item,Claymore> claymoreRegistry = new HashMap<Item,Claymore>();
 	private final List<ResupplyStation> resupplyStations = new ArrayList<ResupplyStation>();
 	private final HashMap<Arrow, Projectile> projectiles = new HashMap<Arrow, Projectile>();
 	public final boolean damageEnviron;
@@ -382,12 +382,12 @@ public class Match
 		return false;
 	}
 	
-	public void kill(PVPPlayer killer,PVPPlayer victim,String weapon, boolean doKill)
+	public void kill(PVPPlayer killer, PVPPlayer victim,String weapon, boolean doKill)
 	{
 		kill(killer, victim, weapon, doKill, false);
 	}
 	
-	public void kill(PVPPlayer killer,PVPPlayer victim, String weapon, boolean doKill, boolean headshot)
+	public void kill(PVPPlayer killer, PVPPlayer victim, String weapon, boolean doKill, boolean headshot)
 	{
 		if(doKill)
 		{
@@ -617,7 +617,7 @@ public class Match
 		Item is = event.getItemDrop();
 		if(player != null && player.isSpawned())
 		{
-			if(is.getItemStack().getType().equals(Material.CLAY_BALL))
+			/*if(is.getItemStack().getType().equals(Material.CLAY_BALL))
 			{
 				Claymore clay = new Claymore(is, player,Main.gameEngine.configuration.getM18ExploStr(),this);
 				claymoreRegistry.put(is, clay);
@@ -633,7 +633,7 @@ public class Match
 				}
 				this.claymors.put(player, clays);
 			}
-			else if(is.getItemStack().getType().equals(Material.IRON_INGOT))
+			else*/ if(is.getItemStack().getType().equals(Material.IRON_INGOT))
 			{
 				float throwSpeed = Main.gameEngine.configuration.getHandGrenadeThrowSpeed();
 				if(player.thePlayer.isSprinting())
@@ -686,7 +686,7 @@ public class Match
 		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
-	private void unregisterClaymore(Claymore clay)
+	/*private void unregisterClaymore(Claymore clay)
 	{
 		List<Claymore> clays = this.claymors.get(clay.owner);
 		if(clays != null)
@@ -695,7 +695,7 @@ public class Match
 		}
 		this.claymors.put(clay.owner, clays);
 		this.claymoreRegistry.remove(clay.claymore);
-	}
+	}*/
 	
 	public void playerPickUpItem(PlayerPickupItemEvent event)
 	{
@@ -703,7 +703,7 @@ public class Match
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
 		{
-			if(is.getItemStack().getType().equals(Material.CLAY_BALL))
+			/*if(is.getItemStack().getType().equals(Material.CLAY_BALL))
 			{
 				Claymore clay = claymoreRegistry.get(is);
 				if(clay != null)
@@ -726,7 +726,7 @@ public class Match
 					event.setCancelled(true);
 				}
 			}
-			else if(is.getItemStack().getType().equals(Material.IRON_INGOT))
+			else*/ if(is.getItemStack().getType().equals(Material.IRON_INGOT))
 			{
 				HandGrenade hg = handGrenades.get(is);
 				if(hg != null)
@@ -817,7 +817,7 @@ public class Match
 		playersRed = new ArrayList<PVPPlayer>();
 		infSs = new ArrayList<InformationSign>();
 		flags = new ArrayList<Flag>();
-		claymors.clear();
+		//claymors.clear();
 		imss.clear();
 		c4explosives.clear();
 		handGrenades.clear();
@@ -1771,7 +1771,7 @@ public class Match
 	public boolean itemDamage(Item is, DamageCause cause)
 	{
 		boolean explo = ((cause == DamageCause.BLOCK_EXPLOSION) || (cause == DamageCause.ENTITY_EXPLOSION));
-		if(is.getItemStack().getType().equals(Material.CLAY_BALL))
+		/*if(is.getItemStack().getType().equals(Material.CLAY_BALL))
 		{
 			Claymore clay = this.claymoreRegistry.get(is); 
 			if(clay != null)
@@ -1783,7 +1783,7 @@ public class Match
 				return true;
 			}
 		}
-		else if(is.getItemStack().getType().equals(Material.REDSTONE))
+		else*/ if(is.getItemStack().getType().equals(Material.REDSTONE))
 		{
 			if(imss.get(is) != null)
 			{
@@ -1916,12 +1916,12 @@ public class Match
 
 	public void entityDamage(EntityDamageEvent event)
 	{
+		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		if(event.getEntity() instanceof Player)
 		{
 			if(this.playerDamage((Player)event.getEntity(), event.getCause()))
 				event.setCancelled(true);
 		}
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
 	public void entityCombust(EntityCombustEvent event)

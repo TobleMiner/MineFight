@@ -11,7 +11,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
@@ -65,9 +64,10 @@ public class GameEngine
 	{
 		this.config = mane.getConfig();
 		this.configuration = new Config(mane, config);
+		this.configuration.read();
+		Main.gameEngine = this; //Getting the configinstance into the static reference from Main
 		this.dict = new Langfile(mane.getPluginDir());
 		this.stathandler = new StatHandler(mane.getDatabase());
-		this.configuration.read();
 		this.dict.loadLanguageFile(configuration.getLangFile());
 		this.protection = new ProtectionUtil();
 		this.weaponRegistry = new WeaponRegistry();
