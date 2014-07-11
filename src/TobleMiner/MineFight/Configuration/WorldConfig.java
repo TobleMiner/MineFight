@@ -551,7 +551,7 @@ public class WorldConfig
 		return config.getDouble("gamemodes."+g.toString().toLowerCase()+".weapon.critMultiplier",2.0d);					
 	}
 
-	public boolean canEvironmentBeDamaged(Gamemode gmode) 
+	public boolean canEnvironmentBeDamaged(Gamemode gmode) 
 	{
 		return config.getBoolean("gamemodes."+gmode.toString().toLowerCase()+".environment.canBeDamaged",true) && config.getBoolean("environment.canBeDamaged",true);					
 	}
@@ -561,7 +561,7 @@ public class WorldConfig
 		return config.getBoolean("gamemodes."+gmode.toString().toLowerCase()+".environment.doExplosionsDamageEnvironment",true) && config.getBoolean("environment.doExplosionsDamageEnvironment",true);					
 	}
 
-	public boolean canEvironmentBeDamaged() 
+	public boolean canEnvironmentBeDamaged() 
 	{
 		return config.getBoolean("environment.canBeDamaged",true);
 	}

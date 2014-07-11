@@ -184,7 +184,7 @@ public class Match
 				activeRadioStation = radioStationIterator.next();
 			}
 		}
-		this.damageEnviron = Main.gameEngine.configuration.canEvironmentBeDamaged(gmode, world);
+		this.damageEnviron = Main.gameEngine.configuration.canEnvironmentBeDamaged(gmode, world);
 		this.exploDamageEnviron = Main.gameEngine.configuration.canExlosionsDamageEnvironment(gmode, world);
 		this.beaconInterv = Main.gameEngine.configuration.getInfoBeaconInterval(gmode, world);
 
@@ -1032,7 +1032,7 @@ public class Match
 					this.resupplyStations.add(new ResupplyStation((Sign)b.getState(), this, player, ammoRefillDist, ammoRefillSpeed, fill));
 				}
 			}
-			else if(!Main.gameEngine.configuration.canEvironmentBeDamaged(gmode, world))
+			else if(!Main.gameEngine.configuration.canEnvironmentBeDamaged(gmode, world))
 			{
 				return 2;
 			}
@@ -1462,7 +1462,7 @@ public class Match
 				}
 				return 2;
 			}
-			else if(!Main.gameEngine.configuration.canEvironmentBeDamaged(gmode, world))
+			else if(!Main.gameEngine.configuration.canEnvironmentBeDamaged(gmode, world))
 			{
 				return 2;
 			}
@@ -1783,7 +1783,7 @@ public class Match
 				}
 				return 2;
 			}
-			else if(!Main.gameEngine.configuration.canEvironmentBeDamaged(gmode, world))
+			else if(!Main.gameEngine.configuration.canEnvironmentBeDamaged(gmode, world))
 			{
 				return 2;
 			}
@@ -1813,7 +1813,7 @@ public class Match
 					}
 					return 2;
 				}
-				else if(!Main.gameEngine.configuration.canEvironmentBeDamaged(gmode, world))
+				else if(!Main.gameEngine.configuration.canEnvironmentBeDamaged(gmode, world))
 				{
 					return 2;
 				}

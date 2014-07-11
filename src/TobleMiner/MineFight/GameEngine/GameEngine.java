@@ -260,7 +260,7 @@ public class GameEngine
 		{
 			veto = m.blockPlace(event);
 		}
-		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(event.getBlock().getWorld());
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
 	public void endAllMatches() 
@@ -332,7 +332,7 @@ public class GameEngine
 		{
 			veto = m.blockBreak(event);
 		}
-		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(event.getBlock().getWorld());
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
 	public boolean playerDamagePlayer(Player damager, Player damaged, double d)
@@ -425,7 +425,7 @@ public class GameEngine
 		{
 			veto = m.blockDamaged(event);
 		}
-		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(event.getBlock().getWorld());
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
 	public boolean entityChangeBlock(EntityChangeBlockEvent event)
@@ -436,7 +436,7 @@ public class GameEngine
 		{
 			veto = m.blockChanged(event);
 		}
-		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEvironmentBeDamaged(event.getBlock().getWorld());
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
 	public void entityDamageByEntity(EntityDamageByEntityEvent event)

@@ -748,12 +748,12 @@ public class Config
 		return 2.0d;
 	}
 	
-	public boolean canEvironmentBeDamaged(Gamemode gmode, World w)
+	public boolean canEnvironmentBeDamaged(Gamemode gmode, World w)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
 		if(wcfg != null)
 		{
-			return wcfg.canEvironmentBeDamaged(gmode);
+			return wcfg.canEnvironmentBeDamaged(gmode);
 		}
 		Error err = new Error("Tried to get can environment be damaged for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
@@ -772,12 +772,12 @@ public class Config
 		return false;
 	}
 
-	public boolean canEvironmentBeDamaged(World w) 
+	public boolean canEnvironmentBeDamaged(World w) 
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
 		if(wcfg != null)
 		{
-			return wcfg.canEvironmentBeDamaged();
+			return wcfg.canEnvironmentBeDamaged();
 		}
 		Error err = new Error("Tried to get can environment be damaged for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
