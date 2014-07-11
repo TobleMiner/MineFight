@@ -45,7 +45,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
-//import TobleMiner.MineFight.Configuration.Container.ClaymoreContainer;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.Killstreak;
 import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
@@ -79,8 +78,6 @@ import TobleMiner.MineFight.Util.SyncDerp.InventorySyncCalls;
 import TobleMiner.MineFight.Weapon.Projectile.Projectile;
 import TobleMiner.MineFight.Weapon.Projectile.SimpleProjectile;
 import TobleMiner.MineFight.Weapon.Projectile.WeaponProjectile;
-import TobleMiner.MineFight.Weapon.RC.C4;
-//import TobleMiner.MineFight.Weapon.Stationary.Claymore;
 import TobleMiner.MineFight.Weapon.Stationary.SentryGun;
 import TobleMiner.MineFight.Weapon.TickControlled.HandGrenade;
 import TobleMiner.MineFight.Weapon.TickControlled.IMS;
@@ -116,8 +113,6 @@ public class Match
 	public final StatHandler sh;
 	private final KillstreakConfig kcconf;
 	
-	//private final HashMap<PVPPlayer,List<Claymore>> claymors = new HashMap<PVPPlayer,List<Claymore>>();
-	private final HashMap<PVPPlayer,List<C4>> c4explosives = new HashMap<PVPPlayer,List<C4>>();
 	private final HashMap<PVPPlayer,SentryGun> sentries = new HashMap<PVPPlayer,SentryGun>();
 	private final HashMap<Item,HandGrenade> handGrenades = new HashMap<Item,HandGrenade>();
 	private final HashMap<Item,IMS> imss = new HashMap<Item,IMS>();
@@ -125,8 +120,6 @@ public class Match
 	private final HashMap<Arrow,SentryGun> sentryArrows = new HashMap<Arrow,SentryGun>();
 	private final HashMap<Arrow, SentryMissile> sentryMissiles = new HashMap<Arrow,SentryMissile>();
 	private final HashMap<Arrow,RPG> rpgs = new HashMap<Arrow,RPG>();
-	private final HashMap<Item,C4> c4registry = new HashMap<Item,C4>();
-	//private final HashMap<Item,Claymore> claymoreRegistry = new HashMap<Item,Claymore>();
 	private final List<ResupplyStation> resupplyStations = new ArrayList<ResupplyStation>();
 	private final HashMap<Arrow, Projectile> projectiles = new HashMap<Arrow, Projectile>();
 	public final boolean damageEnviron;
@@ -397,7 +390,6 @@ public class Match
 		{
 			if(killer.isSpawned() && victim.isSpawned())
 			{
-				this.c4explosives.remove(victim);
 				if(doKill)
 				{
 					victim.thePlayer.setHealth(0);
@@ -426,7 +418,6 @@ public class Match
 		}
 		else
 		{
-			this.c4explosives.remove(victim);
 			if(doKill)
 			{
 				victim.thePlayer.setHealth(0);
@@ -617,23 +608,7 @@ public class Match
 		Item is = event.getItemDrop();
 		if(player != null && player.isSpawned())
 		{
-			/*if(is.getItemStack().getType().equals(Material.CLAY_BALL))
-			{
-				Claymore clay = new Claymore(is, player,Main.gameEngine.configuration.getM18ExploStr(),this);
-				claymoreRegistry.put(is, clay);
-				List<Claymore> clays = this.claymors.get(player);
-				if(clays == null) clays = new ArrayList<Claymore>();
-				clays.add(clay);
-				if(clays.size() > Main.gameEngine.configuration.getClaymoreConfig(this.world,this.gmode).maxClayNum)
-				{
-					Claymore c = clays.get(0);
-					this.claymoreRegistry.remove(c.claymore);
-					clays.remove(c);
-					EntitySyncCalls.removeEntity(c.claymore);
-				}
-				this.claymors.put(player, clays);
-			}
-			else*/ if(is.getItemStack().getType().equals(Material.IRON_INGOT))
+			if(is.getItemStack().getType().equals(Material.IRON_INGOT))
 			{
 				float throwSpeed = Main.gameEngine.configuration.getHandGrenadeThrowSpeed();
 				if(player.thePlayer.isSprinting())
@@ -654,26 +629,6 @@ public class Match
 					this.imss.put(is, ims);
 				}
 			}
-			else if(is.getItemStack().getType().equals(Material.INK_SACK) && (is.getItemStack().getDurability() == (short)4))
-			{
-				double throwSpeed = Main.gameEngine.configuration.getC4ThrowSpeed();
-				if(player.thePlayer.isSprinting())
-				{
-					throwSpeed *= 2d;
-				}
-				double actualSpeed = is.getVelocity().length();
-				double fact = throwSpeed/actualSpeed;
-				is.setVelocity(is.getVelocity().multiply(fact));
-				List<C4> c4s = c4explosives.get(player);
-				if(c4s == null)
-				{
-					c4s = new ArrayList<C4>();
-				}
-				C4 explosive = new C4(null, is, Main.gameEngine.configuration.getC4ExploStr(), player, this);
-				c4s.add(explosive);
-				c4explosives.put(player, c4s);			
-				c4registry.put(is,explosive);
-			}
 			else
 			{
 				event.setCancelled(Main.gameEngine.configuration.getPreventItemDrop(world, gmode));
@@ -686,47 +641,13 @@ public class Match
 		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 
-	/*private void unregisterClaymore(Claymore clay)
-	{
-		List<Claymore> clays = this.claymors.get(clay.owner);
-		if(clays != null)
-		{
-			clays.remove(clay);
-		}
-		this.claymors.put(clay.owner, clays);
-		this.claymoreRegistry.remove(clay.claymore);
-	}*/
-	
 	public void playerPickUpItem(PlayerPickupItemEvent event)
 	{
 		Item is = event.getItem();
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
 		{
-			/*if(is.getItemStack().getType().equals(Material.CLAY_BALL))
-			{
-				Claymore clay = claymoreRegistry.get(is);
-				if(clay != null)
-				{
-					ClaymoreContainer cc = Main.gameEngine.configuration.getClaymoreConfig(this.world, this.gmode);
-					if((clay.owner == player && player.thePlayer.isSneaking() && cc.canPickup))
-					{
-						this.unregisterClaymore(clay);
-					}
-					else
-					{
-						event.setCancelled(true);
-					}
-					if(this.canKill(clay.owner,player) && !(player.thePlayer.isSneaking() && cc.canAvoid))
-					{
-						this.unregisterClaymore(clay);
-						this.kill(clay.owner,player,"M18 CLAYMORE",player.thePlayer.getHealth() > 0d);
-						clay.explode();
-					}
-					event.setCancelled(true);
-				}
-			}
-			else*/ if(is.getItemStack().getType().equals(Material.IRON_INGOT))
+			if(is.getItemStack().getType().equals(Material.IRON_INGOT))
 			{
 				HandGrenade hg = handGrenades.get(is);
 				if(hg != null)
@@ -742,13 +663,6 @@ public class Match
 					event.setCancelled(true);
 				}
 			}
-			else if(is.getItemStack().getType().equals(Material.INK_SACK))
-			{
-				if(c4registry.get(is) != null)
-				{
-					event.setCancelled(true);
-				}
-			}
 		}
 		else
 			event.setCancelled(true);
@@ -756,9 +670,7 @@ public class Match
 	}
 
 	public void itemDespawn(ItemDespawnEvent event)
-	{
-		
-		//return this.itemDamage(event, DamageCause.CUSTOM);
+	{		
 		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
 	
@@ -799,17 +711,6 @@ public class Match
 					sg.getValue().dispenser.getBlock().setType(Material.AIR);
 				}
 			}
-			for(Entry<PVPPlayer, List<C4>> c4hm : c4explosives.entrySet())
-			{
-				List<C4> c4s = c4hm.getValue();
-				if(c4s != null)
-				{
-					for(C4 c4 : c4s)
-					{
-						c4.explode();
-					}
-				}
-			}
 		}
 		teamRed = new TeamRed();
 		teamBlue = new TeamBlue();
@@ -817,9 +718,7 @@ public class Match
 		playersRed = new ArrayList<PVPPlayer>();
 		infSs = new ArrayList<InformationSign>();
 		flags = new ArrayList<Flag>();
-		//claymors.clear();
 		imss.clear();
-		c4explosives.clear();
 		handGrenades.clear();
 		rpgs.clear();
 		sentries.clear();
@@ -837,7 +736,6 @@ public class Match
 		if(player != null)
 		{
 			Debugger.writeDebugOut("Player "+player.getName()+" died.");
-			this.c4explosives.remove(player);
 			if(Main.gameEngine.configuration.getPreventItemDropOnDeath(this.world, this.gmode))
 			{
 				if(drops != null)
@@ -1090,50 +988,11 @@ public class Match
 		}
 	}
 
-	public void rightClickBlockWithLapis(Player p, Block clickedBlock,PlayerInventory playerInventory)
-	{
-		if(clickedBlock.getType().equals(Material.BEDROCK) || protection.isBlockProtected(clickedBlock))
-		{
-			return;
-		}
-		PVPPlayer player = this.getPlayerExact(p);
-		if(player != null && player.isSpawned())
-		{
-			List<C4> c4s = c4explosives.get(player);
-			if(c4s == null)
-			{
-				c4s = new ArrayList<C4>();
-			}
-			C4 explosive = new C4(clickedBlock, null, Main.gameEngine.configuration.getC4ExploStr(), player, this);
-			c4s.add(explosive);
-			c4explosives.put(player, c4s);
-			InventorySyncCalls.removeItemStack(playerInventory, new ItemStack(Material.INK_SACK,1,(short)4));
-		}
-	}
-
-	public void rightClickWithDiamond(Player p) 
-	{
-		PVPPlayer player = this.getPlayerExact(p);
-		if(player != null && player.isSpawned())
-		{
-			List<C4> c4s = this.c4explosives.get(player);
-			if(c4s != null)
-			{
-				for(C4 c4 : c4s)
-				{
-					c4.explode();
-				}
-			}
-			this.c4explosives.remove(player);
-		}
-	}
-
 	public void playerQuit(Player p)
 	{
 		PVPPlayer player = this.getPlayerExact(p);
 		if(player != null)
 		{
-			this.c4explosives.remove(player);
 			player.leaveMatch(matchLeaveLoc);
 		}
 	}
@@ -1771,40 +1630,10 @@ public class Match
 	public boolean itemDamage(Item is, DamageCause cause)
 	{
 		boolean explo = ((cause == DamageCause.BLOCK_EXPLOSION) || (cause == DamageCause.ENTITY_EXPLOSION));
-		/*if(is.getItemStack().getType().equals(Material.CLAY_BALL))
-		{
-			Claymore clay = this.claymoreRegistry.get(is); 
-			if(clay != null)
-			{
-				if(explo)
-				{
-					this.unregisterClaymore(clay);
-				}
-				return true;
-			}
-		}
-		else*/ if(is.getItemStack().getType().equals(Material.REDSTONE))
+		if(is.getItemStack().getType().equals(Material.REDSTONE))
 		{
 			if(imss.get(is) != null)
 			{
-				return true;
-			}
-		}
-		else if(is.getItemStack().getType().equals(Material.INK_SACK))
-		{
-			C4 c4 = c4registry.get(is);
-			if(c4 != null)
-			{
-				if(explo)
-				{
-					List<C4> c4s = this.c4explosives.get(c4.owner);
-					if(c4s != null)
-					{
-						c4s.remove(c4);
-					}
-					this.c4registry.remove(is);
-					c4.explode();
-				}
 				return true;
 			}
 		}
@@ -1874,13 +1703,6 @@ public class Match
 		if(player != null)
 		{
 			ItemStack is = p.getInventory().getItemInHand();
-			if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
-			{
-				if(is != null && is.getType().equals(Material.INK_SACK) && is.getDurability() == (short)4)
-				{
-					Main.gameEngine.rightClickBlockWithLapis(p,event.getClickedBlock(),p.getInventory());
-				}
-			}
 			if(is != null)
 			{
 				if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
@@ -1889,11 +1711,7 @@ public class Match
 					{
 						Main.gameEngine.rightClickWithStick(p);
 					}
-					if(is.getType().equals(Material.DIAMOND))
-					{
-						Main.gameEngine.rightClickWithDiamond(p);					
-					}
-					else if(is.getType().equals(Material.BONE))
+					if(is.getType().equals(Material.BONE))
 					{
 						Main.gameEngine.rightClickWithBone(p);										
 					}
