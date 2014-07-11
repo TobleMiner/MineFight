@@ -234,24 +234,6 @@ public class GameEngine
 		}
 	}
 
-	/*public void rightClickBlockWithLapis(Player p, Block clickedBlock, PlayerInventory playerInventory)
-	{
-		Match m = this.getMatch(p.getWorld());
-		if(m != null)
-		{
-			m.rightClickBlockWithLapis(p,clickedBlock,playerInventory);
-		}
-	}
-
-	public void rightClickWithDiamond(Player p) 
-	{
-		Match m = this.getMatch(p.getWorld());
-		if(m != null)
-		{
-			m.rightClickWithDiamond(p);
-		}
-	}*/
-
 	public void playerQuit(Player p)
 	{
 		Match m = this.getMatch(p.getWorld());
