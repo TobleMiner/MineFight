@@ -16,7 +16,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import TobleMiner.MineFight.Main;
-import TobleMiner.MineFight.Configuration.Container.ClaymoreContainer;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.Killstreak;
 import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
@@ -569,14 +568,6 @@ public class WorldConfig
 	public double getScoreForAction(Score s)
 	{
 		return config.getDouble("gameProps.score."+s.name,0d);
-	}
-
-	public ClaymoreContainer getClaymoreConfig(Gamemode gmode)
-	{
-		int maxNum = config.getInt("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.maxNum",5);
-		boolean canAvoid = config.getBoolean("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.canAvoid",true);					
-		boolean canPickup = config.getBoolean("gamemodes."+gmode.toString().toLowerCase()+".weapon.claymore.canPickup",true);					
-		return new ClaymoreContainer(maxNum, canPickup, canAvoid);
 	}
 	
 	public int getInfoBeaconInterval(Gamemode gmode) 

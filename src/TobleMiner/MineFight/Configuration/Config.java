@@ -16,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import TobleMiner.MineFight.Main;
-import TobleMiner.MineFight.Configuration.Container.ClaymoreContainer;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.KillstreakConfig;
 import TobleMiner.MineFight.Configuration.Container.PlayerSeekerContainer;
@@ -75,23 +74,6 @@ public class Config
 			config.set("CombatClass.Pyro.Armor","IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS");
 			config.set("CombatClass.Pyro.Name","pyro");
 			config.set("GameControl.Sign.joinCmd","Join game");
-			config.set("GameProps.C4.exploStr",4.0d);
-			config.set("GameProps.C4.throwSpeed",0.5d);
-			config.set("GameProps.C4.allowedInsideProtection",false);
-			config.set("GameProps.M18.exploStr",4.0d);
-			config.set("GameProps.M18.allowedInsideProtection",false);
-			config.set("GameProps.sentry.projectileSpeed",4.5d);
-			config.set("GameProps.sentry.missileSpeed",2.0d);
-			config.set("GameProps.sentry.missileExploStr",3.0d);
-			config.set("GameProps.handGrenade.exploStr",4.0d);
-			config.set("GameProps.handGrenade.fuse",3.0d);
-			config.set("GameProps.handGrenade.throwSpeed",1.5d);
-			config.set("GameProps.handGrenade.allowedInsideProtection",true);
-			config.set("GameProps.rpg.speed",1.5d);
-			config.set("GameProps.rpg.accel",0.1d);
-			config.set("GameProps.rpg.throtle",0.1d);
-			config.set("GameProps.rpg.exploStr",3.0d);
-			config.set("GameProps.rpg.lifeTime",10.0d);
 			config.set("GameProps.ims.triggerDist",12.0d);
 			config.set("GameProps.ims.shots",2);
 			config.set("GameProps.ims.allowedInsideProtection",false);
@@ -193,37 +175,7 @@ public class Config
 		Error err = new Error("Tried to fetch spawn point for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return null;		
-	}
-	
-	public float getC4ExploStr()
-	{
-		return (float)config.getDouble("GameProps.C4.exploStr");
-	}
-		
-	public float getM18ExploStr()
-	{
-		return (float)config.getDouble("GameProps.M18.exploStr");
-	}
-
-	public float getSentryArrowSpeed()
-	{
-		return (float)config.getDouble("GameProps.sentry.projectileSpeed");
-	}
-		
-	public float getHandGrenadeExploStr()
-	{
-		return (float)config.getDouble("GameProps.handGrenade.exploStr");
-	}
-
-	public float getHandGrenadeFuse()
-	{
-		return (float)config.getDouble("GameProps.handGrenade.fuse");
-	}
-		
-	public float getHandGrenadeThrowSpeed()
-	{
-		return (float)config.getDouble("GameProps.handGrenade.throwSpeed");
-	}
+	}	
 		
 	public boolean isGamemodeEnabledInWorld(World w, Gamemode gmode)
 	{
@@ -417,31 +369,6 @@ public class Config
 		return false;
 	}
 	
-	public double getRPGMaxSpeed()
-	{
-		return config.getDouble("GameProps.rpg.speed",1.5d);
-	}
-	
-	public double getRPGAcceleration()
-	{
-		return config.getDouble("GameProps.rpg.accel",0.1d);
-	}
-
-	public double getRPGThrotle()
-	{
-		return config.getDouble("GameProps.rpg.throtle",0.1d);
-	}
-	
-	public float getRPGExploStr()
-	{
-		return (float)config.getDouble("GameProps.rpg.exploStr",3.0d);
-	}
-	
-	public double getRPGLifeTime()
-	{
-		return config.getDouble("GameProps.rpg.lifeTime",10.0d);
-	}
-	
 	public double getIMSTriggerDist()
 	{
 		return config.getDouble("GameProps.ims.triggerDist",12.0d);
@@ -570,12 +497,7 @@ public class Config
 	{
 		return (float)config.getDouble("GameProps.sentry.missileExploStr",3.0d);
 	}
-	
-	public double getC4ThrowSpeed()
-	{
-		return config.getDouble("GameProps.C4.throwSpeed",0.5d);
-	}
-	
+		
 	public void addNewProtectedRegion(Location pos1, Location pos2)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(pos1.getWorld().getName());
@@ -590,21 +512,6 @@ public class Config
 		}
 	}
 	
-	public boolean getC4allowedInsideProtection()
-	{
-		return config.getBoolean("GameProps.C4.allowedInsideProtection",false);
-	}
-	
-	public boolean getM18allowedInsideProtection()
-	{
-		return config.getBoolean("GameProps.M18.allowedInsideProtection",false);
-	}
-
-	public boolean getHandGrenadeAllowedInsideProtection()
-	{
-		return config.getBoolean("GameProps.handGrenade.allowedInsideProtection",true);
-	}
-
 	public boolean getIMSAllowedInsideProtection()
 	{
 		return config.getBoolean("GameProps.ims.allowedInsideProtection",false);
@@ -815,19 +722,7 @@ public class Config
 	{
 		return config.getBoolean("GameProps.statistics.global.instantUpdate.enabled",false);
 	}
-	
-	public ClaymoreContainer getClaymoreConfig(World w, Gamemode gm)
-	{
-		WorldConfig wcfg = this.configByWorldName.get(w.getName());
-		if(wcfg != null)
-		{
-			return wcfg.getClaymoreConfig(gm);
-		}
-		Error err = new Error("Tried to get claymoreConfigurationContainer for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
-		ErrorReporter.reportError(err);
-		return new ClaymoreContainer(5, true, true);
-	}
-	
+		
 	public int getInfoBeaconInterval(Gamemode gmode, World w) 
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
