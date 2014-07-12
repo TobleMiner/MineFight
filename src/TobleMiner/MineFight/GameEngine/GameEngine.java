@@ -29,7 +29,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.inventory.PlayerInventory;
 
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.API.MineFightAPI;

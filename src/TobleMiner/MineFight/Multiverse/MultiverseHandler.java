@@ -11,7 +11,6 @@ import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 
 public class MultiverseHandler 
 {
-
 	private final MultiverseCore mc;
 	
 	public MultiverseHandler(Plugin p) 

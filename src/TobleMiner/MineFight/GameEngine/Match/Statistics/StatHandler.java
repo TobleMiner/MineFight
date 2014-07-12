@@ -157,7 +157,11 @@ public class StatHandler
 						case ADD: bean.setRsDestruct(bean.getRsDestruct() + (Long)val); break;
 						case SUB: bean.setRsDestruct(bean.getRsDestruct() - (Long)val); break;
 						case SET: bean.setRsDestruct((Long)val); break;
-					}break;					
+					}break;
+				case TIMEPLAYED:
+					break;
+			default:
+				break;					
 			}
 			this.db.save(bean);
 		}
