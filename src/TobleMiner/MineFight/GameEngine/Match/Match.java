@@ -2,7 +2,6 @@ package TobleMiner.MineFight.GameEngine.Match;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -77,7 +76,6 @@ import TobleMiner.MineFight.Weapon.Projectile.Projectile;
 import TobleMiner.MineFight.Weapon.Projectile.SimpleProjectile;
 import TobleMiner.MineFight.Weapon.Projectile.WeaponProjectile;
 import TobleMiner.MineFight.Weapon.TickControlled.IMS;
-import TobleMiner.MineFight.Weapon.TickControlled.RPG;
 import TobleMiner.MineFight.Weapon.TickControlled.TickControlledWeapon;
 import TobleMiner.MineFight.Weapon.TickControlled.Missile.Missile;
 import TobleMiner.MineFight.Weapon.TickControlled.Missile.PlayerSeeker;
@@ -110,7 +108,6 @@ public class Match
 	
 	private final HashMap<Item,IMS> imss = new HashMap<Item,IMS>();
 	private final HashMap<Arrow,Missile> missiles = new HashMap<Arrow,Missile>();
-	private final HashMap<Arrow,RPG> rpgs = new HashMap<Arrow,RPG>();
 	private final List<ResupplyStation> resupplyStations = new ArrayList<ResupplyStation>();
 	private final HashMap<Arrow, Projectile> projectiles = new HashMap<Arrow, Projectile>();
 	public final boolean damageEnviron;
@@ -682,7 +679,6 @@ public class Match
 		infSs = new ArrayList<InformationSign>();
 		flags = new ArrayList<Flag>();
 		imss.clear();
-		rpgs.clear();
 		Main.gameEngine.weaponRegistry.matchEnded(this);
 		Main.gameEngine.removeMatch(this);
 	}
@@ -1218,41 +1214,6 @@ public class Match
 		}
 		return respawnLocation;
 	}
-
-	public void rightClickWithBone(Player p)
-	{
-		PVPPlayer player = this.getPlayerExact(p);
-		if(player != null && player.isSpawned())
-		{
-			HashSet<Byte> trans = new HashSet<Byte>();
-			trans.add((byte)31);
-			trans.add((byte)0);
-			trans.add((byte)20);
-			trans.add((byte)102);
-			Block b = player.thePlayer.getTargetBlock(trans, 200);
-			if(b != null)
-			{
-				Location playerEyeLoc = player.thePlayer.getLocation().add(0d,2.0d,0d); 
-				Vector locHelp = b.getLocation().subtract(playerEyeLoc).toVector();
-				Location launchLoc = playerEyeLoc.add(locHelp.multiply(1.5d/locHelp.length()));
-				Vector vec = b.getLocation().subtract(launchLoc).toVector();
-				double maxSpeed = Main.gameEngine.configuration.getRPGMaxSpeed();
-				double accel = Main.gameEngine.configuration.getRPGAcceleration();
-				double throtle = Main.gameEngine.configuration.getRPGThrotle();
-				double lifeTime = Main.gameEngine.configuration.getRPGLifeTime();
-				double exploStr = Main.gameEngine.configuration.getRPGExploStr();
-				Arrow arr = this.world.spawnArrow(launchLoc, locHelp.multiply(accel*maxSpeed/locHelp.length()), 1f, 1f);
-				RPG rpg = new RPG(this, arr, (float)exploStr, lifeTime, maxSpeed, accel, vec, throtle, player);
-				rpgs.put(arr, rpg);
-				p.getInventory().removeItem(new ItemStack(Material.BONE, 1));
-			}
-		}
-	}
-	
-	public void unregisterRPG(RPG rpg)
-	{
-		this.rpgs.remove(rpg.getProjectile());
-	}
 	
 	public List<PVPPlayer> getSpawnedPlayersNearLocation(Location loc, double dist)
 	{
@@ -1578,10 +1539,6 @@ public class Match
 					{
 						Main.gameEngine.rightClickWithStick(p);
 					}
-					if(is.getType().equals(Material.BONE))
-					{
-						Main.gameEngine.rightClickWithBone(p);										
-					}
 				}
 			}
 		}
@@ -1700,12 +1657,6 @@ public class Match
 		if(event.getEntity() instanceof Arrow)
 		{
 			Arrow arr = (Arrow)event.getEntity();
-			RPG rpg = this.rpgs.get(arr);
-			if(rpg != null)
-			{
-				rpg.explode();
-				return;
-			}
 			Missile missile = this.missiles.get(arr);
 			if(missile != null)
 			{

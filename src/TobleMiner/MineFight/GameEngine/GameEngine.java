@@ -306,15 +306,6 @@ public class GameEngine
 		return respawnLocation;
 	}
 
-	public void rightClickWithBone(Player p)
-	{
-		Match m = this.getMatch(p.getWorld());
-		if(m != null)
-		{
-			m.rightClickWithBone(p);
-		}		
-	}
-
 	public boolean blockBreak(BlockBreakEvent event)
 	{
 		Match m = this.getMatch(event.getBlock().getWorld());

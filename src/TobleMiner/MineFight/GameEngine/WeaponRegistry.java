@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.event.Event;
 
+import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.Weapon.Weapon;
@@ -51,7 +52,7 @@ public class WeaponRegistry
 		weapon.getRequiredEvents(events);
 		for(Class<?> event : events)
 		{
-			List<Weapon> weaponsByEvent = this.events.get(event);
+			List<Weapon> weaponsByEvent = this.events.get(event.getSimpleName());
 			if(weaponsByEvent == null)
 				weaponsByEvent = new ArrayList<Weapon>();
 			if(!weaponsByEvent.contains(weapon)) 
