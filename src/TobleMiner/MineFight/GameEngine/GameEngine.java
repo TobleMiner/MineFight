@@ -243,15 +243,6 @@ public class GameEngine
 		}
 	}
 
-	public void ClickWithWoodenSword(Player p, boolean rightclick)
-	{
-		Match m = this.getMatch(p.getWorld());
-		if(m != null)
-		{
-			m.ClickWithWoodenSword(p,rightclick);
-		}		
-	}
-
 	public boolean blockPlace(BlockPlaceEvent event)
 	{
 		Match m = this.getMatch(event.getBlock().getWorld());

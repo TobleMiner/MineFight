@@ -27,5 +27,4 @@ public interface Weapon
 	public abstract void matchCreated(Match m);
 	public abstract void matchEnded(Match m);
 	public abstract void onTick();
-	
 }

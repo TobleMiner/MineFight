@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -14,7 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.Dispenser;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
@@ -78,11 +76,8 @@ import TobleMiner.MineFight.Util.SyncDerp.InventorySyncCalls;
 import TobleMiner.MineFight.Weapon.Projectile.Projectile;
 import TobleMiner.MineFight.Weapon.Projectile.SimpleProjectile;
 import TobleMiner.MineFight.Weapon.Projectile.WeaponProjectile;
-import TobleMiner.MineFight.Weapon.Stationary.SentryGun;
-import TobleMiner.MineFight.Weapon.TickControlled.HandGrenade;
 import TobleMiner.MineFight.Weapon.TickControlled.IMS;
 import TobleMiner.MineFight.Weapon.TickControlled.RPG;
-import TobleMiner.MineFight.Weapon.TickControlled.SentryMissile;
 import TobleMiner.MineFight.Weapon.TickControlled.TickControlledWeapon;
 import TobleMiner.MineFight.Weapon.TickControlled.Missile.Missile;
 import TobleMiner.MineFight.Weapon.TickControlled.Missile.PlayerSeeker;
@@ -113,12 +108,8 @@ public class Match
 	public final StatHandler sh;
 	private final KillstreakConfig kcconf;
 	
-	private final HashMap<PVPPlayer,SentryGun> sentries = new HashMap<PVPPlayer,SentryGun>();
-	private final HashMap<Item,HandGrenade> handGrenades = new HashMap<Item,HandGrenade>();
 	private final HashMap<Item,IMS> imss = new HashMap<Item,IMS>();
 	private final HashMap<Arrow,Missile> missiles = new HashMap<Arrow,Missile>();
-	private final HashMap<Arrow,SentryGun> sentryArrows = new HashMap<Arrow,SentryGun>();
-	private final HashMap<Arrow, SentryMissile> sentryMissiles = new HashMap<Arrow,SentryMissile>();
 	private final HashMap<Arrow,RPG> rpgs = new HashMap<Arrow,RPG>();
 	private final List<ResupplyStation> resupplyStations = new ArrayList<ResupplyStation>();
 	private final HashMap<Arrow, Projectile> projectiles = new HashMap<Arrow, Projectile>();
@@ -608,17 +599,7 @@ public class Match
 		Item is = event.getItemDrop();
 		if(player != null && player.isSpawned())
 		{
-			if(is.getItemStack().getType().equals(Material.IRON_INGOT))
-			{
-				float throwSpeed = Main.gameEngine.configuration.getHandGrenadeThrowSpeed();
-				if(player.thePlayer.isSprinting())
-				{
-					throwSpeed *= 2.0f;
-				}
-				HandGrenade grenade = new HandGrenade(is, player, this, Main.gameEngine.configuration.getHandGrenadeExploStr(), Main.gameEngine.configuration.getHandGrenadeFuse(), throwSpeed);
-				this.handGrenades.put(is, grenade);
-			}
-			else if(is.getItemStack().getType().equals(Material.REDSTONE))
+			if(is.getItemStack().getType().equals(Material.REDSTONE))
 			{
 				if(player.killstreaks.contains(Killstreak.IMS))
 				{
@@ -647,15 +628,7 @@ public class Match
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
 		{
-			if(is.getItemStack().getType().equals(Material.IRON_INGOT))
-			{
-				HandGrenade hg = handGrenades.get(is);
-				if(hg != null)
-				{
-					event.setCancelled(true);
-				}
-			}
-			else if(is.getItemStack().getType().equals(Material.REDSTONE))
+			if(is.getItemStack().getType().equals(Material.REDSTONE))
 			{
 				IMS ims = imss.get(is);
 				if(ims != null)
@@ -702,16 +675,6 @@ public class Match
 		{
 			
 		}
-		else
-		{
-			for(Entry<PVPPlayer, SentryGun> sg : sentries.entrySet())
-			{
-				if(sg.getValue() != null && sg.getValue().dispenser.getBlock() != null)
-				{
-					sg.getValue().dispenser.getBlock().setType(Material.AIR);
-				}
-			}
-		}
 		teamRed = new TeamRed();
 		teamBlue = new TeamBlue();
 		playersBlue = new ArrayList<PVPPlayer>();
@@ -719,10 +682,7 @@ public class Match
 		infSs = new ArrayList<InformationSign>();
 		flags = new ArrayList<Flag>();
 		imss.clear();
-		handGrenades.clear();
 		rpgs.clear();
-		sentries.clear();
-		sentryArrows.clear();
 		Main.gameEngine.weaponRegistry.matchEnded(this);
 		Main.gameEngine.removeMatch(this);
 	}
@@ -1004,12 +964,7 @@ public class Match
 		if(player != null && player.isSpawned())
 		{
 			Block b = event.getBlock();
-			if(b.getType().equals(Material.DISPENSER))
-			{
-				SentryGun sg = new SentryGun(this, (Dispenser)b.getState(), player, Main.gameEngine.configuration.getSentryArrowSpeed(), Main.gameEngine.configuration.getSentryMissileSpeed(), Main.gameEngine.configuration.getSentryMissileExploStr());
-				this.sentries.put(player, sg);
-			}
-			else if(gmode.equals(Gamemode.Rush) && (b.getType().equals(Material.REDSTONE_TORCH_ON) || b.getType().equals(Material.REDSTONE_TORCH_OFF)))
+			if(gmode.equals(Gamemode.Rush) && (b.getType().equals(Material.REDSTONE_TORCH_ON) || b.getType().equals(Material.REDSTONE_TORCH_OFF)))
 			{
 				if(activeRadioStation != null && activeRadioStation.getLocation().distance(b.getLocation()) < 3d)
 				{
@@ -1039,51 +994,6 @@ public class Match
 			return 1;
 		}
 		return 2;
-	}
-
-	public void ClickWithWoodenSword(Player p, boolean rightClick)
-	{
-		PVPPlayer player = this.getPlayerExact(p);
-		if(player != null && player.isSpawned())
-		{
-			SentryGun sg = sentries.get(player);
-			if(sg != null)
-			{
-				HashSet<Byte> trans = new HashSet<Byte>();
-				trans.add((byte)31);
-				trans.add((byte)0);
-				trans.add((byte)20);
-				trans.add((byte)102);
-				Block b = p.getTargetBlock(trans,200);
-				if(b != null)
-				{
-					if(rightClick)
-					{
-						SentryMissile sm = sg.shootMissile(b.getLocation().clone());
-						if(sm == null)
-						{
-							player.thePlayer.sendMessage(ChatColor.DARK_RED+Main.gameEngine.dict.get("sentry_missile"));
-						}
-						else
-						{
-							sentryMissiles.put(sm.getArrow(),sm);
-						}
-					}
-					else
-					{
-						Arrow arr = sg.shoot(b.getLocation().clone());
-						if(arr == null)
-						{
-							player.thePlayer.sendMessage(ChatColor.DARK_RED+Main.gameEngine.dict.get("sentry_ammo"));
-						}
-						else
-						{
-								sentryArrows.put(arr, sg);
-						}
-					}
-				}
-			}
-		}
 	}
 
 	public boolean arrowLaunchedByPlayer(Player p, Arrow arrow)
@@ -1127,11 +1037,6 @@ public class Match
 	public void unregisterTickControlled(TickControlledWeapon tickControlledWeapon) 
 	{
 		ltcw.remove(tickControlledWeapon);
-	}
-
-	public void unregisterHandGrenade(Item item)
-	{
-		this.handGrenades.remove(item);
 	}
 
 	public String[] getInformationSignText()
@@ -1226,39 +1131,6 @@ public class Match
 				{
 					hitzone = HitZone.HEAD;
 					multi = Main.gameEngine.configuration.getHeadshotDamageMultiplier(world, gmode);
-				}
-				SentryGun sg = this.sentryArrows.get(a);
-				if(sg != null)
-				{
-					PVPPlayer attacker = sg.getOwner();
-					if(attacker != null)
-					{
-						if(this.canKill(attacker, player))
-						{
-							if(hitzone == HitZone.HEAD)
-							{
-								attacker.thePlayer.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("headshot")+"!");
-							}
-							player.normalDeathBlocked = true;
-							player.thePlayer.damage((float)Math.round(damage * multi));
-							if(player.thePlayer.getHealth() <= 0d)
-							{
-								this.kill(attacker, player, "SENTRY", false, hitzone == HitZone.HEAD);
-							}
-							else
-							{
-								player.addKillhelper(attacker, (int)Math.round(damage*multi));
-							}
-							player.normalDeathBlocked = false;
-						}
-					}
-					this.sentryArrows.remove(a);
-					return !this.canKill(attacker, player);
-				}
-				SentryMissile sm = sentryMissiles.get(a);
-				if(sm != null)
-				{
-					sm.explode();
 				}
 				Projectile sp = this.projectiles.get(a);
 				if(sp != null)
@@ -1476,11 +1348,6 @@ public class Match
 		this.sendTeamMessage(winner,ChatColor.DARK_GREEN+Main.gameEngine.dict.get("won"));
 		this.sendTeamMessage(winner.equals(teamRed) ? teamBlue : teamRed,ChatColor.DARK_RED+Main.gameEngine.dict.get("lost"));
 		this.endMatch();
-	}
-
-	public void unregisterSentryMissile(SentryMissile sentryMissile) 
-	{
-		this.sentryMissiles.remove(sentryMissile.getArrow());
 	}
 	
 	public int getPlayerNumRed()
@@ -1716,17 +1583,6 @@ public class Match
 						Main.gameEngine.rightClickWithBone(p);										
 					}
 				}
-				if(is.getType().equals(Material.WOOD_SWORD))
-				{
-					if(event.getAction().equals(Action.RIGHT_CLICK_AIR))
-					{
-						Main.gameEngine.ClickWithWoodenSword(p,true);
-					}
-					else if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK))
-					{
-						Main.gameEngine.ClickWithWoodenSword(p,false);
-					}
-				}
 			}
 		}
 		Main.gameEngine.weaponRegistry.executeEvent(this, event);
@@ -1848,12 +1704,6 @@ public class Match
 			if(rpg != null)
 			{
 				rpg.explode();
-				return;
-			}
-			SentryMissile sm = this.sentryMissiles.get(arr);
-			if(sm != null)
-			{
-				sm.explode();
 				return;
 			}
 			Missile missile = this.missiles.get(arr);
