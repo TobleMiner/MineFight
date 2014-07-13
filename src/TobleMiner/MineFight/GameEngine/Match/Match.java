@@ -67,6 +67,7 @@ import TobleMiner.MineFight.GameEngine.Player.PVPPlayer.HitZone;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.GameEngine.Player.Info.InformationSign;
 import TobleMiner.MineFight.GameEngine.Player.Resupply.ResupplyStation;
+import TobleMiner.MineFight.Protection.Area3D;
 import TobleMiner.MineFight.Util.Location.TeleportUtil;
 import TobleMiner.MineFight.Util.Protection.ProtectionUtil;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
@@ -90,9 +91,11 @@ public class Match
 	private List<PVPPlayer> playersBlue = new ArrayList<PVPPlayer>();
 	private List<PVPPlayer> playersRed = new ArrayList<PVPPlayer>();
 	private final boolean hardcore;
-	private final Location classSelectLoc;
-	private final Location spawnLoc;
-	private final Location matchLeaveLoc;
+	private final Area3D classSelectArea;
+	private final Area3D spawnArea;
+	private final Area3D spawnAreaRed;
+	private final Area3D spawnAreaBlue;
+private final Location matchLeaveLoc;
 	private final List<TickControlledWeapon> ltcw = new ArrayList<TickControlledWeapon>();
 	private List<InformationSign> infSs = new ArrayList<InformationSign>();
 	private List<Flag> flags = new ArrayList<Flag>();
@@ -124,8 +127,10 @@ public class Match
 		this.hardcore = hardcore;
 		this.weapons = weapons;
 		this.matchLeaveLoc = Main.gameEngine.configuration.getRoundEndSpawnForWorld(world);
-		this.spawnLoc = Main.gameEngine.configuration.getSpawnForWorld(world);
-		this.classSelectLoc = Main.gameEngine.configuration.getRespawnForWorld(world);
+		this.spawnArea = Main.gameEngine.configuration.getSpawnForWorld(world);
+		this.spawnAreaRed = Main.gameEngine.configuration.getSpawnForWorldRed(world);
+		this.spawnAreaBlue = Main.gameEngine.configuration.getSpawnForWorldBlue(world);
+		this.classSelectArea = Main.gameEngine.configuration.getRespawnForWorld(world);
 		this.kcconf = Main.gameEngine.configuration.getKillstreaks(world, gmode);
 		if(gmode.equals(Gamemode.Conquest))
 		{
@@ -232,7 +237,7 @@ public class Match
 		{
 			playersBlue.add(player);
 		}
-		p.teleport(classSelectLoc);
+		p.teleport(this.classSelectArea.pickRandomPoint());
 		Main.plsl.registerPlayer(p, player);
 		player.storeInventory();
 		Main.gameEngine.weaponRegistry.playerJoined(this, player);
@@ -838,7 +843,7 @@ public class Match
 	{
 		if(this.gmode.equals(Gamemode.Teamdeathmatch))
 		{
-			return this.spawnLoc;
+			return this.spawnArea.pickRandomPoint();
 		}
 		if(this.gmode.equals(Gamemode.Rush))
 		{
@@ -915,7 +920,7 @@ public class Match
 				}
 				avgHeight /= flags.size();
 				Location loc = baseLoc.clone().add(x,5d,z);
-				List<Location> locs = TeleportUtil.getSafeTeleportLocations(loc,200,flag.spawnSky);
+				List<Location> locs = TeleportUtil.getSafeTeleportLocations(loc, 200, flag.spawnSky);
 				if(locs.size() > 0)
 				{
 					double hdiff = Double.MAX_VALUE;
@@ -930,9 +935,16 @@ public class Match
 					}
 				}
 				return loc;				
-			}		
+			}
+			else
+			{
+				if(p.getTeam() == this.teamRed)
+					return this.spawnAreaRed.pickRandomPoint();
+				else if(p.getTeam() == this.teamBlue)
+					return this.spawnAreaBlue.pickRandomPoint();
+			}
 		}
-		return this.spawnLoc;
+		return this.spawnArea.pickRandomPoint();
 	}
 
 	public void playerChangedWorld(Player player)
@@ -1210,7 +1222,7 @@ public class Match
 		PVPPlayer player = this.getPlayerExact(p);
 		if(player != null)
 		{
-			return this.classSelectLoc;
+			return this.classSelectArea.pickRandomPoint();
 		}
 		return respawnLocation;
 	}

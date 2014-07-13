@@ -1,5 +1,7 @@
 package TobleMiner.MineFight.Protection;
 
+import java.util.Random;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -8,7 +10,7 @@ import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 
-public class ProtectedArea 
+public class Area3D 
 {
 	private final double pos1X;
 	private final double pos1Y;
@@ -18,7 +20,9 @@ public class ProtectedArea
 	private final double pos2Z;
 	private final World world;
 	
-	public ProtectedArea(Location pos1, Location pos2)
+	private final Random rand = new Random();
+	
+	public Area3D(Location pos1, Location pos2)
 	{
 		this.pos1X = pos1.getX();
 		this.pos1Y = pos1.getY();
@@ -28,7 +32,7 @@ public class ProtectedArea
 		this.pos2Z = pos2.getZ();
 		if(!pos1.getWorld().equals(pos2.getWorld()))
 		{
-			Error error = new Error("Iternal error!","Protectionregion worldmissmatch!","I've got to find a way, to make this all ok.", this.getClass().getCanonicalName(), ErrorSeverity.WARNING);
+			Error error = new Error("Internal error!","Area3D world missmatch!","I've got to find a way, to make this all ok.", this.getClass().getCanonicalName(), ErrorSeverity.WARNING);
 			ErrorReporter.reportError(error);
 		}
 		this.world = pos1.getWorld();
@@ -61,5 +65,13 @@ public class ProtectedArea
 			}			
 		}
 		return false;
+	}
+	
+	public Location pickRandomPoint()
+	{
+		double x = pos1X + (pos2X - pos1X) * rand.nextDouble();
+		double y = pos1Y + (pos2Y - pos1Y) * rand.nextDouble();
+		double z = pos1Z + (pos2Z - pos1Z) * rand.nextDouble();
+		return new Location(this.world, x, y, z);
 	}
 }

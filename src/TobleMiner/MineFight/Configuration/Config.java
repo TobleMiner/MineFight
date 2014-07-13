@@ -28,7 +28,7 @@ import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
-import TobleMiner.MineFight.Protection.ProtectedArea;
+import TobleMiner.MineFight.Protection.Area3D;
 
 public class Config
 {
@@ -129,7 +129,7 @@ public class Config
 		
 	}
 	
-	public List<ProtectedArea> getProtectedAreasByWorld(World w)
+	public List<Area3D> getProtectedAreasByWorld(World w)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
 		if(wcfg != null)
@@ -153,30 +153,54 @@ public class Config
 		return null;
 	}
 	
-	public Location getRespawnForWorld(World w)
+	public Area3D getRespawnForWorld(World w)
 	{	
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
 		if(wcfg != null)
 		{
-			return wcfg.getRespawnLoc();
+			return wcfg.getRespawnArea();
 		}
 		Error err = new Error("Tried to fetch respawn point for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return null;
 	}
 	
-	public Location getSpawnForWorld(World w)
+	public Area3D getSpawnForWorld(World w)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());
 		if(wcfg != null)
 		{
-			return wcfg.getSpawnLoc();
+			return wcfg.getSpawnArea();
 		}
 		Error err = new Error("Tried to fetch spawn point for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
 		return null;		
 	}	
-		
+
+	public Area3D getSpawnForWorldRed(World w)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getSpawnAreaRed();
+		}
+		Error err = new Error("Tried to fetch spawn point for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return null;		
+	}	
+
+	public Area3D getSpawnForWorldBlue(World w)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.getSpawnAreaBlue();
+		}
+		Error err = new Error("Tried to fetch spawn point for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return null;		
+	}	
+	
 	public boolean isGamemodeEnabledInWorld(World w, Gamemode gmode)
 	{
 		WorldConfig wcfg = this.configByWorldName.get(w.getName());

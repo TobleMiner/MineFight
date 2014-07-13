@@ -26,11 +26,11 @@ import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
 import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
-import TobleMiner.MineFight.Protection.ProtectedArea;
+import TobleMiner.MineFight.Protection.Area3D;
 
 public class WorldConfig
 {
-	public final List<ProtectedArea> protectedRegions = new ArrayList<ProtectedArea>();
+	public final List<Area3D> protectedRegions = new ArrayList<Area3D>();
 
 	private final FileConfiguration config;
 	private final FileConfiguration regions;
@@ -103,18 +103,36 @@ public class WorldConfig
 		if(makeConfig)
 		{
 			config.set("mpvp",false);
-			config.set("classSelection.X",spawn.getBlockX());
-			config.set("classSelection.Y",spawn.getBlockY());
-			config.set("classSelection.Z",spawn.getBlockZ());
-			config.set("battleSpawn.X",spawn.getBlockX());
-			config.set("battleSpawn.Y",spawn.getBlockY());
-			config.set("battleSpawn.Z",spawn.getBlockZ());
+			config.set("classSelection.pos1.X", spawn.getBlockX());
+			config.set("classSelection.pos1.y", spawn.getBlockY());
+			config.set("classSelection.pos1.z", spawn.getBlockZ());
+			config.set("classSelection.pos2.X", spawn.getBlockX());
+			config.set("classSelection.pos2.y", spawn.getBlockY());
+			config.set("classSelection.pos2.z", spawn.getBlockZ());
+			config.set("battleSpawn.pos1.X",spawn.getBlockX());
+			config.set("battleSpawn.pos1.Y",spawn.getBlockY());
+			config.set("battleSpawn.pos1.Z",spawn.getBlockZ());
+			config.set("battleSpawn.pos2.X",spawn.getBlockX());
+			config.set("battleSpawn.pos2.Y",spawn.getBlockY());
+			config.set("battleSpawn.pos2.Z",spawn.getBlockZ());
+			config.set("battleSpawn.red.pos1.X",spawn.getBlockX());
+			config.set("battleSpawn.red.pos1.Y",spawn.getBlockY());
+			config.set("battleSpawn.red.pos1.Z",spawn.getBlockZ());
+			config.set("battleSpawn.red.pos2.X",spawn.getBlockX());
+		 	config.set("battleSpawn.red.pos2.Y",spawn.getBlockY());
+			config.set("battleSpawn.red.pos2.Z",spawn.getBlockZ());
+			config.set("battleSpawn.blue.pos1.X",spawn.getBlockX());
+			config.set("battleSpawn.blue.pos1.Y",spawn.getBlockY());
+			config.set("battleSpawn.blue.pos1.Z",spawn.getBlockZ());
+			config.set("battleSpawn.blue.pos2.X",spawn.getBlockX());
+			config.set("battleSpawn.blue.pos2.Y",spawn.getBlockY());
+			config.set("battleSpawn.blue.pos2.Z",spawn.getBlockZ());
 			for(Gamemode gmode : Gamemode.values())
 			{
 				String gmpref = "gamemodes."+gmode.toString().toLowerCase();
 				config.set(gmpref+".tickets",500);
-				config.set(gmpref+".enabled",true);					
-				config.set(gmpref+".autobalance",true);					
+				config.set(gmpref+".enabled",true);			
+				config.set(gmpref+".autobalance",true);
 				config.set(gmpref+".player.preventItemDropOnDeath",true);					
 				config.set(gmpref+".player.preventItemDrop",true);					
 				config.set(gmpref+".player.enableFallDamage",true);					
@@ -202,7 +220,7 @@ public class WorldConfig
 			double z2 = cs.getDouble(key+".pos2.Z");
 			if(this.isProtectionEnabled(cs,key))
 			{
-				protectedRegions.add(new ProtectedArea(new Location(world, x1, y1, z1), new Location(world, x2, y2, z2)));
+				protectedRegions.add(new Area3D(new Location(world, x1, y1, z1), new Location(world, x2, y2, z2)));
 			}
 		}
 	}
@@ -224,7 +242,7 @@ public class WorldConfig
 		cs.set(prefix+".pos2.Z", pos2.getZ());
 		cs.set(prefix+".enabled",true);
 		this.save();
-		this.protectedRegions.add(new ProtectedArea(pos1, pos2));
+		this.protectedRegions.add(new Area3D(pos1, pos2));
 	}
 	
 	public Location getRoundEndSpawn()
@@ -241,21 +259,49 @@ public class WorldConfig
 		return null;
 	}
 
-	public Location getRespawnLoc() 
+	public Area3D getRespawnArea() 
 	{
-		Double x = config.getDouble("classSelection.X");
-		Double y = config.getDouble("classSelection.Y");
-		Double z = config.getDouble("classSelection.Z");
-		return new Location(this.world, x, y, z);
+		Double x1 = config.getDouble("classSelection.pos1.X");
+		Double y1 = config.getDouble("classSelection.pos1.Y");
+		Double z1 = config.getDouble("classSelection.pos1.Z");
+		Double x2 = config.getDouble("classSelection.pos2.X");
+		Double y2 = config.getDouble("classSelection.pos2.Y");
+		Double z2 = config.getDouble("classSelection.pos2.Z");
+		return new Area3D(new Location(this.world, x1, y1, z1), new Location(this.world, x2, y2, z2));
 	}
 
-	public Location getSpawnLoc() 
+	public Area3D getSpawnArea() 
 	{
-		Double x = config.getDouble("battleSpawn.X");
-		Double y = config.getDouble("battleSpawn.Y");
-		Double z = config.getDouble("battleSpawn.Z");
-		return new Location(this.world, x, y, z);
+		Double x1 = config.getDouble("battleSpawn.pos1.X");
+		Double y1 = config.getDouble("battleSpawn.pos1.Y");
+		Double z1 = config.getDouble("battleSpawn.pos1.Z");
+		Double x2 = config.getDouble("battleSpawn.pos2.X");
+		Double y2 = config.getDouble("battleSpawn.pos2.Y");
+		Double z2 = config.getDouble("battleSpawn.pos2.Z");
+		return new Area3D(new Location(this.world, x1, y1, z1), new Location(this.world, x2, y2, z2));
+	}
 
+	public Area3D getSpawnAreaRed() 
+	{
+		Double x1 = config.getDouble("battleSpawn.red.pos1.X");
+		Double y1 = config.getDouble("battleSpawn.red.pos1.Y");
+		Double z1 = config.getDouble("battleSpawn.red.pos1.Z");
+		Double x2 = config.getDouble("battleSpawn.red.pos2.X");
+		Double y2 = config.getDouble("battleSpawn.red.pos2.Y");
+		Double z2 = config.getDouble("battleSpawn.red.pos2.Z");
+		return new Area3D(new Location(this.world, x1, y1, z1), new Location(this.world, x2, y2, z2));
+	}
+	
+
+	public Area3D getSpawnAreaBlue() 
+	{
+		Double x1 = config.getDouble("battleSpawn.blue.pos1.X");
+		Double y1 = config.getDouble("battleSpawn.blue.pos1.Y");
+		Double z1 = config.getDouble("battleSpawn.blue.pos1.Z");
+		Double x2 = config.getDouble("battleSpawn.blue.pos2.X");
+		Double y2 = config.getDouble("battleSpawn.blue.pos2.Y");
+		Double z2 = config.getDouble("battleSpawn.blue.pos2.Z");
+		return new Area3D(new Location(this.world, x1, y1, z1), new Location(this.world, x2, y2, z2));
 	}
 
 	public boolean isGamemodeEnabled(Gamemode gmode) 
