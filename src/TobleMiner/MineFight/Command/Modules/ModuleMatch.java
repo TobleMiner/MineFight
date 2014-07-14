@@ -1,4 +1,4 @@
-package TobleMiner.MineFight.Command;
+package TobleMiner.MineFight.Command.Modules;
 
 import java.util.List;
 
@@ -6,28 +6,28 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Command.CommandHelp;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.Permissions.Permission;
 
-public class CommandMatch extends CommandHandler
+public class ModuleMatch extends CommandModule
 {
-	public CommandMatch(CommandSender sender)
+	public boolean handleCommand(String[] args, CommandSender sender)
 	{
-		super(sender);
-	}
-
-	public boolean handle(String[] args)
-	{
+		Player p = null;
+		if(sender instanceof Player)
+			p = (Player)sender;
 		if(args.length >= 1)
 		{
 			if(args[0].equalsIgnoreCase("create") && args.length >= 4)
 			{
-				if(this.p != null)
+				if(p != null)
 				{
-					if(!this.pm.hasPlayerPermission(this.p, Permission.MPVP_MATCH_START))
+					if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_MATCH_START))
 					{
 						p.sendMessage(this.noPermMsg);
 						return true;
@@ -41,7 +41,7 @@ public class CommandMatch extends CommandHandler
 				World w = Bukkit.getServer().getWorld(wName);
 				if(w == null)
 				{
-					this.sender.sendMessage(String.format(ChatColor.DARK_RED+Main.gameEngine.dict.get("nosuchworld"),wName));
+					sender.sendMessage(String.format(ChatColor.DARK_RED+Main.gameEngine.dict.get("nosuchworld"),wName));
 					return true;
 				}
 				Gamemode gm = null;
@@ -55,7 +55,7 @@ public class CommandMatch extends CommandHandler
 				}
 				if(gm == null)
 				{
-					this.sender.sendMessage(String.format(ChatColor.DARK_RED+Main.gameEngine.dict.get("nosuchgmode"),gmName));
+					sender.sendMessage(String.format(ChatColor.DARK_RED+Main.gameEngine.dict.get("nosuchgmode"),gmName));
 					return true;
 				}
 				if(!Main.gameEngine.configuration.isMpvpEnabled(w))
@@ -80,7 +80,7 @@ public class CommandMatch extends CommandHandler
 			
 			if(args[0].equalsIgnoreCase("list"))
 			{
-				if(this.p != null && (!this.pm.hasPlayerPermission(this.p, Permission.MPVP_MATCH_LIST)))
+				if(p != null && (!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_MATCH_LIST)))
 				{
 					sender.sendMessage(this.noPermMsg);
 					return true;
@@ -108,7 +108,7 @@ public class CommandMatch extends CommandHandler
 			
 			if(args[0].equalsIgnoreCase("info") && args.length >= 2)
 			{
-				if(this.p != null && (!this.pm.hasPlayerPermission(this.p, Permission.MPVP_MATCH_INFO)))
+				if(p != null && (!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_MATCH_INFO)))
 				{
 					sender.sendMessage(this.noPermMsg);
 					return true;
@@ -139,41 +139,41 @@ public class CommandMatch extends CommandHandler
 			
 			if(args[0].equalsIgnoreCase("join") && args.length >= 2)
 			{
-				if(this.p == null)
+				if(p == null)
 				{
-					this.sender.sendMessage(this.playerOnly);
+					sender.sendMessage(playerOnly);
 					return true;
 				}
-				if(!this.pm.hasPlayerPermission(this.p, Permission.MPVP_MATCH_JOIN))
+				if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_MATCH_JOIN))
 				{
-					this.sender.sendMessage(this.noPermMsg);
+					sender.sendMessage(this.noPermMsg);
 					return true;
 				}
-				sender.sendMessage(Main.gameEngine.playerJoinMatch(this.p,args[1]));
+				sender.sendMessage(Main.gameEngine.playerJoinMatch(p,args[1]));
 				return true;
 			}
 			
 			if(args[0].equalsIgnoreCase("leave") && args.length >= 1)
 			{
-				if(this.p == null)
+				if(p == null)
 				{
-					this.sender.sendMessage(this.playerOnly);
+					sender.sendMessage(playerOnly);
 					return true;
 				}
-				if(!this.pm.hasPlayerPermission(this.p, Permission.MPVP_MATCH_LEAVE))
+				if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_MATCH_LEAVE))
 				{
-					this.sender.sendMessage(this.noPermMsg);
+					sender.sendMessage(this.noPermMsg);
 					return true;
 				}
-				Main.gameEngine.playerLeave(this.p);
+				Main.gameEngine.playerLeave(p);
 				return true;
 			}
 			
 			if(args[0].equalsIgnoreCase("end") && args.length >= 2)
 			{
-				if(this.p != null)
+				if(p != null)
 				{
-					if(!this.pm.hasPlayerPermission(this.p, Permission.MPVP_MATCH_END))
+					if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_MATCH_END))
 					{
 						p.sendMessage(this.noPermMsg);
 						return true;
@@ -194,20 +194,111 @@ public class CommandMatch extends CommandHandler
 			
 			if(args[0].equalsIgnoreCase("changeteam") && args.length >= 1)
 			{
-				if(this.p == null)
+				if(p == null)
 				{
-					this.sender.sendMessage(this.playerOnly);
+					sender.sendMessage(playerOnly);
 					return true;
 				}
-				if(!this.pm.hasPlayerPermission(this.p, Permission.MPVP_MATCH_CHANGETEAM))
+				if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_MATCH_CHANGETEAM))
 				{
-					this.sender.sendMessage(this.noPermMsg);
+					sender.sendMessage(this.noPermMsg);
 					return true;
 				}
-				this.p.sendMessage(Main.gameEngine.playerChangeTeam(this.p));
+				p.sendMessage(Main.gameEngine.playerChangeTeam(p));
 				return true;
 			}
 		}
 		return false;
 	}
+	
+	public String getName()
+	{
+		return "match";
+	}
+
+	@Override
+	public CommandHelp getHelp(String cmd)
+	{
+		for(CommandHelp help : CommandMatch.values())
+			if(help.getCmd().equalsIgnoreCase(cmd))
+				return help;
+		return null;
+	}
+	
+	@Override
+	public CommandHelp[] getHelp()
+	{
+		return CommandMatch.values();
+	}
+	
+	private enum CommandMatch implements CommandHelp
+	{
+		MPVP_MATCH_CREATE("match","create",3,4,"cmdDescrMatchCreate","/mpvp match create <world> <gamemode> <name> [hardcore]",Permission.MPVP_MATCH_START.toString()),
+		MPVP_MATCH_END("match","end",1,1,"cmdDescrMatchEnd","/mpvp match end <name>",Permission.MPVP_MATCH_END.toString()),
+		MPVP_MATCH_JOIN("match","join",1,1,"cmdDescrMatchJoin","/mpvp match join <name>",Permission.MPVP_MATCH_JOIN.toString()),
+		MPVP_MATCH_LEAVE("match","leave",0,0,"cmdDescrMatchLeave","/mpvp match leave",Permission.MPVP_MATCH_LEAVE.toString()),
+		MPVP_MATCH_LIST("match","list",0,0,"cmdDescrMatchList","/mpvp match list",Permission.MPVP_MATCH_LIST.toString()),
+		MPVP_MATCH_INFO("match","info",1,1,"cmdDescrMatchInfo","/mpvp match INFO <name>",Permission.MPVP_MATCH_INFO.toString());
+
+		public final String module;
+		public final String cmd;
+		public final int argnumMin;
+		public final int argnumMax;
+		private final String descr;
+		public final String perm;
+		public final String syntax;
+		
+		CommandMatch(String module, String cmd, int argnumMin,int argnumMax, String descr, String syntax, String perm)
+		{
+			this.module = module;
+			this.cmd = cmd;
+			this.argnumMin = argnumMin;
+			this.argnumMax = argnumMax;
+			this.syntax = syntax;
+			this.descr = descr;
+			this.perm = perm;
+		}
+
+		@Override
+		public String getCmd()
+		{
+			return cmd;
+		}
+		
+		@Override
+		public String getModule()
+		{
+			return module;
+		}
+
+		@Override
+		public int argMin() 
+		{
+			return argnumMin;
+		}
+
+		@Override
+		public int argMax()
+		{
+			return argnumMax;
+		}
+
+		@Override
+		public String getDescr() 
+		{
+			return Main.gameEngine.dict.get(descr);
+		}
+
+		@Override
+		public String getPermission()
+		{
+			return perm;
+		}
+
+		@Override
+		public String getSyntax()
+		{
+			return syntax;
+		}
+	}	
 }

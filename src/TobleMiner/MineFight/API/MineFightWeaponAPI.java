@@ -12,13 +12,13 @@ import TobleMiner.MineFight.Util.Util;
 import TobleMiner.MineFight.Util.Protection.ProtectionUtil;
 import TobleMiner.MineFight.Weapon.Weapon;
 
-public class MineFightAPI 
+public class MineFightWeaponAPI 
 {
-	public static MineFightAPI instance;
+	public static MineFightWeaponAPI instance;
 	
-	public MineFightAPI()
+	public MineFightWeaponAPI()
 	{
-		MineFightAPI.instance = this;
+		MineFightWeaponAPI.instance = this;
 	}
 	
 	public Logger getLogger(Plugin p)

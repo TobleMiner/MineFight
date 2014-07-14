@@ -30,6 +30,7 @@ public class Main extends JavaPlugin
 	public static ProtocolLibSafeLoader plsl;
 	public static Logger logger;
 	public static Util util;
+	public static CommandHandler cmdhandler;
 	
 	private final GlobalTimer gtimer = new GlobalTimer();
 	
@@ -63,6 +64,7 @@ public class Main extends JavaPlugin
 		}
 		Main.pm = new PermissionManager();
 		Main.plsl = new ProtocolLibSafeLoader(this);
+		Main.cmdhandler = new CommandHandler();
 		this.gtimer.runTaskTimer(this,1,1);
 	}
 	
@@ -77,7 +79,7 @@ public class Main extends JavaPlugin
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String args[])
 	{
-		return CommandHandler.handleCommand(args, sender);
+		return cmdhandler.handleCommand(args, sender);
 	}
 	
 	@Override

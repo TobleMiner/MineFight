@@ -14,13 +14,13 @@ import TobleMiner.MineFight.Weapon.Weapon;
 
 public class WeaponRegistry 
 {
-	private HashMap<World, HashMap<Material, HashMap<Short, Object>>> weaponsByWorld = new HashMap<>();
-	private HashMap<String, List<Weapon>> events = new HashMap<>();
-	private List<Weapon> weapons = new ArrayList<Weapon>();
+	private HashMap<World, HashMap<Material, HashMap<Short, Object>>> weaponsByWorldByMaterialBySubid = new HashMap<>();
+	private HashMap<World, HashMap<String, List<Weapon>>> eventsByWorld = new HashMap<>();
+	private HashMap<World, List<Weapon>> weaponsByWorld = new HashMap<>();
 	
 	public void preregisterMaterial(Material mat, short subId, World w) //Used internally to block materials that are essential for gameplay
 	{
-		HashMap<Material, HashMap<Short, Object>> wpByMat= this.weaponsByWorld.get(w);
+		HashMap<Material, HashMap<Short, Object>> wpByMat= this.weaponsByWorldByMaterialBySubid.get(w);
 		if(wpByMat == null)
 			wpByMat = new HashMap<Material, HashMap<Short, Object>>();
 		HashMap<Short, Object> wpBySubId = wpByMat.get(mat);
@@ -28,14 +28,14 @@ public class WeaponRegistry
 			wpBySubId = new HashMap<Short, Object>();
 		wpBySubId.put(subId, new Object());
 		wpByMat.put(mat, wpBySubId);
-		this.weaponsByWorld.put(w, wpByMat);
+		this.weaponsByWorldByMaterialBySubid.put(w, wpByMat);
 	}
 	
 	public boolean registerWeapon(Weapon weapon, World w)
 	{
 		short subId = weapon.getSubId(w);
 		Material mat = weapon.getMaterial(w);
-		HashMap<Material, HashMap<Short, Object>> wpByMat = this.weaponsByWorld.get(w);
+		HashMap<Material, HashMap<Short, Object>> wpByMat = this.weaponsByWorldByMaterialBySubid.get(w);
 		if(wpByMat == null)
 			wpByMat = new HashMap<Material, HashMap<Short, Object>>();
 		HashMap<Short, Object> wpBySubId = wpByMat.get(subId);
@@ -46,26 +46,34 @@ public class WeaponRegistry
 				return false;
 		wpBySubId.put(subId, weapon);
 		wpByMat.put(mat, wpBySubId);
-		this.weaponsByWorld.put(w, wpByMat);
+		this.weaponsByWorldByMaterialBySubid.put(w, wpByMat);
 		List<Class<?>> events = new ArrayList<>();
 		weapon.getRequiredEvents(events);
 		for(Class<?> event : events)
 		{
-			List<Weapon> weaponsByEvent = this.events.get(event.getSimpleName());
+			HashMap<String, List<Weapon>> eventsByName = this.eventsByWorld.get(w);
+			if(eventsByName == null)
+				eventsByName = new HashMap<>();
+			List<Weapon> weaponsByEvent = eventsByName.get(event.getSimpleName());
 			if(weaponsByEvent == null)
 				weaponsByEvent = new ArrayList<Weapon>();
-			if(!weaponsByEvent.contains(weapon)) 
-				weaponsByEvent.add(weapon);
-			this.events.put(event.getSimpleName(), weaponsByEvent);
+			weaponsByEvent.add(weapon);
+			eventsByName.put(event.getSimpleName(), weaponsByEvent);
+			this.eventsByWorld.put(w, eventsByName);
 		}
-		if(!weapons.contains(weapon))
-			weapons.add(weapon);
+		List<Weapon> weapons = this.weaponsByWorld.get(w);
+		if(weapons == null)
+			weapons = new ArrayList<>();
+		weapons.add(weapon);
+		this.weaponsByWorld.put(w, weapons);
 		return true;
 	}
 
 	public void executeEvent(Match m, Event event) 
 	{
-		List<Weapon> weapons = this.events.get(event.getClass().getSimpleName());
+		HashMap<String, List<Weapon>> events = this.eventsByWorld.get(m.getWorld());
+		if(events == null) return;
+		List<Weapon> weapons = events.get(event.getClass().getSimpleName());
 		if(weapons == null) return;
 		for(Weapon weapon : weapons)
 			weapon.onEvent(m, event);
@@ -73,55 +81,73 @@ public class WeaponRegistry
 
 	public void playerJoined(Match m, PVPPlayer player)
 	{
-		for(Weapon weapon : this.weapons)
+		List<Weapon> weapons = this.weaponsByWorld.get(m.getWorld());
+		if(weapons == null) return;
+		for(Weapon weapon : weapons)
 			weapon.onJoin(m, player);
 	}
 
 	public void playerLeft(Match m, PVPPlayer player)
 	{
-		for(Weapon weapon : this.weapons)
+		List<Weapon> weapons = this.weaponsByWorld.get(m.getWorld());
+		if(weapons == null) return;
+		for(Weapon weapon : weapons)
 			weapon.onLeave(m, player);
 	}
 
 	public void playerChangedTeam(Match m, PVPPlayer player)
 	{
-		for(Weapon weapon : this.weapons)
+		List<Weapon> weapons = this.weaponsByWorld.get(m.getWorld());
+		if(weapons == null) return;
+		for(Weapon weapon : weapons)
 			weapon.onTeamchange(m, player);
 	}
 
 	public void playerKilled(Match m, PVPPlayer killer, PVPPlayer killed)
 	{
-		for(Weapon weapon : this.weapons)
+		List<Weapon> weapons = this.weaponsByWorld.get(m.getWorld());
+		if(weapons == null) return;
+		for(Weapon weapon : weapons)
 			weapon.onKill(m, killer, killed);
 	}
 	
 	public void playerDied(Match m, PVPPlayer killed, PVPPlayer killer)
 	{
-		for(Weapon weapon : this.weapons)
+		List<Weapon> weapons = this.weaponsByWorld.get(m.getWorld());
+		if(weapons == null) return;
+		for(Weapon weapon : weapons)
 			weapon.onDeath(m, killed, killer);
 	}
 	
 	public void playerRespawned(Match m, PVPPlayer player)
 	{
-		for(Weapon weapon : this.weapons)
+		List<Weapon> weapons = this.weaponsByWorld.get(m.getWorld());
+		if(weapons == null) return;
+		for(Weapon weapon : weapons)
 			weapon.onRespawn(m, player);
 	}
 	
 	public void matchCreated(Match m)
 	{
-		for(Weapon weapon : this.weapons)
+		List<Weapon> weapons = this.weaponsByWorld.get(m.getWorld());
+		if(weapons == null) return;
+		for(Weapon weapon : weapons)
 			weapon.matchCreated(m);
 	}
 	
 	public void matchEnded(Match m)
 	{
-		for(Weapon weapon : this.weapons)
+		List<Weapon> weapons = this.weaponsByWorld.get(m.getWorld());
+		if(weapons == null) return;
+		for(Weapon weapon : weapons)
 			weapon.matchEnded(m);
 	}
 	
-	public void onTick()
+	public void onTick(Match m)
 	{
-		for(Weapon weapon : this.weapons)
+		List<Weapon> weapons = this.weaponsByWorld.get(m.getWorld());
+		if(weapons == null) return;
+		for(Weapon weapon : weapons)
 			weapon.onTick();
 	}
 }

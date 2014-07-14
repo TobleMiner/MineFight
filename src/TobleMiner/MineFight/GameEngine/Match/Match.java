@@ -572,6 +572,7 @@ private final Location matchLeaveLoc;
 				}
 				timer++;
 			}
+			Main.gameEngine.weaponRegistry.onTick(this);
 		}
 		catch(Exception ex)
 		{

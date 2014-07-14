@@ -1,4 +1,4 @@
-package TobleMiner.MineFight.Command;
+package TobleMiner.MineFight.Command.Modules;
 
 import java.util.List;
 
@@ -10,29 +10,29 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Command.CommandHelp;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.Permissions.Permission;
 
-public class CommandInfosign extends CommandHandler
+public class ModuleInfosign extends CommandModule
 {
-	public CommandInfosign(CommandSender sender) 
+	public boolean handleCommand(String[] args, CommandSender sender)
 	{
-		super(sender);
-	}
-
-	public boolean handle(String[] args)
-	{
+		Player p = null;
+		if(sender instanceof Player)
+			p = (Player)sender;
 		if(args.length >= 1)
 		{
 			if(args[0].equalsIgnoreCase("list"))
 			{
 				if(args.length >= 3)
 				{
-					if(this.p != null)
+					if(p != null)
 					{
-						if(!this.pm.hasPlayerPermission(this.p, Permission.MPVP_INFOSIGN_LIST))
+						if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_INFOSIGN_LIST))
 						{
 							p.sendMessage(this.noPermMsg);
 							return true;
@@ -76,17 +76,17 @@ public class CommandInfosign extends CommandHandler
 				return false;
 			}
 			
-			if(this.p == null)
+			if(p == null)
 			{
-				this.sender.sendMessage(this.playerOnly);
+				sender.sendMessage(playerOnly);
 				return true;
 			}
 			
 			if(args[0].equalsIgnoreCase("add") && args.length >= 2)
 			{
-				if(!this.pm.hasPlayerPermission(this.p, Permission.MPVP_INFOSIGN_ADD))
+				if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_INFOSIGN_ADD))
 				{
-					this.sender.sendMessage(this.noPermMsg);
+					sender.sendMessage(this.noPermMsg);
 					return true;
 				}
 				Gamemode gm = null;
@@ -99,7 +99,7 @@ public class CommandInfosign extends CommandHandler
 				}
 				if(gm != null)
 				{
-					Block tb = this.p.getTargetBlock(null,10);
+					Block tb = p.getTargetBlock(null,10);
 					if(tb != null && (tb.getType().equals(Material.WALL_SIGN) || tb.getType().equals(Material.SIGN_POST)))
 					{
 						Main.gameEngine.configuration.addInfoSign((Sign)tb.getState(), gm);
@@ -119,9 +119,9 @@ public class CommandInfosign extends CommandHandler
 	
 			if(args[0].equalsIgnoreCase("remove") && args.length >= 2)
 			{
-				if(!this.pm.hasPlayerPermission(this.p, Permission.MPVP_INFOSIGN_DEL))
+				if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_INFOSIGN_DEL))
 				{
-					this.sender.sendMessage(this.noPermMsg);
+					sender.sendMessage(this.noPermMsg);
 					return true;
 				}
 				Gamemode gm = null;
@@ -134,7 +134,7 @@ public class CommandInfosign extends CommandHandler
 				}
 				if(gm != null)
 				{
-					Block tb = this.p.getTargetBlock(null,10);
+					Block tb = p.getTargetBlock(null,10);
 					if(tb != null && (tb.getType().equals(Material.WALL_SIGN) || tb.getType().equals(Material.SIGN_POST)))
 					{
 						Main.gameEngine.configuration.removeInfoSign((Sign)tb.getState(), gm);
@@ -153,5 +153,93 @@ public class CommandInfosign extends CommandHandler
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public String getName()
+	{
+		return "is";
+	}
+
+	@Override
+	public CommandHelp getHelp(String cmd)
+	{
+		for(CommandHelp help : CommandInfosign.values())
+			if(help.getCmd().equalsIgnoreCase(cmd))
+				return help;
+		return null;
+	}
+	
+	@Override
+	public CommandHelp[] getHelp()
+	{
+		return CommandInfosign.values();
+	}
+	
+	private enum CommandInfosign implements CommandHelp
+	{
+		MPVP_FLAG_ADD("is","add",0,0,"cmdDescrFlagAdd","/mpvp flag add",Permission.MPVP_FLAG_ADD.toString()),
+		MPVP_FLAG_DEL("is","remove",0,0,"cmdDescrFlagDel","/mpvp flag remove",Permission.MPVP_FLAG_DEL.toString());
+
+		public final String module;
+		public final String cmd;
+		public final int argnumMin;
+		public final int argnumMax;
+		private final String descr;
+		public final String perm;
+		public final String syntax;
+		
+		CommandInfosign(String module, String cmd, int argnumMin,int argnumMax, String descr, String syntax, String perm)
+		{
+			this.module = module;
+			this.cmd = cmd;
+			this.argnumMin = argnumMin;
+			this.argnumMax = argnumMax;
+			this.syntax = syntax;
+			this.descr = descr;
+			this.perm = perm;
+		}
+
+		@Override
+		public String getCmd()
+		{
+			return cmd;
+		}
+		
+		@Override
+		public String getModule()
+		{
+			return module;
+		}
+
+		@Override
+		public int argMin() 
+		{
+			return argnumMin;
+		}
+
+		@Override
+		public int argMax()
+		{
+			return argnumMax;
+		}
+
+		@Override
+		public String getDescr() 
+		{
+			return Main.gameEngine.dict.get(descr);
+		}
+
+		@Override
+		public String getPermission()
+		{
+			return perm;
+		}
+
+		@Override
+		public String getSyntax()
+		{
+			return syntax;
+		}
 	}
 }
