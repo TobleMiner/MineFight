@@ -3,6 +3,7 @@ package TobleMiner.MineFight.GameEngine;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -38,7 +39,7 @@ public class WeaponRegistry
 		HashMap<Material, HashMap<Short, Object>> wpByMat = this.weaponsByWorldByMaterialBySubid.get(w);
 		if(wpByMat == null)
 			wpByMat = new HashMap<Material, HashMap<Short, Object>>();
-		HashMap<Short, Object> wpBySubId = wpByMat.get(subId);
+		HashMap<Short, Object> wpBySubId = wpByMat.get(mat);
 		if(wpBySubId == null)
 			wpBySubId = new HashMap<Short, Object>();
 		else
@@ -69,6 +70,46 @@ public class WeaponRegistry
 		return true;
 	}
 
+	public boolean unregisterWeapon(Weapon weapon, World w)
+	{
+		HashMap<Material, HashMap<Short, Object>> wpByMat = this.weaponsByWorldByMaterialBySubid.get(w);
+		if(wpByMat == null)
+			return false; //Weapon obviously not registered for the given world
+		for(Material mat : wpByMat.keySet())
+		{
+			HashMap<Short, Object> wpBySubId = wpByMat.get(mat);
+			if(wpBySubId == null)
+				return false;
+			boolean found = false;
+			for(Short subid : wpBySubId.keySet())
+			{
+				Object wp = wpBySubId.get(subid);
+				if(wp == weapon)
+				{
+					wpBySubId.remove(weapon);
+					found = true;
+				}
+				if(!found)
+					return false;
+			}
+			wpByMat.put(mat, wpBySubId);
+		}
+		this.weaponsByWorldByMaterialBySubid.put(w, wpByMat);
+		List<Weapon> weapons = this.weaponsByWorld.get(w);
+		if(weapons == null)
+			return false;
+		if(!weapons.remove(weapon))
+			return false;
+		HashMap<String, List<Weapon>> weaponsByEvent = this.eventsByWorld.get(w);
+		for(String eventname : weaponsByEvent.keySet())
+		{
+			List<Weapon> weaponsEvent = weaponsByEvent.get(eventname);
+			if(weaponsEvent != null)
+				weaponsEvent.remove(weapon);
+		}
+		return true;
+	}
+	
 	public void executeEvent(Match m, Event event) 
 	{
 		HashMap<String, List<Weapon>> events = this.eventsByWorld.get(m.getWorld());
