@@ -58,6 +58,7 @@ import TobleMiner.MineFight.GameEngine.GameEngine;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Conquest.Flag;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Rush.RadioStation;
+import TobleMiner.MineFight.GameEngine.Match.Spawning.Spawnengine;
 import TobleMiner.MineFight.GameEngine.Match.Statistics.StatHandler;
 import TobleMiner.MineFight.GameEngine.Match.Team.Team;
 import TobleMiner.MineFight.GameEngine.Match.Team.TeamBlue;
@@ -95,7 +96,7 @@ public class Match
 	private final Area3D spawnArea;
 	private final Area3D spawnAreaRed;
 	private final Area3D spawnAreaBlue;
-private final Location matchLeaveLoc;
+	private final Location matchLeaveLoc;
 	private final List<TickControlledWeapon> ltcw = new ArrayList<TickControlledWeapon>();
 	private List<InformationSign> infSs = new ArrayList<InformationSign>();
 	private List<Flag> flags = new ArrayList<Flag>();
@@ -117,6 +118,7 @@ private final Location matchLeaveLoc;
 	private final boolean exploDamageEnviron;
 	public final WeaponIndex weapons;
 	private final ProtectionUtil protection = new ProtectionUtil();
+	private final Spawnengine spawnengine;
 	
 	public Match(World world, Gamemode gmode, String name, boolean hardcore, WeaponIndex weapons, List<Sign> infoSigns, List<FlagContainer> flags, List<RadioStationContainer> radioStations, StatHandler sh)
 	{
@@ -180,7 +182,7 @@ private final Location matchLeaveLoc;
 		this.damageEnviron = Main.gameEngine.configuration.canEnvironmentBeDamaged(gmode, world);
 		this.exploDamageEnviron = Main.gameEngine.configuration.canExlosionsDamageEnvironment(gmode, world);
 		this.beaconInterv = Main.gameEngine.configuration.getInfoBeaconInterval(gmode, world);
-
+		this.spawnengine = new Spawnengine(this);
 	}
 	
 	public boolean canEnvironmentBeDamaged()
@@ -821,7 +823,7 @@ private final Location matchLeaveLoc;
 	private void spawnPlayer(PVPPlayer player)
 	{
 		player.setSpawned(true);
-		Location loc = this.getSpawnLoc(player);
+		Location loc = this.spawnengine.findSafeSpawn(this.getSpawnLoc(player));
 		player.hasMap = Main.gameEngine.configuration.isMinimapEnabled(this.world);
 		if(player.hasMap)
 		{
