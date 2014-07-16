@@ -823,7 +823,7 @@ public class Match
 	private void spawnPlayer(PVPPlayer player)
 	{
 		player.setSpawned(true);
-		Location loc = this.spawnengine.findSafeSpawn(this.getSpawnLoc(player));
+		Location loc = this.spawnengine.findSafeSpawn(this.getSpawnLoc(player), player);
 		player.hasMap = Main.gameEngine.configuration.isMinimapEnabled(this.world);
 		if(player.hasMap)
 		{

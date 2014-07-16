@@ -34,14 +34,17 @@ public class WorldConfig
 
 	private final FileConfiguration config;
 	private final FileConfiguration regions;
+	private final FileConfiguration spawn;
 	private final File conffl;
 	private final File regionfl;
+	private final File spawnfl;
 	private final World world;
 	
 	public WorldConfig(Main mane, World w)
 	{
 		this.config = new YamlConfiguration();
 		this.regions = new YamlConfiguration();
+		this.spawn = new YamlConfiguration();
 		File folder = new File(mane.getPluginDir(),"worlds");
 		if(!folder.exists())
 		{
@@ -55,6 +58,7 @@ public class WorldConfig
 		this.world = w;
 		this.conffl = new File(folder,"world.conf");
 		this.regionfl = new File(folder,"regions.conf");
+		this.spawnfl = new File(folder,"regions.conf");
 		this.load();
 	}
 	
@@ -64,6 +68,7 @@ public class WorldConfig
 		{
 			this.config.save(this.conffl);
 			this.regions.save(this.regionfl);
+			this.spawn.save(this.spawnfl);
 		}
 		catch(Exception ex)
 		{
@@ -94,7 +99,19 @@ public class WorldConfig
 			}
 			catch(Exception ex)
 			{
-				Error error = new Error("Failed loading world regions!",String.format("The regions for the world '%s' could not be loaded: ", this.world.getName()) + ex.getMessage(),"The protection won't work for this particular world until this problem is fixed!",this.getClass().getCanonicalName(),ErrorSeverity.SEVERE);
+				Error error = new Error("Failed loading world regions!",String.format("The regions for the world '%s' could not be loaded: ", this.world.getName()) + ex.getMessage(),"The protection won't work for this particular world until the problem is fixed!",this.getClass().getCanonicalName(),ErrorSeverity.SEVERE);
+				ErrorReporter.reportError(error);
+			}
+		}
+		if(this.spawnfl.exists())
+		{
+			try
+			{
+				this.spawn.load(this.spawnfl);
+			}
+			catch(Exception ex)
+			{
+				Error error = new Error("Failed loading spawnengine config!",String.format("The spawnengine-config for the world '%s' could not be loaded: ", this.world.getName()) + ex.getMessage(), "The configuration for the spawn-engine won't be applied until this problem is fixed!",this.getClass().getCanonicalName(),ErrorSeverity.SEVERE);
 				ErrorReporter.reportError(error);
 			}
 		}
@@ -203,7 +220,18 @@ public class WorldConfig
 			cs.set(s+".enabled",true);
 			this.regions.set("regions.reset",false);
 		}
-		if(makeConfig || makeRegions)
+		boolean makeSpawnConf = this.spawn.getBoolean("spawnengine.reset", true);
+		if(makeSpawnConf)
+		{
+			ConfigurationSection cs = this.spawn.createSection("spawnengine");
+			cs.set("enabled", true);
+			cs.set("minEnemyDistance", 12d);
+			cs.set("isMinEnemyDist2D", true);
+			cs.set("smallestLineOfSightAngle:", 15d);
+			cs.set("maxLOScomputationDistance", 25d);
+			cs.set("reset", false);
+		}
+		if(makeConfig || makeRegions || makeSpawnConf)
 		{
 			this.save();
 		}
@@ -245,6 +273,31 @@ public class WorldConfig
 		this.protectedRegions.add(new Area3D(pos1, pos2));
 	}
 	
+	public boolean isSpawnengineEnabled()
+	{
+		return this.spawn.getBoolean("spawnengine.enabled");
+	}
+	
+	public double minEnemySpawnDistance()
+	{
+		return this.spawn.getDouble("spawnengine.minEnemyDistance", 12d);
+	}
+	
+	public boolean isMinEnemySpawnDistance2D()
+	{
+		return this.spawn.getBoolean("spawnengine.isMinEnemyDist2D", true);
+	}
+
+	public double smallestLineOfSightAngle()
+	{
+		return this.spawn.getDouble("spawnengine.smallestLineOfSightAngle", 15d);
+	}
+	
+	public double maxLOScomputationDistance()
+	{
+		return this.spawn.getDouble("spawnengine.maxLOScomputationDistance", 25d);
+	}
+
 	public Location getRoundEndSpawn()
 	{
 		String worldStr = config.getString("leaveWorld");

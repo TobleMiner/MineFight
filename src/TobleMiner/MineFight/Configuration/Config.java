@@ -875,4 +875,64 @@ public class Config
 	{
 		return this.worlds;
 	}
+	
+	public boolean isSpawnengineEnabled(World w)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.isSpawnengineEnabled();
+		}
+		Error err = new Error("Tried to get isSpawnengineEnabled for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return true;
+	}
+	
+	public double minEnemySpawnDistance(World w)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.minEnemySpawnDistance();
+		}
+		Error err = new Error("Tried to get minEnemySpawnDistance for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 12d;
+	}
+	
+	public double smallestLineOfSightAngle(World w)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.smallestLineOfSightAngle();
+		}
+		Error err = new Error("Tried to get smallestLineOfSightAngle for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 15d;
+	}
+
+	public boolean isMinEnemySpawnDistance2D(World w)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.isMinEnemySpawnDistance2D();
+		}
+		Error err = new Error("Tried to get isMinEnemySpawnDistance2D for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return true;
+	}
+
+	public double maxLOScomputationDistance(World w)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.maxLOScomputationDistance();
+		}
+		Error err = new Error("Tried to get isMinEnemySpawnDistance2D for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 25d;
+	}
 }
