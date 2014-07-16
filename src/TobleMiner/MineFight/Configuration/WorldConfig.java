@@ -58,7 +58,7 @@ public class WorldConfig
 		this.world = w;
 		this.conffl = new File(folder,"world.conf");
 		this.regionfl = new File(folder,"regions.conf");
-		this.spawnfl = new File(folder,"regions.conf");
+		this.spawnfl = new File(folder,"spawnengine.conf");
 		this.load();
 	}
 	
@@ -224,10 +224,10 @@ public class WorldConfig
 		if(makeSpawnConf)
 		{
 			ConfigurationSection cs = this.spawn.createSection("spawnengine");
-			cs.set("enabled", true);
+			cs.set("enabled", false);
 			cs.set("minEnemyDistance", 12d);
 			cs.set("isMinEnemyDist2D", true);
-			cs.set("smallestLineOfSightAngle:", 15d);
+			cs.set("smallestLineOfSightAngle", 15d);
 			cs.set("maxLOScomputationDistance", 25d);
 			cs.set("reset", false);
 		}
