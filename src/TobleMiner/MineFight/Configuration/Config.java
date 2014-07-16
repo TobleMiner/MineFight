@@ -921,7 +921,7 @@ public class Config
 		}
 		Error err = new Error("Tried to get isMinEnemySpawnDistance2D for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
 		ErrorReporter.reportError(err);
-		return true;
+		return false;
 	}
 
 	public double maxLOScomputationDistance(World w)

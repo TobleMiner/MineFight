@@ -223,13 +223,12 @@ public class WorldConfig
 		boolean makeSpawnConf = this.spawn.getBoolean("spawnengine.reset", true);
 		if(makeSpawnConf)
 		{
-			ConfigurationSection cs = this.spawn.createSection("spawnengine");
-			cs.set("enabled", false);
-			cs.set("minEnemyDistance", 12d);
-			cs.set("isMinEnemyDist2D", true);
-			cs.set("smallestLineOfSightAngle", 15d);
-			cs.set("maxLOScomputationDistance", 25d);
-			cs.set("reset", false);
+			this.spawn.set("spawnengine.enabled", true);
+			this.spawn.set("spawnengine.minEnemyDistance", 12d);
+			this.spawn.set("spawnengine.isMinEnemyDist2D", false);
+			this.spawn.set("spawnengine.smallestLineOfSightAngle", 15d);
+			this.spawn.set("spawnengine.maxLOScomputationDistance", 25d);
+			this.spawn.set("spawnengine.reset", false);
 		}
 		if(makeConfig || makeRegions || makeSpawnConf)
 		{
@@ -275,7 +274,7 @@ public class WorldConfig
 	
 	public boolean isSpawnengineEnabled()
 	{
-		return this.spawn.getBoolean("spawnengine.enabled");
+		return this.spawn.getBoolean("spawnengine.enabled", false);
 	}
 	
 	public double minEnemySpawnDistance()
@@ -285,7 +284,7 @@ public class WorldConfig
 	
 	public boolean isMinEnemySpawnDistance2D()
 	{
-		return this.spawn.getBoolean("spawnengine.isMinEnemyDist2D", true);
+		return this.spawn.getBoolean("spawnengine.isMinEnemyDist2D", false);
 	}
 
 	public double smallestLineOfSightAngle()

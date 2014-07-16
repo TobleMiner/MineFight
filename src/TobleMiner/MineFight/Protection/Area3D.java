@@ -74,4 +74,10 @@ public class Area3D
 		double z = pos1Z + (pos2Z - pos1Z) * rand.nextDouble();
 		return new Location(this.world, x, y, z);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return String.format("World: '%s' pos1: [%d, %d, %d] pos2: [%d, %d, %d]", this.world.getName(), (int)this.pos1X, (int)this.pos1Y, (int)this.pos1Z, (int)this.pos2X, (int)this.pos2Y, (int)this.pos2Z);
+	}
 }

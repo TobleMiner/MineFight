@@ -823,12 +823,31 @@ public class Match
 	private void spawnPlayer(PVPPlayer player)
 	{
 		player.setSpawned(true);
-		Location loc = TeleportUtil.getSafeTeleportLocation(this.spawnengine.findSafeSpawn(this.getSpawnLoc(player), player));
+		Location spawn = null;
+		int cnt = 0;
+		while(spawn == null)
+		{
+			Location tempSpawn = this.spawnengine.findSafeSpawn(this.getSpawnLoc(player), player);
+			double minDistY = Double.MAX_VALUE;
+			for(Location loc : TeleportUtil.getSafeTeleportLocations(tempSpawn, true))
+			{
+				double distY = Math.abs(loc.getY() - tempSpawn.getY());
+				if(distY < minDistY)
+				{
+					minDistY = distY;
+					spawn = loc;
+				}
+			}
+			if(cnt > 100)
+				spawn = tempSpawn;
+			cnt++;
+		}
+		Debugger.writeDebugOut(String.format("Found safe spawn in %d tries", cnt));
 		player.hasMap = Main.gameEngine.configuration.isMinimapEnabled(this.world);
 		if(player.hasMap)
 		{
-			player.getMapView().setCenterX(loc.getBlockX());
-			player.getMapView().setCenterZ(loc.getBlockZ());
+			player.getMapView().setCenterX(spawn.getBlockX());
+			player.getMapView().setCenterZ(spawn.getBlockZ());
 			InventorySyncCalls.addItemStack(player.thePlayer.getInventory(), new ItemStack(Material.MAP,1,player.getMapView().getId()));
 			player.thePlayer.updateInventory();
 		}
@@ -838,7 +857,7 @@ public class Match
 			if(ks == Killstreak.IMS) InventorySyncCalls.addItemStack(i,new ItemStack(Material.REDSTONE,1));
 			if(ks == Killstreak.PLAYERSEEKER) InventorySyncCalls.addItemStack(i, new ItemStack(Material.STICK,1));
 		}
-		player.teleport(loc);
+		player.teleport(spawn);
 		Main.gameEngine.weaponRegistry.playerRespawned(this, player);
 	}
 

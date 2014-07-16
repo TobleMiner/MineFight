@@ -1,13 +1,12 @@
 package TobleMiner.MineFight.GameEngine.Match.Spawning;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.Protection.Area3D;
@@ -26,7 +25,9 @@ public class Spawnengine
 	{
 		if(!Main.gameEngine.configuration.isSpawnengineEnabled(this.match.getWorld()))
 			return base;
+		Debugger.writeDebugOut("Spawnengine active");
 		double minDist = Main.gameEngine.configuration.minEnemySpawnDistance(this.match.getWorld());
+		Debugger.writeDebugOut(String.format("Min spawn dist: %.2f", minDist));
 		double smallestLOSangle = Main.gameEngine.configuration.smallestLineOfSightAngle(this.match.getWorld());
 		double maxLOScomputationDistance = Main.gameEngine.configuration.maxLOScomputationDistance(this.match.getWorld());
 		boolean safe = false;
@@ -43,18 +44,24 @@ public class Spawnengine
 				if(p.getTeam() != player.getTeam() && p.isSpawned())
 				{
 					Vector vect = new Vector(minDist, minDist, minDist);
-					if(Main.gameEngine.configuration.isMinEnemySpawnDistance2D(this.match.getWorld()));
+					if(Main.gameEngine.configuration.isMinEnemySpawnDistance2D(this.match.getWorld()))
 						vect.setY(0d);
 					Area3D dzone = new Area3D(p.thePlayer.getLocation().clone().add(vect), p.thePlayer.getLocation().clone().add(vect.clone().multiply(-1d)));
+					Debugger.writeDebugOut(String.format("Area: (%s) Location: [%d, %d, %d]", dzone.toString(), current.getBlockX(), current.getBlockY(), current.getBlockZ()));
 					if(dzone.isCoordInsideRegion(current))
+					{
 						safe = false;
+						Debugger.writeDebugOut(String.format("Spawn not safe for '%s' due to near enemy player '%s' Radius: %.2f", player.thePlayer.getName(), p.thePlayer.getName(), radius));
+					}
 					if(safe && radius <= maxLOScomputationDistance)
 					{
 						Vector look = p.thePlayer.getLocation().getDirection();
 						Vector lookat = p.thePlayer.getLocation().clone().subtract(current).toVector();
-						if(look.angle(lookat) < smallestLOSangle)
+						double lookAngle = look.angle(lookat) * 180d * Math.PI;
+						if(lookAngle < smallestLOSangle)
 						{
 							safe = false;
+							Debugger.writeDebugOut(String.format("Spawn not safe for '%s' due to look from enemy player '%s' Radius: %.2f Look-angle: %.2f°", player.thePlayer.getName(), p.thePlayer.getName(), radius, lookAngle));
 						}
 					}
 				}
