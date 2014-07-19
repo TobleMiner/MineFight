@@ -5,6 +5,8 @@ import java.util.Random;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.ErrorHandling.Error;
 import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
@@ -12,18 +14,31 @@ import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 
 public class Area3D 
 {
-	private final double pos1X;
-	private final double pos1Y;
-	private final double pos1Z;
-	private final double pos2X;
-	private final double pos2Y;
-	private final double pos2Z;
-	private final World world;
+	private double pos1X;
+	private double pos1Y;
+	private double pos1Z;
+	private double pos2X;
+	private double pos2Y;
+	private double pos2Z;
+	private World world;
+	private final Entity entity;
+	private final Vector vec1;
+	private final Vector vec2;
 	
 	private final Random rand = new Random();
 	
+	public Area3D(Entity ent, Vector vec1, Vector vec2)
+	{
+		this.entity = ent;
+		this.vec1 = vec1;
+		this.vec2 = vec2;
+	}
+	
 	public Area3D(Location pos1, Location pos2)
 	{
+		this.entity = null;
+		this.vec1 = null;
+		this.vec2 = null;
 		this.pos1X = pos1.getX();
 		this.pos1Y = pos1.getY();
 		this.pos1Z = pos1.getZ();
@@ -45,7 +60,12 @@ public class Area3D
 	
 	public boolean isCoordInsideRegion(Location loc)
 	{
-		if(loc.getWorld().equals(this.world))
+		World world = this.world;
+		if(this.entity != null)
+		{
+			world = this.entity.getWorld();
+		}
+		if(loc.getWorld().equals(world))
 		{
 			return this.isCoordInsideRegion(loc.getX(),loc.getY(),loc.getZ());
 		}
@@ -54,6 +74,23 @@ public class Area3D
 	
 	public boolean isCoordInsideRegion(double x, double y, double z)
 	{
+		double pos1X = this.pos1X;
+		double pos1Y = this.pos1Y;
+		double pos1Z = this.pos1Z;
+		double pos2X = this.pos2X;
+		double pos2Y = this.pos2Y;
+		double pos2Z = this.pos2Z;
+		if(this.entity != null)
+		{
+			Location entBound1 = this.entity.getLocation().clone().add(this.vec1);
+			pos1X = entBound1.getX();
+			pos1Y = entBound1.getY();
+			pos1Z = entBound1.getZ();
+			Location entBound2 = this.entity.getLocation().clone().add(this.vec2);
+			pos2X = entBound2.getX();
+			pos2Y = entBound2.getY();
+			pos2Z = entBound2.getZ();
+		}
 		if((x <= pos1X && x >= pos2X) || (x <= pos2X && x >= pos1X))
 		{
 			if((y <= pos1Y && y >= pos2Y) || (y <= pos2Y && y >= pos1Y))
@@ -69,15 +106,53 @@ public class Area3D
 	
 	public Location pickRandomPoint()
 	{
+		double pos1X = this.pos1X;
+		double pos1Y = this.pos1Y;
+		double pos1Z = this.pos1Z;
+		double pos2X = this.pos2X;
+		double pos2Y = this.pos2Y;
+		double pos2Z = this.pos2Z;
+		World world = this.world;
+		if(this.entity != null)
+		{
+			Location entBound1 = this.entity.getLocation().clone().add(this.vec1);
+			pos1X = entBound1.getX();
+			pos1Y = entBound1.getY();
+			pos1Z = entBound1.getZ();
+			Location entBound2 = this.entity.getLocation().clone().add(this.vec2);
+			pos2X = entBound2.getX();
+			pos2Y = entBound2.getY();
+			pos2Z = entBound2.getZ();
+			world = this.entity.getWorld();
+		}
 		double x = pos1X + (pos2X - pos1X) * rand.nextDouble();
 		double y = pos1Y + (pos2Y - pos1Y) * rand.nextDouble();
 		double z = pos1Z + (pos2Z - pos1Z) * rand.nextDouble();
-		return new Location(this.world, x, y, z);
+		return new Location(world, x, y, z);
 	}
 	
 	@Override
 	public String toString()
 	{
-		return String.format("World: '%s' pos1: [%d, %d, %d] pos2: [%d, %d, %d]", this.world.getName(), (int)this.pos1X, (int)this.pos1Y, (int)this.pos1Z, (int)this.pos2X, (int)this.pos2Y, (int)this.pos2Z);
+		double pos1X = this.pos1X;
+		double pos1Y = this.pos1Y;
+		double pos1Z = this.pos1Z;
+		double pos2X = this.pos2X;
+		double pos2Y = this.pos2Y;
+		double pos2Z = this.pos2Z;
+		World world = this.world;
+		if(this.entity != null)
+		{
+			Location entBound1 = this.entity.getLocation().clone().add(this.vec1);
+			pos1X = entBound1.getX();
+			pos1Y = entBound1.getY();
+			pos1Z = entBound1.getZ();
+			Location entBound2 = this.entity.getLocation().clone().add(this.vec2);
+			pos2X = entBound2.getX();
+			pos2Y = entBound2.getY();
+			pos2Z = entBound2.getZ();
+			world = this.entity.getWorld();
+		}
+		return String.format("World: '%s' pos1: [%d, %d, %d] pos2: [%d, %d, %d]", world.getName(), (int)pos1X, (int)pos1Y, (int)pos1Z, (int)pos2X, (int)pos2Y, (int)pos2Z);
 	}
 }

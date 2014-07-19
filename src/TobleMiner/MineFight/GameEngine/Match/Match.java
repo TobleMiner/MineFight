@@ -119,6 +119,7 @@ public class Match
 	public final WeaponIndex weapons;
 	private final ProtectionUtil protection = new ProtectionUtil();
 	private final Spawnengine spawnengine;
+	public final List<Area3D> dangerZones = new ArrayList<>();
 	
 	public Match(World world, Gamemode gmode, String name, boolean hardcore, WeaponIndex weapons, List<Sign> infoSigns, List<FlagContainer> flags, List<RadioStationContainer> radioStations, StatHandler sh)
 	{
@@ -1698,5 +1699,15 @@ public class Match
 				return;
 			}
 		}
+	}
+	
+	public void registerDangerZone(Area3D area)
+	{
+		this.dangerZones.add(area);
+	}
+	
+	public void unregisterDangerZone(Area3D area)
+	{
+		this.dangerZones.remove(area);
 	}
 }

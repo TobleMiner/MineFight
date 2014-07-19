@@ -64,6 +64,14 @@ public class Spawnengine
 							Debugger.writeDebugOut(String.format("Spawn not safe for '%s' due to look from enemy player '%s' Radius: %.2f Look-angle: %.2f°", player.thePlayer.getName(), p.thePlayer.getName(), radius, lookAngle));
 						}
 					}
+					if(safe)
+					{
+						for(Area3D dangerZone : match.dangerZones)
+						{
+							if(dangerZone.isCoordInsideRegion(current))
+								safe = false;
+						}
+					}
 				}
 			}
 			radius += 1d;
