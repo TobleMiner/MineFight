@@ -19,6 +19,7 @@ public enum Permission
 	MPVP_RELOAD("MineFight.admin.reloadConfig"),
 	MPVP_STATS("MineFight.player.stats"),
 	MPVP_DEBUG("MineFight.debug"),
+	MPVP_HELP("MineFight.help"),
 	MPVP_NONE("NONE");
 	
 	

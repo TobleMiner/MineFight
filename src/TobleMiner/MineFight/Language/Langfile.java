@@ -150,6 +150,8 @@ public class Langfile
 		
 	public String get(String key)
 	{
+		if(key == null || key.length() == 0) 
+			return "";
 		List<String> vals = this.dictionary.get(key);
 		if(vals == null || vals.size() == 0)
 		{
