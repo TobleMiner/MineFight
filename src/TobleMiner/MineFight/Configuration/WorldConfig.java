@@ -228,6 +228,7 @@ public class WorldConfig
 			this.spawn.set("spawnengine.isMinEnemyDist2D", false);
 			this.spawn.set("spawnengine.smallestLineOfSightAngle", 15d);
 			this.spawn.set("spawnengine.maxLOScomputationDistance", 25d);
+			this.spawn.set("spawnengine.minProjectileDist", 2.5d);
 			this.spawn.set("spawnengine.reset", false);
 		}
 		if(makeConfig || makeRegions || makeSpawnConf)
@@ -295,6 +296,11 @@ public class WorldConfig
 	public double maxLOScomputationDistance()
 	{
 		return this.spawn.getDouble("spawnengine.maxLOScomputationDistance", 25d);
+	}
+
+	public double minProjectileDist()
+	{
+		return this.spawn.getDouble("spawnengine.minProjectileDist", 2.5d);
 	}
 
 	public Location getRoundEndSpawn()

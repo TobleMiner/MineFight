@@ -120,6 +120,7 @@ public class Match
 	private final ProtectionUtil protection = new ProtectionUtil();
 	private final Spawnengine spawnengine;
 	public final List<Area3D> dangerZones = new ArrayList<>();
+	public final List<org.bukkit.entity.Projectile> allProjectiles = new ArrayList<>();
 	
 	public Match(World world, Gamemode gmode, String name, boolean hardcore, WeaponIndex weapons, List<Sign> infoSigns, List<FlagContainer> flags, List<RadioStationContainer> radioStations, StatHandler sh)
 	{
@@ -1709,5 +1710,15 @@ public class Match
 	public void unregisterDangerZone(Area3D area)
 	{
 		this.dangerZones.remove(area);
+	}
+
+	public void registerProjectile(org.bukkit.entity.Projectile proj)
+	{
+		this.allProjectiles.add(proj);
+	}
+	
+	public void unregisterProjectile(org.bukkit.entity.Projectile proj)
+	{
+		this.allProjectiles.remove(proj);
 	}
 }

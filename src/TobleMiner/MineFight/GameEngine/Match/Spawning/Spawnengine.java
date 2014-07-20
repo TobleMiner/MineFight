@@ -3,6 +3,7 @@ package TobleMiner.MineFight.GameEngine.Match.Spawning;
 import java.util.Random;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
 
 import TobleMiner.MineFight.Main;
@@ -10,6 +11,7 @@ import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 import TobleMiner.MineFight.Protection.Area3D;
+import TobleMiner.MineFight.Util.Geometry.Line3D;
 
 public class Spawnengine
 {
@@ -30,6 +32,7 @@ public class Spawnengine
 		Debugger.writeDebugOut(String.format("Min spawn dist: %.2f", minDist));
 		double smallestLOSangle = Main.gameEngine.configuration.smallestLineOfSightAngle(this.match.getWorld());
 		double maxLOScomputationDistance = Main.gameEngine.configuration.maxLOScomputationDistance(this.match.getWorld());
+		double minProjDist = Main.gameEngine.configuration.minProjectileDist(this.match.getWorld());
 		boolean safe = false;
 		double radius = 0d;
 		Location current = base.clone();
@@ -69,6 +72,17 @@ public class Spawnengine
 						for(Area3D dangerZone : match.dangerZones)
 						{
 							if(dangerZone.isCoordInsideRegion(current))
+								safe = false;
+						}
+					}
+					if(safe)
+					{
+						for(Projectile proj : match.allProjectiles)
+						{
+							Location projLoc = proj.getLocation();
+							Vector projDir = proj.getVelocity();
+							Line3D path = new Line3D(projLoc, projDir);
+							if(path.getSmallestDist(current) < minProjDist)
 								safe = false;
 						}
 					}

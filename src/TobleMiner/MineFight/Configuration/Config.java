@@ -935,4 +935,16 @@ public class Config
 		ErrorReporter.reportError(err);
 		return 25d;
 	}
+
+	public double minProjectileDist(World w)
+	{
+		WorldConfig wcfg = this.configByWorldName.get(w.getName());
+		if(wcfg != null)
+		{
+			return wcfg.minProjectileDist();
+		}
+		Error err = new Error("Tried to get minProjectileDist for unknown world.",String.format("World: \"%s\"", w.getName()), "This probably means that your configuration isn't up to date.", this.getClass().getName(), ErrorSeverity.WARNING);
+		ErrorReporter.reportError(err);
+		return 25d;
+	}
 }
