@@ -3,6 +3,7 @@ package TobleMiner.MineFight;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -152,5 +153,11 @@ public class EventListener implements Listener
 	public void onEntityExplode(EntityExplodeEvent event)
 	{
 		Main.gameEngine.entityExplosion(event);
+	}
+	
+	@EventHandler
+	public void onBlockBurn(BlockBurnEvent event)
+	{
+		Main.gameEngine.blockBurn(event);
 	}
 }

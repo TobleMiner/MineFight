@@ -13,6 +13,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -436,6 +437,15 @@ public class GameEngine
 		if(m != null)
 		{
 			m.projectileHit(event);
+		}		
+	}
+	
+	public void blockBurn(BlockBurnEvent event)
+	{
+		Match m = this.getMatch(event.getBlock().getWorld());
+		if(m != null)
+		{
+			m.blockBurn(event);
 		}		
 	}
 }

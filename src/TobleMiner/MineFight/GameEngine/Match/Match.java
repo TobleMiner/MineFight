@@ -19,6 +19,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -69,6 +70,7 @@ import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
 import TobleMiner.MineFight.GameEngine.Player.Info.InformationSign;
 import TobleMiner.MineFight.GameEngine.Player.Resupply.ResupplyStation;
 import TobleMiner.MineFight.Protection.Area3D;
+import TobleMiner.MineFight.Util.Util;
 import TobleMiner.MineFight.Util.Location.TeleportUtil;
 import TobleMiner.MineFight.Util.Protection.ProtectionUtil;
 import TobleMiner.MineFight.Util.SyncDerp.EffectSyncCalls;
@@ -1672,6 +1674,12 @@ public class Match
 		return 2;
 	}
 
+	public void blockBurn(BlockBurnEvent event) 
+	{
+		if(Util.protect.isBlockProtected(event.getBlock()))
+			event.setCancelled(true);
+	}
+	
 	public void entityDamageByEntity(EntityDamageByEntityEvent event)
 	{
 		if(event.getDamager() instanceof Arrow && event.getEntity() instanceof Player)
