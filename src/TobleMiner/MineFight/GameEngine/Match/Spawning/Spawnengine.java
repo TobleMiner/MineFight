@@ -55,6 +55,7 @@ public class Spawnengine
 					{
 						safe = false;
 						Debugger.writeDebugOut(String.format("Spawn not safe for '%s' due to near enemy player '%s' Radius: %.2f", player.thePlayer.getName(), p.thePlayer.getName(), radius));
+						break;
 					}
 					if(safe && radius <= maxLOScomputationDistance)
 					{
@@ -65,6 +66,7 @@ public class Spawnengine
 						{
 							safe = false;
 							Debugger.writeDebugOut(String.format("Spawn not safe for '%s' due to look from enemy player '%s' Radius: %.2f Look-angle: %.2f°", player.thePlayer.getName(), p.thePlayer.getName(), radius, lookAngle));
+							break;
 						}
 					}
 					if(safe)
@@ -72,7 +74,10 @@ public class Spawnengine
 						for(Area3D dangerZone : match.dangerZones)
 						{
 							if(dangerZone.isCoordInsideRegion(current))
+							{
 								safe = false;
+								break;
+							}
 						}
 					}
 					if(safe)
@@ -83,7 +88,10 @@ public class Spawnengine
 							Vector projDir = proj.getVelocity();
 							Line3D path = new Line3D(projLoc, projDir);
 							if(path.getSmallestDist(current) < minProjDist)
+							{
 								safe = false;
+								break;
+							}
 						}
 					}
 				}
