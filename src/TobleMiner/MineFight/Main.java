@@ -53,7 +53,7 @@ public class Main extends JavaPlugin
 		Main.logger = new Logger(this);
 		Main.util = new Util();
 		Main.gameEngine = new GameEngine(this);
-		Main.gameEngine.reload();
+		Main.gameEngine.init();
 		logger.log(Level.INFO,gameEngine.dict.get("preEnable"));
 		Bukkit.getPluginManager().registerEvents(eventListener, this);
 		if(!(new LicenseHandler().init(this)))
@@ -64,8 +64,8 @@ public class Main extends JavaPlugin
 		}
 		Main.pm = new PermissionManager();
 		Main.plsl = new ProtocolLibSafeLoader(this);
-		Main.cmdhandler = new CommandHandler();
-		this.gtimer.runTaskTimer(this,1,1);
+		Main.cmdhandler = new CommandHandler(this);
+		this.gtimer.runTaskTimer(this, 1, 1);
 	}
 	
 	@Override

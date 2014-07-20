@@ -25,11 +25,11 @@ public class CommandHandler
 	public final List<CommandModule> modules = new ArrayList<>(); 
 	private final HashMap<String, CommandModule> moduleByName;
 	
-	public CommandHandler()
+	public CommandHandler(Main mane)
 	{
 		this.pm = Main.pm;
 		this.moduleByName = new HashMap<>();
-		this.registerModule(new ModuleAdmin());
+		this.registerModule(new ModuleAdmin(mane));
 		this.registerModule(new ModuleDebug());
 		this.registerModule(new ModuleFlag());
 		this.registerModule(new ModuleHelp());

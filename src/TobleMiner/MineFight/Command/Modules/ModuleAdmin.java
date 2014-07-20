@@ -10,6 +10,13 @@ import TobleMiner.MineFight.Permissions.Permission;
 
 public class ModuleAdmin extends CommandModule
 {
+	private final Main mane;
+	
+	public ModuleAdmin(Main mane)
+	{
+		this.mane = mane;
+	}
+	
 	public boolean handleCommand(String[] args, CommandSender sender)
 	{
 		if(args.length >= 1)
@@ -25,7 +32,7 @@ public class ModuleAdmin extends CommandModule
 						return true;
 					}
 				}
-				Main.gameEngine.reload();
+				Main.gameEngine.reload(this.mane);
 				sender.sendMessage(ChatColor.DARK_GREEN + Main.gameEngine.dict.get("configrl"));				
 				return true;
 			}

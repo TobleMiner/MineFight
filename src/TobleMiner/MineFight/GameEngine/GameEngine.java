@@ -50,13 +50,13 @@ import TobleMiner.MineFight.Util.Protection.ProtectionUtil;
 public class GameEngine
 {
 	public HashMap<String,CombatClass> combatClasses = new HashMap<String,CombatClass>();
-	public final Config configuration;
-	public final FileConfiguration config;
+	public Config configuration;
+	public FileConfiguration config;
 	private final List<Match> matches = new ArrayList<Match>();
-	public final Langfile dict;
-	public final StatHandler stathandler;
-	public final WeaponRegistry weaponRegistry;
-	private final ProtectionUtil protection;
+	public Langfile dict;
+	public StatHandler stathandler;
+	public WeaponRegistry weaponRegistry;
+	private ProtectionUtil protection;
 	private WeaponIndex weapons;
 	
 	public static double tps = 20.0d;
@@ -76,12 +76,18 @@ public class GameEngine
 		new MineFightCommandAPI();
 	}
 	
-	public void reload()
+	public void reload(Main mane)
 	{
+		this.config = mane.getConfig();
+		this.configuration = new Config(mane, config);
+		this.configuration.read();
+		Main.gameEngine = this; //Getting the configinstance into the static reference from Main
+		this.stathandler = new StatHandler(mane.getDatabase());
+		this.dict.loadLanguageFile(configuration.getLangFile());
 		init();
 	}
 	
-	private void init()
+	public void init()
 	{
 		this.stathandler.reload(this);
 		this.weapons = WeaponConfig.getConfigs(Main.main.getDataFolder());
