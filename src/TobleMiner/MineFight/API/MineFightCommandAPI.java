@@ -7,7 +7,6 @@ import TobleMiner.MineFight.Command.Modules.CommandModule;
 
 public class MineFightCommandAPI
 {
-
 	public static MineFightCommandAPI instance;
 
 	public MineFightCommandAPI()

@@ -79,7 +79,6 @@ import TobleMiner.MineFight.Util.SyncDerp.InventorySyncCalls;
 import TobleMiner.MineFight.Weapon.Projectile.Projectile;
 import TobleMiner.MineFight.Weapon.Projectile.SimpleProjectile;
 import TobleMiner.MineFight.Weapon.Projectile.WeaponProjectile;
-import TobleMiner.MineFight.Weapon.TickControlled.IMS;
 import TobleMiner.MineFight.Weapon.TickControlled.TickControlledWeapon;
 import TobleMiner.MineFight.Weapon.TickControlled.Missile.Missile;
 import TobleMiner.MineFight.Weapon.TickControlled.Missile.PlayerSeeker;
@@ -112,7 +111,6 @@ public class Match
 	public final StatHandler sh;
 	private final KillstreakConfig kcconf;
 	
-	private final HashMap<Item,IMS> imss = new HashMap<Item,IMS>();
 	private final HashMap<Arrow,Missile> missiles = new HashMap<Arrow,Missile>();
 	private final List<ResupplyStation> resupplyStations = new ArrayList<ResupplyStation>();
 	private final HashMap<Arrow, Projectile> projectiles = new HashMap<Arrow, Projectile>();
@@ -357,14 +355,19 @@ public class Match
 		p.setTeam(t);
 	}
 	
-	public boolean canKill(PVPPlayer killer,PVPPlayer victim)
+	public boolean canKill(PVPPlayer killer, PVPPlayer victim)
+	{
+		return this.canKill(killer, victim, false);
+	}
+	
+	public boolean canKill(PVPPlayer killer, PVPPlayer victim, boolean postMortem)
 	{		
 		if(killer == null)
 		{
 			Debugger.writeDebugOut("canKill: killer is null");
 			return true;
 		}
-		if(killer.isSpawned() && victim.isSpawned())
+		if((killer.isSpawned() || postMortem) && victim.isSpawned())
 		{
 			Debugger.writeDebugOut(String.format("\"%s\" canKill \"%s\", teams: %s and %s",killer.getName(),victim.getName(),killer.getTeam().getName(),victim.getTeam().getName()));
 			Debugger.writeDebugOut(String.format("\"%s\" canKill \"%s\", teams: %s and %s",killer.getName(),victim.getName(),killer.getTeam().toString(),victim.getTeam().toString()));
@@ -376,10 +379,15 @@ public class Match
 	
 	public void kill(PVPPlayer killer, PVPPlayer victim,String weapon, boolean doKill)
 	{
-		kill(killer, victim, weapon, doKill, false);
+		kill(killer, victim, weapon, doKill, false, false);
+	}
+
+	public void kill(PVPPlayer killer, PVPPlayer victim,String weapon, boolean doKill, boolean postMortem)
+	{
+		kill(killer, victim, weapon, doKill, false, postMortem);
 	}
 	
-	public void kill(PVPPlayer killer, PVPPlayer victim, String weapon, boolean doKill, boolean headshot)
+	public void kill(PVPPlayer killer, PVPPlayer victim, String weapon, boolean doKill, boolean headshot, boolean postMortem)
 	{
 		if(doKill)
 		{
@@ -387,7 +395,7 @@ public class Match
 		}
 		if(killer != null)
 		{
-			if(killer.isSpawned() && victim.isSpawned())
+			if((killer.isSpawned() || postMortem) && victim.isSpawned())
 			{
 				if(doKill)
 				{
@@ -608,21 +616,7 @@ public class Match
 		Item is = event.getItemDrop();
 		if(player != null && player.isSpawned())
 		{
-			if(is.getItemStack().getType().equals(Material.REDSTONE))
-			{
-				if(player.killstreaks.contains(Killstreak.IMS))
-				{
-					player.killstreaks.remove(Killstreak.IMS);
-					double triggerDist = Main.gameEngine.configuration.getIMSTriggerDist();
-					int grenades = Main.gameEngine.configuration.getIMSShots();
-					IMS ims = new IMS(this, is, triggerDist, grenades, player);
-					this.imss.put(is, ims);
-				}
-			}
-			else
-			{
-				event.setCancelled(Main.gameEngine.configuration.getPreventItemDrop(world, gmode));
-			}
+			event.setCancelled(Main.gameEngine.configuration.getPreventItemDrop(world, gmode));
 		}
 		else
 		{
@@ -633,20 +627,8 @@ public class Match
 
 	public void playerPickUpItem(PlayerPickupItemEvent event)
 	{
-		Item is = event.getItem();
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
-		if(player != null && player.isSpawned())
-		{
-			if(is.getItemStack().getType().equals(Material.REDSTONE))
-			{
-				IMS ims = imss.get(is);
-				if(ims != null)
-				{
-					event.setCancelled(true);
-				}
-			}
-		}
-		else
+		if(player == null || (!player.isSpawned()))
 			event.setCancelled(true);
 		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 	}
@@ -690,7 +672,6 @@ public class Match
 		playersRed = new ArrayList<PVPPlayer>();
 		infSs = new ArrayList<InformationSign>();
 		flags = new ArrayList<Flag>();
-		imss.clear();
 		Main.gameEngine.weaponRegistry.matchEnded(this);
 		Main.gameEngine.removeMatch(this);
 	}
@@ -1267,11 +1248,6 @@ public class Match
 		return nearPlayers;
 	}
 	
-	public void unregisterIMS(Item item)
-	{
-		imss.remove(item);
-	}
-
 	public void radioStationDestroyed(RadioStation radioStation)
 	{
 		this.sendTeamMessage(teamRed,ChatColor.GREEN+Main.gameEngine.dict.get("rsDestroyed"));
@@ -1453,7 +1429,7 @@ public class Match
 		{
 			if(issuer != null && doDamage)
 			{
-				if(this.canKill(issuer, p) || issuer == p) //explosions always damage their creator
+				if(this.canKill(issuer, p, true) || issuer == p) //explosions always damage their creator
 				{
 					double dist = loc.distance(p.thePlayer.getLocation());
 					double radius = 1.24d*exploStr;
@@ -1466,7 +1442,7 @@ public class Match
 						p.thePlayer.damage((int)Math.floor(dmg));
 						if(p.thePlayer.getHealth() <= 0d)
 						{
-							this.kill(issuer, p, weapon, false);
+							this.kill(issuer, p, weapon, false, true);
 						}
 						else
 						{
@@ -1491,19 +1467,6 @@ public class Match
 		{
 			this.createFakeExplosion(issuer,loc, exploStr, true, true, weapon);
 		}
-	}
-
-	public boolean itemDamage(Item is, DamageCause cause)
-	{
-		boolean explo = ((cause == DamageCause.BLOCK_EXPLOSION) || (cause == DamageCause.ENTITY_EXPLOSION));
-		if(is.getItemStack().getType().equals(Material.REDSTONE))
-		{
-			if(imss.get(is) != null)
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public void addMissile(Missile proj)

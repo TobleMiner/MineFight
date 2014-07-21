@@ -18,7 +18,7 @@ public class MineFightLangAPI
 		Main.gameEngine.dict.loadLanguageFileExt(langFile);
 	}
 
-	public String getTranslation(String key)
+	public String localize(String key)
 	{
 		return Main.gameEngine.dict.get(key);
 	}
