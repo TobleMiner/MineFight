@@ -4,7 +4,7 @@ import TobleMiner.MineFight.GameEngine.Match.Match;
 
 public abstract class TickControlledWeapon
 {
-	protected final Match match;
+	public final Match match;
 	
 	public TickControlledWeapon(Match match)
 	{

@@ -32,8 +32,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.API.MineFightAPI;
 import TobleMiner.MineFight.API.MineFightCommandAPI;
+import TobleMiner.MineFight.API.MineFightLangAPI;
+import TobleMiner.MineFight.API.MineFightProtectionAPI;
 import TobleMiner.MineFight.API.MineFightWeaponAPI;
+import TobleMiner.MineFight.API.MineFightWorldAPI;
 import TobleMiner.MineFight.Configuration.Config;
 import TobleMiner.MineFight.Configuration.Container.FlagContainer;
 import TobleMiner.MineFight.Configuration.Container.RadioStationContainer;
@@ -72,6 +76,10 @@ public class GameEngine
 		this.dict.loadLanguageFile(configuration.getLangFile());
 		this.protection = new ProtectionUtil();
 		this.weaponRegistry = new WeaponRegistry();
+		new MineFightAPI();
+		new MineFightLangAPI();
+		new MineFightWorldAPI();
+		new MineFightProtectionAPI();
 		new MineFightWeaponAPI();
 		new MineFightCommandAPI();
 	}

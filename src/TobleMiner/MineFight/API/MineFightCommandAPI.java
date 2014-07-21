@@ -7,13 +7,14 @@ import TobleMiner.MineFight.Command.Modules.CommandModule;
 
 public class MineFightCommandAPI
 {
+
+	public static MineFightCommandAPI instance;
+
 	public MineFightCommandAPI()
 	{
 		instance = this;
 	}
-	
-	public static MineFightCommandAPI instance;
-	
+		
 	public void registerCommandModule(CommandModule cm)
 	{
 		Main.cmdhandler.registerModule(cm);
