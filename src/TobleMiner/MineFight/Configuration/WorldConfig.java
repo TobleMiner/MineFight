@@ -227,7 +227,7 @@ public class WorldConfig
 			this.spawn.set("spawnengine.minEnemyDistance", 12d);
 			this.spawn.set("spawnengine.isMinEnemyDist2D", false);
 			this.spawn.set("spawnengine.smallestLineOfSightAngle", 15d);
-			this.spawn.set("spawnengine.maxLOScomputationDistance", 25d);
+			this.spawn.set("spawnengine.maxLOScomputationDistance", 50d);
 			this.spawn.set("spawnengine.minProjectileDist", 2.5d);
 			this.spawn.set("spawnengine.reset", false);
 		}
@@ -295,7 +295,7 @@ public class WorldConfig
 	
 	public double maxLOScomputationDistance()
 	{
-		return this.spawn.getDouble("spawnengine.maxLOScomputationDistance", 25d);
+		return this.spawn.getDouble("spawnengine.maxLOScomputationDistance", 50d);
 	}
 
 	public double minProjectileDist()
