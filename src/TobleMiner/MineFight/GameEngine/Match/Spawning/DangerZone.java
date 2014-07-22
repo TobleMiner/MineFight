@@ -1,5 +1,6 @@
 package TobleMiner.MineFight.GameEngine.Match.Spawning;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,18 +18,18 @@ public class DangerZone extends Area3D
 	public DangerZone(Area3D area, Team ... teams)
 	{
 		super(area);
-		this.teams = Arrays.asList(teams);
+		this.teams = new ArrayList<Team>(Arrays.asList(teams));
 	}
 	
 	public DangerZone(Location loc, Location loc1, Team ... teams)
 	{
 		super(loc, loc1);
-		this.teams = Arrays.asList(teams);
+		this.teams = new ArrayList<Team>(Arrays.asList(teams));
 	}
 	
 	public DangerZone(Entity ent, Vector vec, Vector vec1, Team ... teams)
 	{
 		super(ent, vec, vec1);
-		this.teams = Arrays.asList(teams);
+		this.teams = new ArrayList<Team>(Arrays.asList(teams));
 	}
 }
