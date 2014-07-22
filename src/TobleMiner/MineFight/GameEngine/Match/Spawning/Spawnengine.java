@@ -10,7 +10,7 @@ import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.Debug.Debugger;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
-import TobleMiner.MineFight.Protection.Area3D;
+import TobleMiner.MineFight.Util.Geometry.Area3D;
 import TobleMiner.MineFight.Util.Geometry.Line3D;
 
 public class Spawnengine
@@ -73,6 +73,11 @@ public class Spawnengine
 					{
 						for(Area3D dangerZone : match.dangerZones)
 						{
+							if(dangerZone instanceof DangerZone)
+							{
+								if(((DangerZone)dangerZone).teams.contains(player.getTeam()))
+									continue;
+							}
 							if(dangerZone.isCoordInsideRegion(current))
 							{
 								safe = false;

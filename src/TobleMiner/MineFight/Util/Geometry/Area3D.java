@@ -1,4 +1,4 @@
-package TobleMiner.MineFight.Protection;
+package TobleMiner.MineFight.Util.Geometry;
 
 import java.util.Random;
 
@@ -26,6 +26,28 @@ public class Area3D
 	private final Vector vec2;
 	
 	private final Random rand = new Random();
+	
+	protected Area3D(Area3D area)
+	{
+		if(area.entity != null)
+		{
+			this.entity = area.entity;
+			this.vec1 = area.vec1;
+			this.vec2 = area.vec2;
+		}
+		else
+		{
+			this.entity = null;
+			this.vec1 = null;
+			this.vec2 = null;
+			this.pos1X = area.pos1X;
+			this.pos1Y = area.pos1Y;
+			this.pos1Z = area.pos1Z;
+			this.pos2X = area.pos2X;
+			this.pos2Y = area.pos2Y;
+			this.pos2Z = area.pos2Z;
+		}
+	}
 	
 	public Area3D(Entity ent, Vector vec1, Vector vec2)
 	{

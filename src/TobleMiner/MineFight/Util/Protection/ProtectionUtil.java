@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 import TobleMiner.MineFight.Main;
-import TobleMiner.MineFight.Protection.Area3D;
+import TobleMiner.MineFight.Util.Geometry.Area3D;
 
 public class ProtectionUtil 
 {

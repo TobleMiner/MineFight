@@ -28,7 +28,7 @@ import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Score;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.GameEngine.Player.CombatClass.CombatClass;
-import TobleMiner.MineFight.Protection.Area3D;
+import TobleMiner.MineFight.Util.Geometry.Area3D;
 
 public class Config
 {
