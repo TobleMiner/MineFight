@@ -32,6 +32,7 @@ public class Spawnengine
 		Debugger.writeDebugOut(String.format("Min spawn dist: %.2f", minDist));
 		double smallestLOSangle = Main.gameEngine.configuration.smallestLineOfSightAngle(this.match.getWorld());
 		double maxLOScomputationDistance = Main.gameEngine.configuration.maxLOScomputationDistance(this.match.getWorld());
+		Debugger.writeDebugOut(String.format("Max los compdist: %.2f", maxLOScomputationDistance));
 		double minProjDist = Main.gameEngine.configuration.minProjectileDist(this.match.getWorld());
 		boolean safe = false;
 		double radius = 0d;
@@ -50,7 +51,6 @@ public class Spawnengine
 					if(Main.gameEngine.configuration.isMinEnemySpawnDistance2D(this.match.getWorld()))
 						vect.setY(0d);
 					Area3D dzone = new Area3D(p.thePlayer.getLocation().clone().add(vect), p.thePlayer.getLocation().clone().add(vect.clone().multiply(-1d)));
-					Debugger.writeDebugOut(String.format("Area: (%s) Location: [%d, %d, %d]", dzone.toString(), current.getBlockX(), current.getBlockY(), current.getBlockZ()));
 					if(dzone.isCoordInsideRegion(current))
 					{
 						safe = false;
@@ -60,8 +60,8 @@ public class Spawnengine
 					if(safe && radius <= maxLOScomputationDistance)
 					{
 						Vector look = p.thePlayer.getLocation().getDirection();
-						Vector lookat = p.thePlayer.getLocation().clone().subtract(current).toVector();
-						double lookAngle = look.angle(lookat) * 180d * Math.PI;
+						Vector lookat = current.clone().subtract(p.thePlayer.getLocation()).toVector();
+						double lookAngle = look.angle(lookat) / Math.PI * 180d;
 						if(lookAngle < smallestLOSangle)
 						{
 							safe = false;
