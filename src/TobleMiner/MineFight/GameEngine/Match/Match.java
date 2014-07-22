@@ -759,7 +759,12 @@ public class Match
 			String joinCmd = Main.gameEngine.configuration.config.getString("GameControl.Sign.joinCmd");
 			if(cmd.equalsIgnoreCase(joinCmd))
 			{
-				player.thePlayer.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("spawnmsg"),player.getTeam().color+player.getTeam().getName().toUpperCase()+ChatColor.RESET));
+				if(player.getCombatClass() == null)
+				{
+					player.thePlayer.sendMessage(ChatColor.DARK_RED + Main.gameEngine.dict.get("pickclass"));
+					return;
+				}
+				player.thePlayer.sendMessage(ChatColor.GOLD + String.format(Main.gameEngine.dict.get("spawnmsg"),player.getTeam().color+player.getTeam().getName().toUpperCase()+ChatColor.RESET));
 				this.spawnPlayer(player);
 			}
 			else
