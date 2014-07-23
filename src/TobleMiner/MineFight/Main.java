@@ -71,9 +71,10 @@ public class Main extends JavaPlugin
 	@Override
 	public void onDisable()
 	{
+		this.gtimer.cancel();
+		gameEngine.isExiting = true;
 		logger.log(Level.INFO,gameEngine.dict.get("onDisable"));
 		Main.gameEngine.endAllMatches();
-		this.gtimer.cancel();
 	}
 		
 	@Override

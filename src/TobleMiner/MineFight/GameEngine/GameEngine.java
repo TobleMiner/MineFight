@@ -63,6 +63,8 @@ public class GameEngine
 	private ProtectionUtil protection;
 	private WeaponIndex weapons;
 	
+	public boolean isExiting = false;
+	
 	public static double tps = 20.0d;
 	
 	public GameEngine(Main mane)
