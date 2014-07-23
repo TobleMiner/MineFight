@@ -275,6 +275,7 @@ public class GameEngine
 		{
 			matches.get(i).endMatch();
 		}
+		this.matches.clear();
 	}
 
 	public boolean playerLeave(Player p)
