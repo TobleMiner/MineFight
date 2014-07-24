@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -85,14 +86,13 @@ public class MapInfoRenderer extends MapRenderer
 			{
 				try
 				{
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					PrintWriter pw = new PrintWriter(baos);
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
 					ex.printStackTrace(pw);
-					Error err = new Error("I don't know what went wrong!", baos.toString("UTF-8"), "Failed reading and printing images for easteregg.", this.getClass().getName(), ErrorSeverity.DOUBLERAINBOOM);
+					Error err = new Error("I don't know what went wrong!", sw.toString(), "Failed reading and printing images for easteregg.", this.getClass().getName(), ErrorSeverity.DOUBLERAINBOOM);
 					ErrorReporter.reportError(err);
 					pw.close();
-					baos.close();
-					ex.printStackTrace();
+					sw.close();
 				}
 				catch(Exception exint)
 				{

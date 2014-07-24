@@ -1,7 +1,7 @@
 package TobleMiner.MineFight.Util.SyncDerp;
 
-import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -27,13 +27,13 @@ public class EffectSyncCalls
 			{
 				try
 				{
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					PrintWriter pw = new PrintWriter(baos);
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
 					ex.printStackTrace(pw);
-					Error err = new Error("Exception while exiting", baos.toString("UTF-8"), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EffectSyncCalls.class.getName(), ErrorSeverity.INFO);
+					Error err = new Error("Exception while exiting", sw.toString(), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EffectSyncCalls.class.getName(), ErrorSeverity.INFO);
 					ErrorReporter.reportError(err);
 					pw.close();
-					baos.close();
+					sw.close();
 				}
 				catch(Exception exint)
 				{
@@ -67,13 +67,13 @@ public class EffectSyncCalls
 			{
 				try
 				{
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					PrintWriter pw = new PrintWriter(baos);
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
 					ex.printStackTrace(pw);
-					Error err = new Error("Exception while exiting", baos.toString("UTF-8"), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EffectSyncCalls.class.getName(), ErrorSeverity.INFO);
+					Error err = new Error("Exception while exiting", sw.toString(), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EffectSyncCalls.class.getName(), ErrorSeverity.INFO);
 					ErrorReporter.reportError(err);
 					pw.close();
-					baos.close();
+					sw.close();
 				}
 				catch(Exception exint)
 				{
@@ -105,13 +105,13 @@ public class EffectSyncCalls
 			{
 				try
 				{
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					PrintWriter pw = new PrintWriter(baos);
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
 					ex.printStackTrace(pw);
-					Error err = new Error("Exception while exiting", baos.toString("UTF-8"), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EffectSyncCalls.class.getName(), ErrorSeverity.INFO);
+					Error err = new Error("Exception while exiting", sw.toString(), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EffectSyncCalls.class.getName(), ErrorSeverity.INFO);
 					ErrorReporter.reportError(err);
 					pw.close();
-					baos.close();
+					sw.close();
 				}
 				catch(Exception exint)
 				{
@@ -141,13 +141,13 @@ public class EffectSyncCalls
 			{
 				try
 				{
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					PrintWriter pw = new PrintWriter(baos);
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
 					ex.printStackTrace(pw);
-					Error err = new Error("Exception while exiting", baos.toString("UTF-8"), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EffectSyncCalls.class.getName(), ErrorSeverity.INFO);
+					Error err = new Error("Exception while exiting", sw.toString(), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EffectSyncCalls.class.getName(), ErrorSeverity.INFO);
 					ErrorReporter.reportError(err);
 					pw.close();
-					baos.close();
+					sw.close();
 				}
 				catch(Exception exint)
 				{
