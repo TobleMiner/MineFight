@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.map.MapView.Scale;
 import org.bukkit.util.Vector;
@@ -76,7 +77,13 @@ public class PVPPlayer
 		this.match = match;
 		this.mv = mv;
 		this.mv.setScale(Scale.CLOSEST);
-		mv.addRenderer(this.mir = new MapInfoRenderer(match));
+		this.mir = new MapInfoRenderer(match, this);
+		if(mir._20pcooler)
+		{
+			for(MapRenderer mr : new ArrayList<MapRenderer>(mv.getRenderers()))
+				mv.removeRenderer(mr);
+		}
+		mv.addRenderer(this.mir);
 	}
 	
 	public void addKillhelper(PVPPlayer damager, double d)

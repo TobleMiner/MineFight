@@ -1,6 +1,13 @@
 package TobleMiner.MineFight.GameEngine.Player.Info;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
@@ -10,24 +17,90 @@ import org.bukkit.map.MapView;
 import org.bukkit.map.MapView.Scale;
 import org.bukkit.map.MinecraftFont;
 
+import TobleMiner.MineFight.Main;
+import TobleMiner.MineFight.ErrorHandling.Error;
+import TobleMiner.MineFight.ErrorHandling.ErrorReporter;
+import TobleMiner.MineFight.ErrorHandling.ErrorSeverity;
 import TobleMiner.MineFight.GameEngine.Match.Match;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Gamemode;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Conquest.Flag;
 import TobleMiner.MineFight.GameEngine.Match.Gamemode.Rush.RadioStation;
+import TobleMiner.MineFight.GameEngine.Match.Team.Team;
+import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
 
 public class MapInfoRenderer extends MapRenderer
 {
 	private final Match match;
 	private byte identifier = (byte)'A';
+	public final boolean _20pcooler;
+	private boolean isRendered = false;
+	private PVPPlayer player;
+	private Team lastTeam;
 	
-	public MapInfoRenderer(Match m)
+	public MapInfoRenderer(Match m, PVPPlayer player)
 	{
 		this.match = m;
+		this.lastTeam = player.getTeam();
+		this._20pcooler = Main.gameEngine.configuration.config.getBoolean("20%cooler", false);
+		this.player = player;
 	}
 	
 	@Override
 	public void render(MapView mv, MapCanvas mc, Player p)
 	{
+		if(this.lastTeam != this.player.getTeam())
+		{
+			this.isRendered = false;
+			this.lastTeam = this.player.getTeam();
+		}
+		if(this._20pcooler)
+		{
+			if(this.isRendered)
+				return;
+			for(int i = 0; i < 128; i++)
+				for(int j = 0; j < 128; j++)
+					mc.setPixel(i, j, (byte)0);
+			String resource = "img/nlr.png";
+			if(this.match.getTeamRed() == this.player.getTeam())
+				resource = "img/solarempire.png";
+			try
+			{
+				InputStream is = this.getClass().getResourceAsStream(resource);
+				BufferedImage img = ImageIO.read(is);
+				Image img_ = img;
+				int max = Math.max(img.getWidth(), img.getHeight());
+				if(max > 128)
+				{
+					int scaledHeight = (int)Math.ceil(128d / ((double)max) * ((double)img.getHeight()));
+					int scaledWidth = (int)Math.ceil(128d / ((double)max) * ((double)img.getWidth()));
+					img_ = img.getScaledInstance(scaledWidth, scaledHeight, 0);
+				}
+				mc.drawImage(0, 0, img_);
+				img.flush();
+				img_.flush();
+				is.close();
+				this.isRendered = true;
+			}
+			catch(Exception ex)
+			{
+				try
+				{
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					PrintWriter pw = new PrintWriter(baos);
+					ex.printStackTrace(pw);
+					Error err = new Error("I don't know what went wrong!", baos.toString("UTF-8"), "Failed reading and printing images for easteregg.", this.getClass().getName(), ErrorSeverity.DOUBLERAINBOOM);
+					ErrorReporter.reportError(err);
+					pw.close();
+					baos.close();
+					ex.printStackTrace();
+				}
+				catch(Exception exint)
+				{
+					exint.printStackTrace();
+				}
+			}
+			return;
+		}
 		int blocksPerPixel = 1;
 		Scale scale = mv.getScale();
 		if(scale == Scale.CLOSE)
