@@ -24,6 +24,7 @@ import TobleMiner.MineFight.GameEngine.Match.Team.Team;
 import TobleMiner.MineFight.GameEngine.Match.Team.TeamBlue;
 import TobleMiner.MineFight.GameEngine.Match.Team.TeamRed;
 import TobleMiner.MineFight.GameEngine.Player.PVPPlayer;
+import TobleMiner.MineFight.Util.Material.ColorUtil;
 import TobleMiner.MineFight.Util.SyncDerp.BlockSyncCalls;
 
 public class Flag
@@ -161,25 +162,12 @@ public class Flag
 					if(ownerNow != null)
 					{
 						this.match.sendTeamMessage(ownerNow,ChatColor.GREEN+String.format(Main.gameEngine.dict.get("flagcap"),this.name));
-						if(ownerNow == teamRed)
+						for(Block b : flagArea)
 						{
-							for(Block b : flagArea)
-							{
-								b.setType(Material.WOOL);
-								BlockState bs = b.getState();
-								bs.setData(new Wool(DyeColor.RED));
-								BlockSyncCalls.updateBlockstate(bs);
-							}
-						}
-						else
-						{
-							for(Block b : flagArea)
-							{
-								b.setType(Material.WOOL);
-								BlockState bs = b.getState();
-								bs.setData(new Wool(DyeColor.BLUE));
-								BlockSyncCalls.updateBlockstate(bs);
-							}
+							b.setType(Material.WOOL);
+							BlockState bs = b.getState();
+							bs.setData(new Wool(ColorUtil.ChatColorToDyeColor(ownerNow.color)));
+							BlockSyncCalls.updateBlockstate(bs);
 						}
 						for(PVPPlayer helper : helpers)
 						{
@@ -188,6 +176,7 @@ public class Flag
 								helper.flagCaptured();
 							}
 						}
+						this.helpers.clear();
 					}
 					else
 					{
@@ -214,7 +203,7 @@ public class Flag
 				{
 					this.sign.setLine(0,fname);
 				}
-				this.sign.setLine(1,"RED | BLUE");
+				this.sign.setLine(1,String.format("%s | %s", match.getTeamRed().name, match.getTeamBlue().name));
 				this.sign.setLine(2,Integer.toString((int)Math.floor(percRed))+" | "+Integer.toString((int)Math.floor(percBlue)));
 				this.sign.setLine(3, Integer.toString(match.getFlagsRed())+" | "+Integer.toString(match.getFlagsBlue()));
 				BlockSyncCalls.updateBlockstate(this.sign);
