@@ -176,7 +176,6 @@ public class Flag
 								helper.flagCaptured();
 							}
 						}
-						this.helpers.clear();
 					}
 					else
 					{
