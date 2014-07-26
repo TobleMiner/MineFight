@@ -12,6 +12,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockDamageEvent;
@@ -34,6 +35,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.API.MineFightAPI;
 import TobleMiner.MineFight.API.MineFightCommandAPI;
+import TobleMiner.MineFight.API.MineFightEventListener;
 import TobleMiner.MineFight.API.MineFightLangAPI;
 import TobleMiner.MineFight.API.MineFightProtectionAPI;
 import TobleMiner.MineFight.API.MineFightWeaponAPI;
@@ -62,6 +64,8 @@ public class GameEngine
 	public WeaponRegistry weaponRegistry;
 	private ProtectionUtil protection;
 	private WeaponIndex weapons;
+	private HashMap<World, HashMap<String, List<MineFightEventListener>>> eventListenersByWorldByEvent = new HashMap<>();
+	private HashMap<World, List<MineFightEventListener>> eventListenersByWorld = new HashMap<>();
 	
 	public boolean isExiting = false;
 	
@@ -464,5 +468,128 @@ public class GameEngine
 		{
 			m.blockBurn(event);
 		}		
+	}
+
+	public void registerEventListener(MineFightEventListener listener, World w) 
+	{
+		List<Class<?>> events = new ArrayList<>();
+		listener.getRequiredEvents(events);
+		for(Class<?> event : events)
+		{
+			HashMap<String, List<MineFightEventListener>> eventsByName = this.eventListenersByWorldByEvent.get(w);
+			if(eventsByName == null)
+				eventsByName = new HashMap<>();
+			List<MineFightEventListener> eventListenersByEvent = eventsByName.get(event.getSimpleName());
+			if(eventListenersByEvent == null)
+				eventListenersByEvent = new ArrayList<MineFightEventListener>();
+			eventListenersByEvent.add(listener);
+			eventsByName.put(event.getSimpleName(), eventListenersByEvent);
+			this.eventListenersByWorldByEvent.put(w, eventsByName);
+		}
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(w);
+		if(listeners == null)
+			listeners = new ArrayList<>();
+		listeners.add(listener);
+		this.eventListenersByWorld.put(w, listeners);
+	}
+
+	public void unregisterEventListener(MineFightEventListener listener, World w)
+	{
+		HashMap<String, List<MineFightEventListener>> eventsByName = this.eventListenersByWorldByEvent.get(w);
+		for(String eventname : eventsByName.keySet())
+		{
+			List<MineFightEventListener> listeners = eventsByName.get(eventname);
+			if(listeners != null)
+				listeners.remove(listener);
+			eventsByName.put(eventname, listeners);
+		}
+		this.eventListenersByWorldByEvent.put(w, eventsByName);
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(w);
+		if(listeners == null)
+			return;
+		listeners.remove(listener);
+		this.eventListenersByWorld.put(w, listeners);
+	}
+	
+	public void executeEvent(Match m, Event event) 
+	{
+		HashMap<String, List<MineFightEventListener>> events = this.eventListenersByWorldByEvent.get(m.getWorld());
+		if(events == null) return;
+		List<MineFightEventListener> listeners = events.get(event.getClass().getSimpleName());
+		if(listeners == null) return;
+		for(MineFightEventListener weapon : listeners)
+			weapon.onEvent(m, event);
+	}
+
+	public void playerJoined(Match m, PVPPlayer player)
+	{
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
+		if(listeners == null) return;
+		for(MineFightEventListener weapon : listeners)
+			weapon.onJoin(m, player);
+	}
+
+	public void playerLeft(Match m, PVPPlayer player)
+	{
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
+		if(listeners == null) return;
+		for(MineFightEventListener weapon : listeners)
+			weapon.onLeave(m, player);
+	}
+
+	public void playerChangedTeam(Match m, PVPPlayer player)
+	{
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
+		if(listeners == null) return;
+		for(MineFightEventListener weapon : listeners)
+			weapon.onTeamchange(m, player);
+	}
+
+	public void playerKilled(Match m, PVPPlayer killer, PVPPlayer killed)
+	{
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
+		if(listeners == null) return;
+		for(MineFightEventListener weapon : listeners)
+			weapon.onKill(m, killer, killed);
+	}
+	
+	public void playerDied(Match m, PVPPlayer killed, PVPPlayer killer)
+	{
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
+		if(listeners == null) return;
+		for(MineFightEventListener weapon : listeners)
+			weapon.onDeath(m, killed, killer);
+	}
+	
+	public void playerRespawned(Match m, PVPPlayer player)
+	{
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
+		if(listeners == null) return;
+		for(MineFightEventListener weapon : listeners)
+			weapon.onRespawn(m, player);
+	}
+	
+	public void matchCreated(Match m)
+	{
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
+		if(listeners == null) return;
+		for(MineFightEventListener weapon : listeners)
+			weapon.matchCreated(m);
+	}
+	
+	public void matchEnded(Match m)
+	{
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
+		if(listeners == null) return;
+		for(MineFightEventListener weapon : listeners)
+			weapon.matchEnded(m);
+	}
+	
+	public void onTick(Match m)
+	{
+		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
+		if(listeners == null) return;
+		for(MineFightEventListener weapon : listeners)
+			weapon.onTick();
 	}
 }
