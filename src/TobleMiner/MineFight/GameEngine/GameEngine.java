@@ -35,6 +35,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import TobleMiner.MineFight.Main;
 import TobleMiner.MineFight.API.MineFightAPI;
 import TobleMiner.MineFight.API.MineFightCommandAPI;
+import TobleMiner.MineFight.API.MineFightEventAPI;
 import TobleMiner.MineFight.API.MineFightEventListener;
 import TobleMiner.MineFight.API.MineFightLangAPI;
 import TobleMiner.MineFight.API.MineFightProtectionAPI;
@@ -88,6 +89,7 @@ public class GameEngine
 		new MineFightProtectionAPI();
 		new MineFightWeaponAPI();
 		new MineFightCommandAPI();
+		new MineFightEventAPI();
 	}
 	
 	public void reload(Main mane)
