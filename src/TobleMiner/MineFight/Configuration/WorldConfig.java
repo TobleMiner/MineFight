@@ -121,11 +121,14 @@ public class WorldConfig
 		{
 			config.set("mpvp",false);
 			config.set("classSelection.pos1.X", spawn.getBlockX());
-			config.set("classSelection.pos1.y", spawn.getBlockY());
-			config.set("classSelection.pos1.z", spawn.getBlockZ());
+			config.set("classSelection.pos1.Y", spawn.getBlockY());
+			config.set("classSelection.pos1.Z", spawn.getBlockZ());
 			config.set("classSelection.pos2.X", spawn.getBlockX());
-			config.set("classSelection.pos2.y", spawn.getBlockY());
-			config.set("classSelection.pos2.z", spawn.getBlockZ());
+			config.set("classSelection.pos2.Y", spawn.getBlockY());
+			config.set("classSelection.pos2.Z", spawn.getBlockZ());
+			config.set("classSelection.lookat.X", spawn.getBlockX());
+			config.set("classSelection.lookat.Y", spawn.getBlockY());
+			config.set("classSelection.lookat.Z", spawn.getBlockZ());
 			config.set("battleSpawn.pos1.X",spawn.getBlockX());
 			config.set("battleSpawn.pos1.Y",spawn.getBlockY());
 			config.set("battleSpawn.pos1.Z",spawn.getBlockZ());
@@ -271,6 +274,14 @@ public class WorldConfig
 		cs.set(prefix+".enabled",true);
 		this.save();
 		this.protectedRegions.add(new Area3D(pos1, pos2));
+	}
+	
+	public Location getSpawnLookatPos()
+	{
+		double x = this.config.getDouble("classSelection.lookat.X", 0);
+		double y = this.config.getDouble("classSelection.lookat.Y", 0);
+		double z = this.config.getDouble("classSelection.lookat.Z", 0);
+		return new Location(this.world, x, y, z);
 	}
 	
 	public boolean isSpawnengineEnabled()

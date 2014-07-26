@@ -241,7 +241,17 @@ public class Match
 		{
 			playersBlue.add(player);
 		}
-		p.teleport(this.classSelectArea.pickRandomPoint());
+		Location loc = this.classSelectArea.pickRandomPoint();
+		Location lookat = Main.gameEngine.configuration.getSpawnLookatPos(this.world);
+		if(lookat != null)
+		{
+			Vector vecSouth = new Vector(0, 0, 1);
+			Vector vecDown = new Vector(0, -1, 0);
+			Vector vec = lookat.clone().subtract(loc).toVector();
+			loc.setPitch((float)-((vecDown.angle(vec) / Math.PI * 180d) - 90F));
+			loc.setYaw((float)(vecSouth.angle(vec) / Math.PI * 180d));
+		}
+		p.teleport(loc);
 		Main.plsl.registerPlayer(p, player);
 		player.storeInventory();
 		Main.gameEngine.playerJoined(this, player);
