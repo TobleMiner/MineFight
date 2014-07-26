@@ -244,7 +244,6 @@ public class Match
 		p.teleport(this.classSelectArea.pickRandomPoint());
 		Main.plsl.registerPlayer(p, player);
 		player.storeInventory();
-		Main.gameEngine.weaponRegistry.playerJoined(this, player);
 		Main.gameEngine.playerJoined(this, player);
 		return ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("persJoinMsg"), this.name);
 	}
@@ -301,7 +300,6 @@ public class Match
 		{
 			Main.plsl.sendNamechange(player, watcher, false);
 		}
-		Main.gameEngine.weaponRegistry.playerChangedTeam(this, player);
 		Main.gameEngine.playerChangedTeam(this, player);
 		if(from == teamRed)
 		{
@@ -344,7 +342,6 @@ public class Match
 			Main.plsl.sendNamechange(player, watcher, true);
 			Main.plsl.sendNamechange(watcher, player, true);
 		}
-		Main.gameEngine.weaponRegistry.playerLeft(this, player);
 		Main.gameEngine.playerLeft(this, player);
 	}
 	
@@ -447,8 +444,6 @@ public class Match
 				victim.getTeam().subPoints(1);
 			}
 		}
-		Main.gameEngine.weaponRegistry.playerKilled(this, killer, victim);
-		Main.gameEngine.weaponRegistry.playerDied(this, victim, killer);
 		Main.gameEngine.playerKilled(this, killer, victim);
 		Main.gameEngine.playerDied(this, victim, killer);
 		victim.normalDeathBlocked = false;
@@ -591,7 +586,6 @@ public class Match
 				}
 				timer++;
 			}
-			Main.gameEngine.weaponRegistry.onTick(this);
 			Main.gameEngine.onTick(this);
 		}
 		catch(Exception ex)
@@ -628,7 +622,6 @@ public class Match
 		{
 			event.setCancelled(Main.gameEngine.configuration.getPreventItemDrop(world, gmode));
 		}
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 
@@ -637,13 +630,11 @@ public class Match
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player == null || (!player.isSpawned()))
 			event.setCancelled(true);
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 
 	public void itemDespawn(ItemDespawnEvent event)
 	{		
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 	
@@ -681,7 +672,6 @@ public class Match
 		playersRed = new ArrayList<PVPPlayer>();
 		infSs = new ArrayList<InformationSign>();
 		flags = new ArrayList<Flag>();
-		Main.gameEngine.weaponRegistry.matchEnded(this);
 		Main.gameEngine.matchEnded(this);
 		Main.gameEngine.removeMatch(this);
 	}
@@ -727,7 +717,6 @@ public class Match
 		{
 			event.setDeathMessage(deathMessage);
 		}
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 
@@ -859,7 +848,6 @@ public class Match
 			if(ks == Killstreak.PLAYERSEEKER) InventorySyncCalls.addItemStack(i, new ItemStack(Material.STICK,1));
 		}
 		player.teleport(spawn);
-		Main.gameEngine.weaponRegistry.playerRespawned(this, player);
 		Main.gameEngine.playerRespawned(this, player);
 	}
 
@@ -991,7 +979,6 @@ public class Match
 
 	public int blockPlace(BlockPlaceEvent event)
 	{
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
@@ -1310,7 +1297,6 @@ public class Match
 
 	public int blockBreak(BlockBreakEvent event)
 	{
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
@@ -1412,7 +1398,6 @@ public class Match
 			format = "<"+player.getName()+"> %2$s";
 		}
 		event.setFormat(format);
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 
@@ -1434,7 +1419,6 @@ public class Match
 		{
 			event.setCancelled(true);
 		}
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 
@@ -1528,7 +1512,6 @@ public class Match
 				event.setCancelled(true);;
 			}
 		}
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 	
@@ -1565,13 +1548,11 @@ public class Match
 				}
 			}
 		}
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 
 	public void entityDamage(EntityDamageEvent event)
 	{
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 		if(event.getEntity() instanceof Player)
 		{
@@ -1582,7 +1563,6 @@ public class Match
 
 	public void entityCombust(EntityCombustEvent event)
 	{
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 
@@ -1600,13 +1580,11 @@ public class Match
 					event.setCancelled(true);;
 			}
 		}
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 
 	public int blockDamaged(BlockDamageEvent event) 
 	{
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 		PVPPlayer player = this.getPlayerExact(event.getPlayer());
 		if(player != null && player.isSpawned())
@@ -1635,7 +1613,6 @@ public class Match
 
 	public int blockChanged(EntityChangeBlockEvent event) 
 	{
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 		if(event.getEntity() instanceof Player)
 		{
@@ -1683,13 +1660,11 @@ public class Match
 			if(this.playerDamagePlayer((Player)event.getDamager(),(Player)event.getEntity(),event.getDamage()))
 				event.setCancelled(true);
 		}
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 	}
 
 	public void projectileHit(ProjectileHitEvent event) 
 	{
-		Main.gameEngine.weaponRegistry.executeEvent(this, event);
 		Main.gameEngine.executeEvent(this, event);
 		if(event.getEntity() instanceof Arrow)
 		{
