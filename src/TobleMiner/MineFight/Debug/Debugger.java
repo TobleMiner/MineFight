@@ -1,6 +1,6 @@
 package TobleMiner.MineFight.Debug;
 
-import java.io.PrintStream;
+import java.util.logging.Level;
 
 import TobleMiner.MineFight.Main;
 
@@ -10,12 +10,7 @@ public class Debugger
 	{
 		if(Main.gameEngine.configuration.isDebuging())
 		{
-			PrintStream stdout = System.out;
-			stdout.println(" ");
-			stdout.println("----------------DEBUG----------------");
-			stdout.println(s);
-			stdout.println("----------------DEBUG----------------");
-			stdout.println(" ");
+			Main.logger.log(Level.INFO, String.format("[DEBUG] %s", s));
 		}
 	}
 }
