@@ -23,10 +23,14 @@ public class MineFightWeaponAPI
 		Match m = Main.gameEngine.getMatch(w);
 		if(m != null)
 		{
-			weapon.matchCreated(m);
-			for(PVPPlayer p : m.getPlayers())
+			if(weapon instanceof MineFightEventListener)
 			{
-				weapon.onJoin(m, p);
+				MineFightEventListener listener = (MineFightEventListener)weapon;
+				listener.matchCreated(m);
+				for(PVPPlayer p : m.getPlayers())
+				{
+					listener.onJoin(m, p);
+				}
 			}
 		}
 		return Main.gameEngine.weaponRegistry.registerWeapon(weapon, w);
@@ -38,11 +42,15 @@ public class MineFightWeaponAPI
 		Match m = Main.gameEngine.getMatch(w);
 		if(m != null)
 		{
-			for(PVPPlayer p : m.getPlayers())
+			if(weapon instanceof MineFightEventListener)
 			{
-				weapon.onLeave(m, p);
+				MineFightEventListener listener = (MineFightEventListener)weapon;
+				for(PVPPlayer p : m.getPlayers())
+				{
+					listener.onLeave(m, p);
+				}
+				listener.matchEnded(m);
 			}
-			weapon.matchEnded(m);
 		}
 		return Main.gameEngine.weaponRegistry.unregisterWeapon(weapon, w);
 	}		
