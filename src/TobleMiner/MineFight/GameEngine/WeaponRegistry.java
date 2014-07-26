@@ -105,7 +105,9 @@ public class WeaponRegistry
 			List<Weapon> weaponsEvent = weaponsByEvent.get(eventname);
 			if(weaponsEvent != null)
 				weaponsEvent.remove(weapon);
+			weaponsByEvent.put(eventname, weaponsEvent);
 		}
+		this.eventsByWorld.put(w, weaponsByEvent);
 		return true;
 	}
 	
