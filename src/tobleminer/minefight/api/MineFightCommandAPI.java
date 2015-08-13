@@ -13,12 +13,12 @@ public class MineFightCommandAPI
 	{
 		instance = this;
 	}
-		
+
 	public void registerCommandModule(CommandModule cm)
 	{
 		Main.cmdhandler.registerModule(cm);
 	}
-	
+
 	public boolean hasPlayerPermission(Player p, String perm)
 	{
 		return Main.cmdhandler.pm.hasPlayerPermission(p, perm);

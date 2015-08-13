@@ -1,9 +1,6 @@
 package tobleminer.minefight.permission;
 
-public enum PermissionPlugin 
+public enum PermissionPlugin
 {
-	VAULT,
-	PEX,
-	OPONLYFALLBACK,
-	NONE
+	VAULT, PEX, OPONLYFALLBACK, NONE
 }

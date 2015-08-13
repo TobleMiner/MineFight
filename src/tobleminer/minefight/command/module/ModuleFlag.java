@@ -1,5 +1,7 @@
 package tobleminer.minefight.command.module;
 
+import java.util.HashSet;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -17,76 +19,79 @@ public class ModuleFlag extends CommandModule
 {
 	public boolean handleCommand(String[] args, CommandSender sender)
 	{
-		if(args.length >= 1)
+		if (args.length >= 1)
 		{
-			if(!(sender instanceof Player))
+			if (!(sender instanceof Player))
 			{
 				sender.sendMessage(playerOnly);
 				return true;
 			}
-			Player p = (Player)sender;
-			if(args[0].equalsIgnoreCase("add"))
+			Player p = (Player) sender;
+			if (args[0].equalsIgnoreCase("add"))
 			{
-				if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_FLAG_ADD))
+				if (!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_FLAG_ADD))
 				{
 					sender.sendMessage(this.noPermMsg);
 					return true;
 				}
-				Block tb = p.getTargetBlock(null,10);
-				if(tb != null && (tb.getType().equals(Material.WALL_SIGN)))
+				Block tb = p.getTargetBlock((HashSet<Byte>) null, 10);
+				if (tb != null && (tb.getType().equals(Material.WALL_SIGN)))
 				{
 					String name = "";
 					boolean sky = true;
-					if(args.length >= 2)
+					if (args.length >= 2)
 					{
 						name = args[1];
-						if(args.length >= 3)
+						if (args.length >= 3)
 						{
 							try
 							{
 								sky = Boolean.parseBoolean(args[2]);
 							}
-							catch(Exception ex) { };
+							catch (Exception ex)
+							{};
 						}
 					}
-					Sign sign = (Sign)tb.getState();
+					Sign sign = (Sign) tb.getState();
 					Flag.buildFlag(sign);
 					Main.gameEngine.configuration.addFlag(new FlagContainer(sign, name, sky));
-					Main.gameEngine.configuration.addNewProtectedRegion(sign.getLocation().clone().subtract(11d, 11d, 11d), sign.getLocation().clone().add(11d, 11d, 11d));
-					sender.sendMessage(ChatColor.DARK_GREEN+Main.gameEngine.dict.get("addFlag"));
+					Main.gameEngine.configuration.addNewProtectedRegion(
+							sign.getLocation().clone().subtract(11d, 11d, 11d),
+							sign.getLocation().clone().add(11d, 11d, 11d));
+					sender.sendMessage(ChatColor.DARK_GREEN + Main.gameEngine.dict.get("addFlag"));
 				}
 				else
 				{
-					sender.sendMessage(ChatColor.DARK_RED+Main.gameEngine.dict.get("mustPointOnSign"));
+					sender.sendMessage(ChatColor.DARK_RED + Main.gameEngine.dict.get("mustPointOnSign"));
 				}
 				return true;
 			}
-			
-			if(args[0].equalsIgnoreCase("remove"))
+
+			if (args[0].equalsIgnoreCase("remove"))
 			{
-				if(!!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_FLAG_DEL))
+				if (!!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_FLAG_DEL))
 				{
 					sender.sendMessage(this.noPermMsg);
 					return true;
 				}
 
-				Block tb = p.getTargetBlock(null,10);
-				if(tb != null && (tb.getType().equals(Material.WALL_SIGN)))
+				Block tb = p.getTargetBlock((HashSet<Byte>) null, 10);
+				if (tb != null && (tb.getType().equals(Material.WALL_SIGN)))
 				{
-					Sign sign = (Sign)tb.getState();
+					Sign sign = (Sign) tb.getState();
 					Main.gameEngine.configuration.removeFlag(sign);
-					sender.sendMessage(ChatColor.DARK_GREEN+Main.gameEngine.dict.get("removeFlag"));
+					sender.sendMessage(ChatColor.DARK_GREEN + Main.gameEngine.dict.get("removeFlag"));
 				}
 				else
 				{
-					sender.sendMessage(ChatColor.DARK_RED+Main.gameEngine.dict.get("mustPointOnSign"));
+					sender.sendMessage(ChatColor.DARK_RED + Main.gameEngine.dict.get("mustPointOnSign"));
 				}
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	@Override
 	public String getName()
 	{
@@ -96,22 +101,23 @@ public class ModuleFlag extends CommandModule
 	@Override
 	public CommandHelp getHelp(String cmd)
 	{
-		for(CommandHelp help : CommandFlag.values())
-			if(help.getCmd().equalsIgnoreCase(cmd))
+		for (CommandHelp help : CommandFlag.values())
+			if (help.getCmd().equalsIgnoreCase(cmd))
 				return help;
 		return null;
 	}
-	
+
 	@Override
 	public CommandHelp[] getHelp()
 	{
 		return CommandFlag.values();
 	}
-	
+
 	private enum CommandFlag implements CommandHelp
 	{
-		MPVP_FLAG_ADD("flag","add",0,0,"cmdDescrFlagAdd","/mpvp flag add",Permission.MPVP_FLAG_ADD.toString()),
-		MPVP_FLAG_DEL("flag","remove",0,0,"cmdDescrFlagDel","/mpvp flag remove",Permission.MPVP_FLAG_DEL.toString());
+		MPVP_FLAG_ADD("flag", "add", 0, 0, "cmdDescrFlagAdd", "/mpvp flag add",
+				Permission.MPVP_FLAG_ADD.toString()), MPVP_FLAG_DEL("flag", "remove", 0, 0, "cmdDescrFlagDel",
+						"/mpvp flag remove", Permission.MPVP_FLAG_DEL.toString());
 
 		public final String module;
 		public final String cmd;
@@ -120,8 +126,8 @@ public class ModuleFlag extends CommandModule
 		private final String descr;
 		public final String perm;
 		public final String syntax;
-		
-		CommandFlag(String module, String cmd, int argnumMin,int argnumMax, String descr, String syntax, String perm)
+
+		CommandFlag(String module, String cmd, int argnumMin, int argnumMax, String descr, String syntax, String perm)
 		{
 			this.module = module;
 			this.cmd = cmd;
@@ -137,7 +143,7 @@ public class ModuleFlag extends CommandModule
 		{
 			return cmd;
 		}
-		
+
 		@Override
 		public String getModule()
 		{
@@ -145,7 +151,7 @@ public class ModuleFlag extends CommandModule
 		}
 
 		@Override
-		public int argMin() 
+		public int argMin()
 		{
 			return argnumMin;
 		}
@@ -157,7 +163,7 @@ public class ModuleFlag extends CommandModule
 		}
 
 		@Override
-		public String getDescr() 
+		public String getDescr()
 		{
 			return Main.gameEngine.dict.get(descr);
 		}

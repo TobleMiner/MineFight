@@ -56,28 +56,29 @@ import tobleminer.minefight.util.protection.ProtectionUtil;
 
 public class GameEngine
 {
-	public HashMap<String,CombatClass> combatClasses = new HashMap<String,CombatClass>();
-	public Config configuration;
-	public FileConfiguration config;
-	private final List<Match> matches = new ArrayList<Match>();
-	public Langfile dict;
-	public StatHandler stathandler;
-	public WeaponRegistry weaponRegistry;
-	private ProtectionUtil protection;
-	private WeaponIndex weapons;
-	private HashMap<World, HashMap<String, List<MineFightEventListener>>> eventListenersByWorldByEvent = new HashMap<>();
-	private HashMap<World, List<MineFightEventListener>> eventListenersByWorld = new HashMap<>();
-	
+	public HashMap<String, CombatClass>										combatClasses					= new HashMap<String, CombatClass>();
+	public Config															configuration;
+	public FileConfiguration												config;
+	private final List<Match>												matches							= new ArrayList<Match>();
+	public Langfile															dict;
+	public StatHandler														stathandler;
+	public WeaponRegistry													weaponRegistry;
+	private ProtectionUtil													protection;
+	private WeaponIndex														weapons;
+	private HashMap<World, HashMap<String, List<MineFightEventListener>>>	eventListenersByWorldByEvent	= new HashMap<>();
+	private HashMap<World, List<MineFightEventListener>>					eventListenersByWorld			= new HashMap<>();
+
 	public boolean isExiting = false;
-	
+
 	public static double tps = 20.0d;
-	
+
 	public GameEngine(Main mane)
 	{
 		this.config = mane.getConfig();
 		this.configuration = new Config(mane, config);
 		this.configuration.read();
-		Main.gameEngine = this; //Getting the configinstance into the static reference from Main
+		Main.gameEngine = this; // Getting the configinstance into the static
+								// reference from Main
 		this.dict = new Langfile(mane.getPluginDir());
 		this.stathandler = new StatHandler(mane.getDatabase());
 		this.dict.loadLanguageFile(configuration.getLangFile());
@@ -91,18 +92,19 @@ public class GameEngine
 		new MineFightCommandAPI();
 		new MineFightEventAPI();
 	}
-	
+
 	public void reload(Main mane)
 	{
 		this.config = mane.getConfig();
 		this.configuration = new Config(mane, config);
 		this.configuration.read();
-		Main.gameEngine = this; //Getting the configinstance into the static reference from Main
+		Main.gameEngine = this; // Getting the configinstance into the static
+								// reference from Main
 		this.stathandler = new StatHandler(mane.getDatabase());
 		this.dict.loadLanguageFile(configuration.getLangFile());
 		init();
 	}
-	
+
 	public void init()
 	{
 		this.stathandler.reload(this);
@@ -111,16 +113,16 @@ public class GameEngine
 		this.combatClasses = this.configuration.getCombatClasses(this.weapons);
 		Main.logger.log(Level.INFO, String.format(this.dict.get("kitconfloaded"), this.combatClasses.size()));
 	}
-	
+
 	public void doUpdate()
 	{
-		for(int i=0;i<matches.size();i++)
+		for (int i = 0; i < matches.size(); i++)
 		{
 			Match m = matches.get(i);
 			m.doUpdate();
 		}
 	}
-	
+
 	public void startNewMatch(World w, Gamemode g, String name, boolean hardcore)
 	{
 		List<Sign> signs = configuration.getInfoSigns(w, g);
@@ -130,14 +132,14 @@ public class GameEngine
 		this.matches.add(match);
 		this.matchCreated(match);
 	}
-	
+
 	public PVPPlayer getPlayerByName(String name)
 	{
-		for(int i=0;i<matches.size();i++)
+		for (int i = 0; i < matches.size(); i++)
 		{
 			Match match = matches.get(i);
 			PVPPlayer p = match.getPlayerByName(name);
-			if(p != null)
+			if (p != null)
 			{
 				return p;
 			}
@@ -145,14 +147,13 @@ public class GameEngine
 		return null;
 	}
 
-	
 	public PVPPlayer getPlayerExact(Player player)
 	{
-		for(int i=0;i<matches.size();i++)
+		for (int i = 0; i < matches.size(); i++)
 		{
 			Match match = matches.get(i);
 			PVPPlayer p = match.getPlayerExact(player);
-			if(p != null)
+			if (p != null)
 			{
 				return p;
 			}
@@ -162,10 +163,10 @@ public class GameEngine
 
 	public Match getMatch(World w)
 	{
-		for(int i=0;i<matches.size();i++)
+		for (int i = 0; i < matches.size(); i++)
 		{
 			Match m = matches.get(i);
-			if(m.getWorld().equals(w))
+			if (m.getWorld().equals(w))
 			{
 				return m;
 			}
@@ -175,36 +176,36 @@ public class GameEngine
 
 	public Match getMatchByNameIgCase(String name)
 	{
-		for(int i=0;i<matches.size();i++)
+		for (int i = 0; i < matches.size(); i++)
 		{
 			Match m = matches.get(i);
-			if(m.name.equalsIgnoreCase(name))
+			if (m.name.equalsIgnoreCase(name))
 			{
 				return m;
 			}
 		}
 		return null;
 	}
-	
+
 	public List<String> getMatchNames()
 	{
 		List<String> matchNames = new ArrayList<String>();
-		for(int i=0;i<matches.size();i++)
+		for (int i = 0; i < matches.size(); i++)
 		{
 			matchNames.add(matches.get(i).name);
 		}
 		return matchNames;
 	}
-	
+
 	public void removeMatch(Match m)
 	{
 		matches.remove(m);
 	}
-	
+
 	public void playerDroppedItem(PlayerDropItemEvent pdie)
 	{
 		Match m = this.getMatch(pdie.getPlayer().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.playerDroppedItem(pdie);
 		}
@@ -213,7 +214,7 @@ public class GameEngine
 	public void playerPickUpItem(PlayerPickupItemEvent ppie)
 	{
 		Match m = this.getMatch(ppie.getPlayer().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.playerPickUpItem(ppie);
 		}
@@ -222,7 +223,7 @@ public class GameEngine
 	public void itemDespawn(ItemDespawnEvent event)
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.itemDespawn(event);
 		}
@@ -232,7 +233,7 @@ public class GameEngine
 	{
 		World w = event.getEntity().getWorld();
 		Match m = this.getMatch(w);
-		if(m != null)
+		if (m != null)
 		{
 			m.playerDeath(event);
 		}
@@ -242,16 +243,16 @@ public class GameEngine
 	{
 		World w = p.getWorld();
 		Match m = this.getMatch(w);
-		if(m != null)
+		if (m != null)
 		{
-			m.rightClickSign(p,clickedBlock);
+			m.rightClickSign(p, clickedBlock);
 		}
 	}
 
 	public void playerChangedWorld(Player player, World from)
 	{
 		Match m = this.getMatch(from);
-		if(m != null)
+		if (m != null)
 		{
 			m.playerChangedWorld(player);
 		}
@@ -260,7 +261,7 @@ public class GameEngine
 	public void playerQuit(Player p)
 	{
 		Match m = this.getMatch(p.getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.playerQuit(p);
 		}
@@ -270,16 +271,17 @@ public class GameEngine
 	{
 		Match m = this.getMatch(event.getBlock().getWorld());
 		int veto = 1;
-		if(m != null)
+		if (m != null)
 		{
 			veto = m.blockPlace(event);
 		}
-		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2
+				|| !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
-	public void endAllMatches() 
+	public void endAllMatches()
 	{
-		for(int i=0;i<matches.size();i++)
+		for (int i = 0; i < matches.size(); i++)
 		{
 			matches.get(i).endMatch();
 		}
@@ -289,7 +291,7 @@ public class GameEngine
 	public boolean playerLeave(Player p)
 	{
 		PVPPlayer player = getPlayerExact(p);
-		if(player != null)
+		if (player != null)
 		{
 			player.leaveMatch(player.getMatch().getMatchLeaveLoc());
 			return true;
@@ -300,33 +302,33 @@ public class GameEngine
 	public String playerChangeTeam(Player p)
 	{
 		PVPPlayer player = getPlayerExact(p);
-		if(player != null)
+		if (player != null)
 		{
 			return player.getMatch().playerChangeTeam(player);
 		}
-		return ChatColor.DARK_RED+Main.gameEngine.dict.get("notJoinedYet");
+		return ChatColor.DARK_RED + Main.gameEngine.dict.get("notJoinedYet");
 	}
 
 	public String playerJoinMatch(Player p, String s)
 	{
 		Match m = getMatchByNameIgCase(s);
-		if(m != null)
+		if (m != null)
 		{
 			return (m.join(p));
 		}
 		else
 		{
-			return ChatColor.DARK_RED+String.format(Main.gameEngine.dict.get("noMatch"),s);
+			return ChatColor.DARK_RED + String.format(Main.gameEngine.dict.get("noMatch"), s);
 		}
 	}
 
 	public Location playerRespawn(Player p, Location respawnLocation)
 	{
 		Match m = this.getMatch(p.getWorld());
-		if(m != null)
+		if (m != null)
 		{
-			return m.playerRespawn(p,respawnLocation);
-		}		
+			return m.playerRespawn(p, respawnLocation);
+		}
 		return respawnLocation;
 	}
 
@@ -334,19 +336,20 @@ public class GameEngine
 	{
 		Match m = this.getMatch(event.getBlock().getWorld());
 		int veto = 1;
-		if(m != null)
+		if (m != null)
 		{
 			veto = m.blockBreak(event);
 		}
-		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2
+				|| !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
 	public boolean playerDamagePlayer(Player damager, Player damaged, double d)
 	{
 		Match m = this.getMatch(damager.getWorld());
-		if(m != null)
+		if (m != null)
 		{
-			return m.playerDamagePlayer(damager,damaged,d);
+			return m.playerDamagePlayer(damager, damaged, d);
 		}
 		return false;
 	}
@@ -354,7 +357,7 @@ public class GameEngine
 	public void playerChat(AsyncPlayerChatEvent event)
 	{
 		Match m = this.getMatch(event.getPlayer().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.playerChat(event);
 		}
@@ -363,16 +366,16 @@ public class GameEngine
 	public void foodLevelChange(FoodLevelChangeEvent event)
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.foodLevelChange(event);
 		}
 	}
 
-	public void rightClickWithStick(Player p) 
+	public void rightClickWithStick(Player p)
 	{
 		Match m = this.getMatch(p.getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.rightClickWithStick(p);
 		}
@@ -381,43 +384,43 @@ public class GameEngine
 	public void entityExplosion(EntityExplodeEvent event)
 	{
 		Match m = this.getMatch(event.getLocation().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.entityExplosion(event);
 		}
 	}
 
-	public void playerInteract(PlayerInteractEvent event) 
+	public void playerInteract(PlayerInteractEvent event)
 	{
 		Match m = this.getMatch(event.getPlayer().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.playerInteract(event);
 		}
 	}
 
-	public void entityDamage(EntityDamageEvent ede) 
+	public void entityDamage(EntityDamageEvent ede)
 	{
 		Match m = this.getMatch(ede.getEntity().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.entityDamage(ede);
 		}
 	}
 
-	public void entityCombust(EntityCombustEvent event) 
+	public void entityCombust(EntityCombustEvent event)
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.entityCombust(event);
 		}
 	}
 
-	public void projectileLaunched(ProjectileLaunchEvent event) 
+	public void projectileLaunched(ProjectileLaunchEvent event)
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.projectileLaunched(event);
 		}
@@ -427,28 +430,30 @@ public class GameEngine
 	{
 		Match m = this.getMatch(event.getBlock().getWorld());
 		int veto = 1;
-		if(m != null)
+		if (m != null)
 		{
 			veto = m.blockDamaged(event);
 		}
-		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2
+				|| !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
 	public boolean entityChangeBlock(EntityChangeBlockEvent event)
 	{
 		Match m = this.getMatch(event.getBlock().getWorld());
 		int veto = 1;
-		if(m != null)
+		if (m != null)
 		{
 			veto = m.blockChanged(event);
 		}
-		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2 || !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
+		return (protection.isBlockProtected(event.getBlock()) && veto != 0) || veto == 2
+				|| !Main.gameEngine.configuration.canEnvironmentBeDamaged(event.getBlock().getWorld());
 	}
 
 	public void entityDamageByEntity(EntityDamageByEntityEvent event)
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.entityDamageByEntity(event);
 		}
@@ -457,39 +462,39 @@ public class GameEngine
 	public void projectileHit(ProjectileHitEvent event)
 	{
 		Match m = this.getMatch(event.getEntity().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.projectileHit(event);
-		}		
+		}
 	}
-	
+
 	public void blockBurn(BlockBurnEvent event)
 	{
 		Match m = this.getMatch(event.getBlock().getWorld());
-		if(m != null)
+		if (m != null)
 		{
 			m.blockBurn(event);
-		}		
+		}
 	}
 
-	public void registerEventListener(MineFightEventListener listener, World w) 
+	public void registerEventListener(MineFightEventListener listener, World w)
 	{
 		List<Class<?>> events = new ArrayList<>();
 		listener.getRequiredEvents(events);
-		for(Class<?> event : events)
+		for (Class<?> event : events)
 		{
 			HashMap<String, List<MineFightEventListener>> eventsByName = this.eventListenersByWorldByEvent.get(w);
-			if(eventsByName == null)
+			if (eventsByName == null)
 				eventsByName = new HashMap<>();
 			List<MineFightEventListener> eventListenersByEvent = eventsByName.get(event.getSimpleName());
-			if(eventListenersByEvent == null)
+			if (eventListenersByEvent == null)
 				eventListenersByEvent = new ArrayList<MineFightEventListener>();
 			eventListenersByEvent.add(listener);
 			eventsByName.put(event.getSimpleName(), eventListenersByEvent);
 			this.eventListenersByWorldByEvent.put(w, eventsByName);
 		}
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(w);
-		if(listeners == null)
+		if (listeners == null)
 			listeners = new ArrayList<>();
 		listeners.add(listener);
 		this.eventListenersByWorld.put(w, listeners);
@@ -498,100 +503,111 @@ public class GameEngine
 	public void unregisterEventListener(MineFightEventListener listener, World w)
 	{
 		HashMap<String, List<MineFightEventListener>> eventsByName = this.eventListenersByWorldByEvent.get(w);
-		for(String eventname : eventsByName.keySet())
+		for (String eventname : eventsByName.keySet())
 		{
 			List<MineFightEventListener> listeners = eventsByName.get(eventname);
-			if(listeners != null)
+			if (listeners != null)
 				listeners.remove(listener);
 			eventsByName.put(eventname, listeners);
 		}
 		this.eventListenersByWorldByEvent.put(w, eventsByName);
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(w);
-		if(listeners == null)
+		if (listeners == null)
 			return;
 		listeners.remove(listener);
 		this.eventListenersByWorld.put(w, listeners);
 	}
-	
-	public void executeEvent(Match m, Event event) 
+
+	public void executeEvent(Match m, Event event)
 	{
 		HashMap<String, List<MineFightEventListener>> events = this.eventListenersByWorldByEvent.get(m.getWorld());
-		if(events == null) return;
+		if (events == null)
+			return;
 		List<MineFightEventListener> listeners = events.get(event.getClass().getSimpleName());
-		if(listeners == null) return;
-		for(MineFightEventListener listener : listeners)
+		if (listeners == null)
+			return;
+		for (MineFightEventListener listener : listeners)
 			listener.onEvent(m, event);
 	}
 
 	public void playerJoined(Match m, PVPPlayer player)
 	{
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
-		if(listeners == null) return;
-		for(MineFightEventListener listener : listeners)
+		if (listeners == null)
+			return;
+		for (MineFightEventListener listener : listeners)
 			listener.onJoin(m, player);
 	}
 
 	public void playerLeft(Match m, PVPPlayer player)
 	{
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
-		if(listeners == null) return;
-		for(MineFightEventListener listener : listeners)
+		if (listeners == null)
+			return;
+		for (MineFightEventListener listener : listeners)
 			listener.onLeave(m, player);
 	}
 
 	public void playerChangedTeam(Match m, PVPPlayer player)
 	{
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
-		if(listeners == null) return;
-		for(MineFightEventListener listener : listeners)
+		if (listeners == null)
+			return;
+		for (MineFightEventListener listener : listeners)
 			listener.onTeamchange(m, player);
 	}
 
 	public void playerKilled(Match m, PVPPlayer killer, PVPPlayer killed)
 	{
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
-		if(listeners == null) return;
-		for(MineFightEventListener listener : listeners)
+		if (listeners == null)
+			return;
+		for (MineFightEventListener listener : listeners)
 			listener.onKill(m, killer, killed);
 	}
-	
+
 	public void playerDied(Match m, PVPPlayer killed, PVPPlayer killer)
 	{
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
-		if(listeners == null) return;
-		for(MineFightEventListener listener : listeners)
+		if (listeners == null)
+			return;
+		for (MineFightEventListener listener : listeners)
 			listener.onDeath(m, killed, killer);
 	}
-	
+
 	public void playerRespawned(Match m, PVPPlayer player)
 	{
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
-		if(listeners == null) return;
-		for(MineFightEventListener listener : listeners)
+		if (listeners == null)
+			return;
+		for (MineFightEventListener listener : listeners)
 			listener.onRespawn(m, player);
 	}
-	
+
 	public void matchCreated(Match m)
 	{
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
-		if(listeners == null) return;
-		for(MineFightEventListener listener : listeners)
+		if (listeners == null)
+			return;
+		for (MineFightEventListener listener : listeners)
 			listener.matchCreated(m);
 	}
-	
+
 	public void matchEnded(Match m)
 	{
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
-		if(listeners == null) return;
-		for(MineFightEventListener listener : listeners)
+		if (listeners == null)
+			return;
+		for (MineFightEventListener listener : listeners)
 			listener.matchEnded(m);
 	}
-	
+
 	public void onTick(Match m)
 	{
 		List<MineFightEventListener> listeners = this.eventListenersByWorld.get(m.getWorld());
-		if(listeners == null) return;
-		for(MineFightEventListener listener : listeners)
+		if (listeners == null)
+			return;
+		for (MineFightEventListener listener : listeners)
 			listener.onTick();
 	}
 }

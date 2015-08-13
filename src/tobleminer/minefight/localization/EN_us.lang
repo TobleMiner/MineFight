@@ -66,7 +66,7 @@ nosuchgmode="The gamemode \"%s\" doesn't exist."
 playeronlycmd="This command can only be used by a player."
 #commandhelp
 helpModulesPre="The commands are devided into the following modules:"
-helpModulesAfter="Use \"/mpvp help <categorie>\" to show more details."
+helpModulesAfter="Use \"/mpvp help <category>\" to show more details."
 helpModulePre="The module \"%s\" provides the following commands:"
 helpModuleAfter="Use \"/mpvp help %s <command>\" to show further details."
 noSuchModule="There is no module \"%s\"."

@@ -40,6 +40,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
 import tobleminer.minefight.Main;
@@ -1582,7 +1583,7 @@ public class Match
 		if(proj instanceof Arrow)
 		{
 			Arrow arrow = (Arrow)proj;
-			LivingEntity shooter = arrow.getShooter();
+			ProjectileSource shooter = arrow.getShooter();
 			if(shooter instanceof Player)
 			{
 				Player p = (Player)shooter;

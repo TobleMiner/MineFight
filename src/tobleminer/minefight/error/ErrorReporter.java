@@ -8,13 +8,13 @@ public class ErrorReporter
 	{
 		reportErrorInternally(error);
 	}
-	
+
 	private static void reportErrorInternally(Error error)
 	{
 		PrintStream stdout = System.out;
 		stdout.println(" ");
 		stdout.println("MineFight encountered an error!");
-		stdout.println("Errorlevel: "+error.severity.toString());
+		stdout.println("Errorlevel: " + error.severity.toString());
 		stdout.println(error.header);
 		stdout.println("-------------------------------------");
 		stdout.println(error.body);
@@ -24,6 +24,6 @@ public class ErrorReporter
 
 	private static boolean reportErrorExternally()
 	{
-		return true; //TODO
+		return true; // TODO
 	}
 }

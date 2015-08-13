@@ -6,16 +6,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import net.minecraft.server.v1_6_R3.Packet60Explosion;
-import net.minecraft.server.v1_6_R3.Vec3D;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -25,6 +22,10 @@ import org.bukkit.map.MapView;
 import org.bukkit.map.MapView.Scale;
 import org.bukkit.util.Vector;
 
+import com.comphenix.protocol.wrappers.BlockPosition;
+
+import net.minecraft.server.v1_8_R3.PacketPlayOutExplosion;
+import net.minecraft.server.v1_8_R3.Vec3D;
 import tobleminer.minefight.Main;
 import tobleminer.minefight.config.container.Killstreak;
 import tobleminer.minefight.config.weapon.WeaponDescriptor;
@@ -47,30 +48,30 @@ import tobleminer.minefight.util.syncderp.InventorySyncCalls;
 
 public class PVPPlayer
 {
-	public final Player thePlayer;
-	private CombatClass combatClass;
-	private boolean spawned = false;
-	private Team team;
-	private final Match match;
-	public int kills;
-	public int deaths;
-	public int killstreak;
-	private double points;
-	private final HashMap<PVPPlayer,Killhelper> killHelpers = new HashMap<PVPPlayer,Killhelper>();
-	public boolean normalDeathBlocked = false;
-	public int timer = 1;
-	private final MapView mv;
-	private final MapInfoRenderer mir;
-	private ItemStack[] inventoryBackup;
-	private ItemStack helmetBackup;
-	private ItemStack bodyarmorBackup;
-	private ItemStack legginsBackup;
-	private ItemStack bootBackup; //hehe
-	public boolean hasMap;
-	public final List<Killstreak> killstreaks = new ArrayList<Killstreak>();
-	private int shotcnt = 0;
-	
-	public PVPPlayer(Player thePlayer,Team team,Match match, MapView mv)
+	public final Player								thePlayer;
+	private CombatClass								combatClass;
+	private boolean									spawned				= false;
+	private Team									team;
+	private final Match								match;
+	public int										kills;
+	public int										deaths;
+	public int										killstreak;
+	private double									points;
+	private final HashMap<PVPPlayer, Killhelper>	killHelpers			= new HashMap<PVPPlayer, Killhelper>();
+	public boolean									normalDeathBlocked	= false;
+	public int										timer				= 1;
+	private final MapView							mv;
+	private final MapInfoRenderer					mir;
+	private ItemStack[]								inventoryBackup;
+	private ItemStack								helmetBackup;
+	private ItemStack								bodyarmorBackup;
+	private ItemStack								legginsBackup;
+	private ItemStack								bootBackup;													// hehe
+	public boolean									hasMap;
+	public final List<Killstreak>					killstreaks			= new ArrayList<Killstreak>();
+	private int										shotcnt				= 0;
+
+	public PVPPlayer(Player thePlayer, Team team, Match match, MapView mv)
 	{
 		this.thePlayer = thePlayer;
 		this.team = team;
@@ -78,29 +79,29 @@ public class PVPPlayer
 		this.mv = mv;
 		this.mv.setScale(Scale.CLOSEST);
 		this.mir = new MapInfoRenderer(match, this);
-		if(mir._20pcooler)
+		if (mir._20pcooler)
 		{
-			for(MapRenderer mr : new ArrayList<MapRenderer>(mv.getRenderers()))
+			for (MapRenderer mr : new ArrayList<MapRenderer>(mv.getRenderers()))
 				mv.removeRenderer(mr);
 		}
 		mv.addRenderer(this.mir);
 	}
-	
+
 	public void addKillhelper(PVPPlayer damager, double d)
 	{
-		if(damager != this && damager.getTeam() != this.getTeam())
+		if (damager != this && damager.getTeam() != this.getTeam())
 		{
 			Killhelper kh = this.killHelpers.get(damager);
-			if(kh == null)
+			if (kh == null)
 			{
 				kh = new Killhelper(damager);
 			}
 			double maxHealth = this.thePlayer.getMaxHealth();
-			kh.addDamage(d/maxHealth);
+			kh.addDamage(d / maxHealth);
 			this.killHelpers.put(damager, kh);
 		}
 	}
-	
+
 	public void storeInventory()
 	{
 		PlayerInventory pi = this.thePlayer.getInventory();
@@ -110,10 +111,10 @@ public class PVPPlayer
 		this.legginsBackup = pi.getChestplate();
 		this.bootBackup = pi.getBoots();
 	}
-	
+
 	public void loadInventory()
 	{
-		if(this.inventoryBackup != null)
+		if (this.inventoryBackup != null)
 		{
 			PlayerInventory pi = this.thePlayer.getInventory();
 			pi.setContents(this.inventoryBackup);
@@ -123,129 +124,136 @@ public class PVPPlayer
 			pi.setBoots(this.bootBackup);
 		}
 	}
-	
+
 	public void setCombatClass(CombatClass cc)
 	{
 		this.combatClass = cc;
 	}
-	
+
 	public CombatClass getCombatClass()
 	{
 		return this.combatClass;
 	}
-		
+
 	public boolean isSpawned()
 	{
 		return spawned;
 	}
-	
+
 	public String getName()
 	{
 		String name = this.thePlayer.getName();
-		if(name.length() > 12)
+		if (name.length() > 12)
 		{
-			name = name.substring(0,9)+"..";
+			name = name.substring(0, 9) + "..";
 		}
-		return this.team.color+name+ChatColor.RESET;
+		return this.team.color + name + ChatColor.RESET;
 	}
-	
+
 	public Player getPlayer()
 	{
 		return thePlayer;
 	}
-	
+
 	public Team getTeam()
 	{
 		return team;
 	}
-	
+
 	public void setTeam(Team t)
 	{
-		if(match.anounceTeamchange(this,team,t))
+		if (match.anounceTeamchange(this, team, t))
 		{
 			this.team = t;
-			this.thePlayer.setDisplayName(this.team.color+this.thePlayer.getName()+ChatColor.RESET);
+			this.thePlayer.setDisplayName(this.team.color + this.thePlayer.getName() + ChatColor.RESET);
 		}
 	}
-	
+
 	public void leaveMatch()
 	{
 		this.mv.removeRenderer(this.mir);
 		this.match.anouncePlayerLeave(this);
-		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("matchLeaveMsg"),points,((double)kills)/((double)(deaths == 0 ? 1 : deaths))));
+		this.thePlayer.sendMessage(ChatColor.DARK_GREEN + String.format(Main.gameEngine.dict.get("matchLeaveMsg"),
+				points, ((double) kills) / ((double) (deaths == 0 ? 1 : deaths))));
 	}
-	
+
 	public void leaveMatch(Location matchLeaveLoc)
 	{
 		this.leaveMatch();
-		if(matchLeaveLoc != null)
+		if (matchLeaveLoc != null)
 		{
 			this.thePlayer.teleport(matchLeaveLoc);
-			this.thePlayer.sendMessage(ChatColor.DARK_GREEN+Main.gameEngine.dict.get("matchTpMsg"));
+			this.thePlayer.sendMessage(ChatColor.DARK_GREEN + Main.gameEngine.dict.get("matchTpMsg"));
 		}
 	}
-	
+
 	public boolean createFakeExplosion(Location loc, float strength, boolean playSound)
 	{
 		try
 		{
-			Packet60Explosion pack = new Packet60Explosion(loc.getX(), loc.getY(), loc.getZ(), strength, new ArrayList<Object>(), Vec3D.a(0d, 0d, 0d));
-			((CraftPlayer)(this.thePlayer)).getHandle().playerConnection.sendPacket(pack);
-			if(playSound)
+			PacketPlayOutExplosion pack = new PacketPlayOutExplosion(loc.getX(), loc.getY(), loc.getZ(), strength,
+					new ArrayList<net.minecraft.server.v1_8_R3.BlockPosition>(), new Vec3D(0d, 0d, 0d));
+			((CraftPlayer) (this.thePlayer)).getHandle().playerConnection.sendPacket(pack);
+			if (playSound)
 			{
 				EffectSyncCalls.playSound(loc, Sound.EXPLODE, 63f, 0.5f);
 			}
 			return true;
 		}
-		catch(Exception ex)
+		catch (Exception ex)
 		{
-			Error err = new Error("Failed sending fake explosion packet!","Fake explosion could not be sent to "+thePlayer.getName()+".","This isn't normal at all, but it won't affect the gameply much.", this.getClass().getName(), ErrorSeverity.WARNING);
+			Error err = new Error("Failed sending fake explosion packet!",
+					"Fake explosion could not be sent to " + thePlayer.getName() + ".",
+					"This isn't normal at all, but it won't affect the gameply much.", this.getClass().getName(),
+					ErrorSeverity.WARNING);
 			ErrorReporter.reportError(err);
 		}
 		return false;
 	}
-	
+
 	public Match getMatch()
 	{
 		return match;
 	}
-	
+
 	public void onKill(PVPPlayer killer)
 	{
 		this.deaths++;
 		this.killstreak = 0;
-		Collection<Killhelper> khelpers = this.killHelpers.values(); 
-		for(Killhelper kh : khelpers)
+		Collection<Killhelper> khelpers = this.killHelpers.values();
+		for (Killhelper kh : khelpers)
 		{
-			if(kh.damager != killer && kh.damager != null)
+			if (kh.damager != killer && kh.damager != null)
 			{
-				kh.damager.killAsist(kh.getDamage()*Main.gameEngine.configuration.getScore(kh.damager.thePlayer.getWorld(),Score.KILL));
+				kh.damager.killAsist(kh.getDamage()
+						* Main.gameEngine.configuration.getScore(kh.damager.thePlayer.getWorld(), Score.KILL));
 			}
 		}
 		this.killHelpers.clear();
 		this.setCombatClass(null);
 		this.match.sh.updatePlayer(this, StatType.DEATHS, StatUpdateType.ADD, new Long(1L));
 	}
-	
+
 	public void killAsist(double d)
 	{
 		this.addPoints(d);
-		this.thePlayer.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("killassist"),d));
+		this.thePlayer.sendMessage(ChatColor.GOLD + String.format(Main.gameEngine.dict.get("killassist"), d));
 	}
-	
+
 	public void killed()
 	{
 		this.kills++;
 		this.killstreak++;
-		double p = Main.gameEngine.configuration.getScore(this.thePlayer.getWorld(),Score.KILL);
+		double p = Main.gameEngine.configuration.getScore(this.thePlayer.getWorld(), Score.KILL);
 		this.addPoints(p);
 		this.match.sh.updatePlayer(this, StatType.KILLS, StatUpdateType.ADD, new Long(1L));
 	}
-	
+
 	public void flagCaptured()
 	{
 		double points = Main.gameEngine.configuration.getScore(this.match.getWorld(), Score.FLAGCAP);
-		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("flagcappoints"),points));
+		this.thePlayer
+				.sendMessage(ChatColor.DARK_GREEN + String.format(Main.gameEngine.dict.get("flagcappoints"), points));
 		this.addPoints(points);
 		this.match.sh.updatePlayer(this, StatType.FLAGCAP, StatUpdateType.ADD, new Long(1L));
 	}
@@ -254,80 +262,91 @@ public class PVPPlayer
 	{
 		this.thePlayer.teleport(loc);
 	}
-	
+
 	public void setSpawned(boolean b)
 	{
 		this.spawned = b;
 	}
-	
+
 	public void doUpdate()
 	{
-		if(this.thePlayer.isBlocking() && this.isSpawned() && this.combatClass != null)
+		if (this.thePlayer.isBlocking() && this.isSpawned() && this.combatClass != null)
 		{
 			PlayerInventory pi = this.thePlayer.getInventory();
 			ItemStack inHand = pi.getItemInHand();
-			if(inHand != null)
+			if (inHand != null)
 			{
 				WeaponIndex wi = this.match.weapons.get(WeaponUseType.BLOCK);
-				if(wi != null)
+				if (wi != null)
 				{
 					WeaponDescriptor wd = wi.get(inHand.getType());
-					if(wd != null)
+					if (wd != null)
 					{
-						if(wd.cadence > 0 && (timer % ((int)Math.round(1200d / (double)wd.cadence))) == 0)
+						if (wd.cadence > 0 && (timer % ((int) Math.round(1200d / (double) wd.cadence))) == 0)
 						{
-							if(wd.ammomat == null || pi.contains(wd.ammomat))
+							if (wd.ammomat == null || pi.contains(wd.ammomat))
 							{
-								if(wd.ammomat != null) InventorySyncCalls.removeItemStack(pi, new ItemStack(wd.ammomat,1));
-								if(wd.firemode == -42 || (wd.firemode > 0 && this.shotcnt < wd.firemode))
+								if (wd.ammomat != null)
+									InventorySyncCalls.removeItemStack(pi, new ItemStack(wd.ammomat, 1));
+								if (wd.firemode == -42 || (wd.firemode > 0 && this.shotcnt < wd.firemode))
 								{
 									this.shotcnt++;
-									if(wd.dmgType == DamageType.PROJECTILEHIT)
+									if (wd.dmgType == DamageType.PROJECTILEHIT)
 									{
-										Block b = this.thePlayer.getTargetBlock(null, 200);
-										if(b != null)
+										Block b = this.thePlayer.getTargetBlock((HashSet<Byte>) null, 200);
+										if (b != null)
 										{
-											Location playerEyeLoc = this.thePlayer.getLocation().add(0d,2.0d,0d); 
+											Location playerEyeLoc = this.thePlayer.getLocation().add(0d, 2.0d, 0d);
 											Vector locHelp = b.getLocation().subtract(playerEyeLoc).toVector();
-											if(locHelp.length() > 0)
+											if (locHelp.length() > 0)
 											{
 												double speed = wd.speed;
 												Vector velocity = locHelp.clone().multiply(speed / locHelp.length());
-												match.createWeaponProjectile(this, playerEyeLoc.clone().add(velocity.clone().multiply(1.5d/velocity.length())), velocity, wd, false);
+												match.createWeaponProjectile(this,
+														playerEyeLoc.clone()
+																.add(velocity.clone()
+																		.multiply(1.5d / velocity.length())),
+														velocity, wd, false);
 											}
 										}
 									}
-									else if(wd.dmgType == DamageType.FLAMETHROWER)
+									else if (wd.dmgType == DamageType.FLAMETHROWER)
 									{
 										HashSet<Byte> trans = new HashSet<Byte>();
-										trans.add((byte)31);
-										trans.add((byte)0);
-										trans.add((byte)20);
-										trans.add((byte)102);
+										trans.add((byte) 31);
+										trans.add((byte) 0);
+										trans.add((byte) 20);
+										trans.add((byte) 102);
 										Block b = this.thePlayer.getTargetBlock(trans, 200);
-										if(b != null)
+										if (b != null)
 										{
-											Location playerEyeLoc = this.thePlayer.getLocation().add(0d,1.0d,0d); 
+											Location playerEyeLoc = this.thePlayer.getLocation().add(0d, 1.0d, 0d);
 											Vector locHelp = b.getLocation().subtract(playerEyeLoc).toVector();
-											Location launchLoc = playerEyeLoc.add(locHelp.multiply(1.5d/locHelp.length()));
+											Location launchLoc = playerEyeLoc
+													.add(locHelp.multiply(1.5d / locHelp.length()));
 											launchLoc.getWorld().playEffect(launchLoc, Effect.MOBSPAWNER_FLAMES, 5);
-											List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(), (int)Math.round(wd.maxDist));
+											List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(
+													this.thePlayer.getLocation(), (int) Math.round(wd.maxDist));
 											PVPPlayer target = null;
-											for(PVPPlayer p : players)
+											for (PVPPlayer p : players)
 											{
-												if(match.canKill(this,p) && p != this)
+												if (match.canKill(this, p) && p != this)
 												{
 													target = p;
 													break;
 												}
 											}
-											if(target != null)
+											if (target != null)
 											{
 												target.normalDeathBlocked = true;
-												target.thePlayer.damage(wd.getDamage(this.thePlayer.getLocation().distance(target.thePlayer.getLocation())) * target.thePlayer.getMaxHealth());
-												if(target.thePlayer.getHealth() <= 0)
+												target.thePlayer.damage(wd
+														.getDamage(this.thePlayer.getLocation()
+																.distance(target.thePlayer.getLocation()))
+														* target.thePlayer.getMaxHealth());
+												if (target.thePlayer.getHealth() <= 0)
 												{
-													this.match.kill(this, target, wd.getName(), target.thePlayer.getHealth() > 0);
+													this.match.kill(this, target, wd.getName(),
+															target.thePlayer.getHealth() > 0);
 												}
 												else
 												{
@@ -336,40 +355,54 @@ public class PVPPlayer
 												target.normalDeathBlocked = false;
 											}
 										}
-										List<Block> potIgniBlocks = this.thePlayer.getLineOfSight(null,(int)Math.round(wd.maxDist));
-										for(Block block : potIgniBlocks)
+										List<Block> potIgniBlocks = this.thePlayer.getLineOfSight((HashSet<Byte>) null,
+												(int) Math.round(wd.maxDist));
+										for (Block block : potIgniBlocks)
 										{
-											if(block.getType().isFlammable() && (!Util.protect.isBlockProtected(block)) && this.match.damageEnviron)
+											if (block.getType().isFlammable() && (!Util.protect.isBlockProtected(block))
+													&& this.match.damageEnviron)
 											{
 												Util.block.ignite(block);
 											}
 										}
 									}
-									else if(wd.dmgType == DamageType.MEDIGUN)
+									else if (wd.dmgType == DamageType.MEDIGUN)
 									{
-										List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(this.thePlayer.getLocation(), (int)Math.round(wd.maxDist));
+										List<PVPPlayer> players = match.getSpawnedPlayersNearLocation(
+												this.thePlayer.getLocation(), (int) Math.round(wd.maxDist));
 										PVPPlayer target = null;
-										for(PVPPlayer p : players)
+										for (PVPPlayer p : players)
 										{
-											if(p.getTeam() == this.getTeam() && p != this && p.thePlayer.getHealth() < p.thePlayer.getMaxHealth())
+											if (p.getTeam() == this.getTeam() && p != this
+													&& p.thePlayer.getHealth() < p.thePlayer.getMaxHealth())
 											{
 												target = p;
 												break;
 											}
 										}
-										if(target != null)
+										if (target != null)
 										{
-											Vector dir = target.thePlayer.getLocation().clone().subtract(this.thePlayer.getLocation().clone()).toVector();
-											int len = (int)Math.round(dir.length());
-											if(len != 0)
+											Vector dir = target.thePlayer.getLocation().clone()
+													.subtract(this.thePlayer.getLocation().clone()).toVector();
+											int len = (int) Math.round(dir.length());
+											if (len != 0)
 											{
-												for(int i=0;i<=len;i++)
+												for (int i = 0; i <= len; i++)
 												{
-													this.thePlayer.getWorld().playEffect(this.thePlayer.getLocation().clone().add(0d,1d,0d).add(dir.clone().multiply(((double)i)/((double)len))),Effect.ENDER_SIGNAL,0);
+													this.thePlayer.getWorld()
+															.playEffect(
+																	this.thePlayer.getLocation().clone().add(0d, 1d, 0d)
+																			.add(dir.clone()
+																					.multiply(((double) i)
+																							/ ((double) len))),
+															Effect.ENDER_SIGNAL, 0);
 												}
 											}
-											double health = target.thePlayer.getHealth() - wd.getDamage(this.thePlayer.getLocation().distance(target.thePlayer.getLocation())) * target.thePlayer.getMaxHealth();
-											if(health > target.thePlayer.getMaxHealth())
+											double health = target.thePlayer.getHealth() - wd
+													.getDamage(this.thePlayer.getLocation()
+															.distance(target.thePlayer.getLocation()))
+													* target.thePlayer.getMaxHealth();
+											if (health > target.thePlayer.getMaxHealth())
 											{
 												health = target.thePlayer.getMaxHealth();
 											}
@@ -382,19 +415,19 @@ public class PVPPlayer
 					}
 				}
 			}
-			timer++;	
+			timer++;
 		}
 		else
 		{
 			shotcnt = 0;
 		}
 	}
-	
+
 	public MapView getMapView()
 	{
 		return this.mv;
 	}
-	
+
 	private void addPoints(double points)
 	{
 		this.points += points;
@@ -403,61 +436,65 @@ public class PVPPlayer
 
 	public void radioDestroyed()
 	{
-		double pDest = Main.gameEngine.configuration.getScore(this.match.getWorld(),Score.RSDEST);
+		double pDest = Main.gameEngine.configuration.getScore(this.match.getWorld(), Score.RSDEST);
 		this.addPoints(pDest);
-		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsdestpoints"),pDest));
+		this.thePlayer
+				.sendMessage(ChatColor.DARK_GREEN + String.format(Main.gameEngine.dict.get("rsdestpoints"), pDest));
 		this.match.sh.updatePlayer(this, StatType.RSDESTROY, StatUpdateType.ADD, new Long(1L));
 	}
-	
+
 	public double getPoints()
 	{
 		return this.points;
 	}
 
-	public void resupplyGiven() 
+	public void resupplyGiven()
 	{
-		double p = Main.gameEngine.configuration.getScore(this.match.getWorld(),Score.RESUPPLY);
+		double p = Main.gameEngine.configuration.getScore(this.match.getWorld(), Score.RESUPPLY);
 		this.addPoints(p);
-		this.thePlayer.sendMessage(ChatColor.GOLD+String.format(Main.gameEngine.dict.get("pointsResupply"), p));
+		this.thePlayer.sendMessage(ChatColor.GOLD + String.format(Main.gameEngine.dict.get("pointsResupply"), p));
 	}
 
 	public void radioArmed()
 	{
-		double pArm = Main.gameEngine.configuration.getScore(this.match.getWorld(),Score.RSARM);
+		double pArm = Main.gameEngine.configuration.getScore(this.match.getWorld(), Score.RSARM);
 		this.addPoints(pArm);
-		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsarmpoints"),pArm));
+		this.thePlayer.sendMessage(ChatColor.DARK_GREEN + String.format(Main.gameEngine.dict.get("rsarmpoints"), pArm));
 		this.match.sh.updatePlayer(this, StatType.RSARM, StatUpdateType.ADD, new Long(1L));
 	}
 
 	public void radioDisarmed()
 	{
-		double pDisarm = Main.gameEngine.configuration.getScore(this.match.getWorld(),Score.RSDISARM);
+		double pDisarm = Main.gameEngine.configuration.getScore(this.match.getWorld(), Score.RSDISARM);
 		this.addPoints(pDisarm);
-		this.thePlayer.sendMessage(ChatColor.DARK_GREEN+String.format(Main.gameEngine.dict.get("rsdisarmpoints"),pDisarm));
+		this.thePlayer
+				.sendMessage(ChatColor.DARK_GREEN + String.format(Main.gameEngine.dict.get("rsdisarmpoints"), pDisarm));
 		this.match.sh.updatePlayer(this, StatType.RSDISARM, StatUpdateType.ADD, new Long(1L));
 	}
 
-	public void addKillstreak(Killstreak ks) 
+	public void addKillstreak(Killstreak ks)
 	{
 		this.killstreaks.add(ks);
-		this.thePlayer.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get("killstreak"));
-		this.thePlayer.sendMessage(ChatColor.GOLD+Main.gameEngine.dict.get(ks.transname));
+		this.thePlayer.sendMessage(ChatColor.GOLD + Main.gameEngine.dict.get("killstreak"));
+		this.thePlayer.sendMessage(ChatColor.GOLD + Main.gameEngine.dict.get(ks.transname));
 		Inventory i = this.thePlayer.getInventory();
-		switch(ks)
+		switch (ks)
 		{
-			case IMS: InventorySyncCalls.addItemStack(i, new ItemStack(Material.REDSTONE)); break;
-			case PLAYERSEEKER: InventorySyncCalls.addItemStack(i, new ItemStack(Material.STICK)); break;
-		}		
+		case IMS:
+			InventorySyncCalls.addItemStack(i, new ItemStack(Material.REDSTONE));
+			break;
+		case PLAYERSEEKER:
+			InventorySyncCalls.addItemStack(i, new ItemStack(Material.STICK));
+			break;
+		}
 	}
-	
+
 	public enum HitZone
 	{
-		HEAD("head"),
-		TORSO("torso"),
-		LEG("leg");
-		
+		HEAD("head"), TORSO("torso"), LEG("leg");
+
 		public final String name;
-		
+
 		private HitZone(String name)
 		{
 			this.name = name;

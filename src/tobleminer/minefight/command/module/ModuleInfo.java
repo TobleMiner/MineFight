@@ -10,10 +10,11 @@ import tobleminer.minefight.command.CommandHelp;
 public class ModuleInfo extends CommandModule
 {
 	@Override
-	public boolean handleCommand(String[] args, CommandSender sender) 
+	public boolean handleCommand(String[] args, CommandSender sender)
 	{
 		PluginDescriptionFile pdf = Main.main.getDescription();
-		sender.sendMessage(String.format("%s v%s Copyright by %s 2014",pdf.getName(),pdf.getVersion(),StringUtils.join(pdf.getAuthors(),",")));
+		sender.sendMessage(String.format("%s v%s Copyright by %s 2014", pdf.getName(), pdf.getVersion(),
+				StringUtils.join(pdf.getAuthors(), ",")));
 		return true;
 	}
 
@@ -26,21 +27,21 @@ public class ModuleInfo extends CommandModule
 	@Override
 	public CommandHelp getHelp(String cmd)
 	{
-		for(CommandHelp help : CommandInfo.values())
-			if(help.getCmd().equalsIgnoreCase(cmd))
+		for (CommandHelp help : CommandInfo.values())
+			if (help.getCmd().equalsIgnoreCase(cmd))
 				return help;
 		return null;
 	}
-	
+
 	@Override
 	public CommandHelp[] getHelp()
 	{
 		return CommandInfo.values();
 	}
-	
+
 	private enum CommandInfo implements CommandHelp
 	{
-		MPVP_INFO_VERSION("info","version",0,0,"cmdDescrVersion","/mpvp info version", "");
+		MPVP_INFO_VERSION("info", "version", 0, 0, "cmdDescrVersion", "/mpvp info version", "");
 
 		public final String module;
 		public final String cmd;
@@ -49,8 +50,8 @@ public class ModuleInfo extends CommandModule
 		private final String descr;
 		public final String perm;
 		public final String syntax;
-		
-		CommandInfo(String module, String cmd, int argnumMin,int argnumMax, String descr, String syntax, String perm)
+
+		CommandInfo(String module, String cmd, int argnumMin, int argnumMax, String descr, String syntax, String perm)
 		{
 			this.module = module;
 			this.cmd = cmd;
@@ -66,7 +67,7 @@ public class ModuleInfo extends CommandModule
 		{
 			return cmd;
 		}
-		
+
 		@Override
 		public String getModule()
 		{
@@ -74,7 +75,7 @@ public class ModuleInfo extends CommandModule
 		}
 
 		@Override
-		public int argMin() 
+		public int argMin()
 		{
 			return argnumMin;
 		}
@@ -86,7 +87,7 @@ public class ModuleInfo extends CommandModule
 		}
 
 		@Override
-		public String getDescr() 
+		public String getDescr()
 		{
 			return Main.gameEngine.dict.get(descr);
 		}

@@ -24,41 +24,44 @@ import tobleminer.minefight.util.Util;
 
 public class Main extends JavaPlugin
 {
-	private final EventListener eventListener = new EventListener(this);
-	public static Main main;
-	public static PermissionManager pm;
-	public static ProtocolLibSafeLoader plsl;
-	public static Logger logger;
-	public static Util util;
-	public static CommandHandler cmdhandler;
-	
+	private final EventListener			eventListener	= new EventListener(this);
+	public static Main					main;
+	public static PermissionManager		pm;
+	public static ProtocolLibSafeLoader	plsl;
+	public static Logger				logger;
+	public static Util					util;
+	public static CommandHandler		cmdhandler;
+
 	private final GlobalTimer gtimer = new GlobalTimer();
-	
+
 	public Main()
 	{
 		Main.main = this;
 	}
-	
+
 	public static GameEngine gameEngine;
-	
+
 	@Override
 	public void onEnable()
 	{
 		init();
-		logger.log(Level.INFO,gameEngine.dict.get("onEnable"));
+		logger.log(Level.INFO, gameEngine.dict.get("onEnable"));
 	}
-	
+
 	public void init()
 	{
 		Main.logger = new Logger(this);
 		Main.util = new Util();
 		Main.gameEngine = new GameEngine(this);
 		Main.gameEngine.init();
-		logger.log(Level.INFO,gameEngine.dict.get("preEnable"));
+		logger.log(Level.INFO, gameEngine.dict.get("preEnable"));
 		Bukkit.getPluginManager().registerEvents(eventListener, this);
-		if(!(new LicenseHandler().init(this)))
+		if (!(new LicenseHandler().init(this)))
 		{
-			Error err = new Error("License check failed!","The plugins license could not be copied into the plugin's folder!", "The plugin won't start until the license is copied.", this.getClass().getName(), ErrorSeverity.DOUBLERAINBOOM);
+			Error err = new Error("License check failed!",
+					"The plugins license could not be copied into the plugin's folder!",
+					"The plugin won't start until the license is copied.", this.getClass().getName(),
+					ErrorSeverity.DOUBLERAINBOOM);
 			ErrorReporter.reportError(err);
 			return;
 		}
@@ -67,22 +70,22 @@ public class Main extends JavaPlugin
 		Main.cmdhandler = new CommandHandler(this);
 		this.gtimer.runTaskTimer(this, 1, 1);
 	}
-	
+
 	@Override
 	public void onDisable()
 	{
 		this.gtimer.cancel();
 		gameEngine.isExiting = true;
-		logger.log(Level.INFO,gameEngine.dict.get("onDisable"));
+		logger.log(Level.INFO, gameEngine.dict.get("onDisable"));
 		Main.gameEngine.endAllMatches();
 	}
-		
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String args[])
 	{
 		return cmdhandler.handleCommand(args, sender);
 	}
-	
+
 	@Override
 	public List<Class<?>> getDatabaseClasses()
 	{
@@ -90,13 +93,13 @@ public class Main extends JavaPlugin
 		classes.add(PlayerStatBean.class);
 		return classes;
 	}
-	
+
 	@Override
 	public void installDDL()
 	{
 		super.installDDL();
 	}
-	
+
 	public File getPluginDir()
 	{
 		return this.getDataFolder();

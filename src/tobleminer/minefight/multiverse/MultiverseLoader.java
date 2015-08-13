@@ -8,7 +8,8 @@ public class MultiverseLoader
 	public MultiverseHandler getHandler()
 	{
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Core");
-		if(p == null) return null;
+		if (p == null)
+			return null;
 		return new MultiverseHandler(p);
 	}
 }

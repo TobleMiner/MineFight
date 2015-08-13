@@ -4,7 +4,7 @@ import java.io.File;
 
 import tobleminer.minefight.Main;
 
-public class MineFightLangAPI 
+public class MineFightLangAPI
 {
 	public static MineFightLangAPI instance;
 
@@ -12,7 +12,7 @@ public class MineFightLangAPI
 	{
 		instance = this;
 	}
-		
+
 	public void addTranslations(File langFile)
 	{
 		Main.gameEngine.dict.loadLanguageFileExt(langFile);

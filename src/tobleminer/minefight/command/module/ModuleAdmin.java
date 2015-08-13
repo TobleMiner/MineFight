@@ -11,29 +11,29 @@ import tobleminer.minefight.permission.Permission;
 public class ModuleAdmin extends CommandModule
 {
 	private final Main mane;
-	
+
 	public ModuleAdmin(Main mane)
 	{
 		this.mane = mane;
 	}
-	
+
 	public boolean handleCommand(String[] args, CommandSender sender)
 	{
-		if(args.length >= 1)
+		if (args.length >= 1)
 		{
-			if(args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl"))
+			if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl"))
 			{
-				if(sender instanceof Player)
+				if (sender instanceof Player)
 				{
-					Player p = (Player)sender;
-					if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_RELOAD))
+					Player p = (Player) sender;
+					if (!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_RELOAD))
 					{
 						p.sendMessage(this.noPermMsg);
 						return true;
 					}
 				}
 				Main.gameEngine.reload(this.mane);
-				sender.sendMessage(ChatColor.DARK_GREEN + Main.gameEngine.dict.get("configrl"));				
+				sender.sendMessage(ChatColor.DARK_GREEN + Main.gameEngine.dict.get("configrl"));
 				return true;
 			}
 		}
@@ -49,18 +49,18 @@ public class ModuleAdmin extends CommandModule
 	@Override
 	public CommandHelp getHelp(String cmd)
 	{
-		for(CommandHelp help : CommandAdmin.values())
-			if(help.getCmd().equalsIgnoreCase(cmd))
+		for (CommandHelp help : CommandAdmin.values())
+			if (help.getCmd().equalsIgnoreCase(cmd))
 				return help;
 		return null;
 	}
-	
+
 	@Override
 	public CommandHelp[] getHelp()
 	{
 		return CommandAdmin.values();
 	}
-	
+
 	private enum CommandAdmin implements CommandHelp
 	{
 		RELOAD("admin", "reload", 0, 0, "cmdDescrAdminReload", "/mpvp admin reload", Permission.MPVP_RELOAD.toString());
@@ -72,8 +72,8 @@ public class ModuleAdmin extends CommandModule
 		private final String descr;
 		public final String perm;
 		public final String syntax;
-		
-		CommandAdmin(String module, String cmd, int argnumMin,int argnumMax, String descr, String syntax, String perm)
+
+		CommandAdmin(String module, String cmd, int argnumMin, int argnumMax, String descr, String syntax, String perm)
 		{
 			this.module = module;
 			this.cmd = cmd;
@@ -89,7 +89,7 @@ public class ModuleAdmin extends CommandModule
 		{
 			return cmd;
 		}
-		
+
 		@Override
 		public String getModule()
 		{
@@ -97,7 +97,7 @@ public class ModuleAdmin extends CommandModule
 		}
 
 		@Override
-		public int argMin() 
+		public int argMin()
 		{
 			return argnumMin;
 		}
@@ -109,7 +109,7 @@ public class ModuleAdmin extends CommandModule
 		}
 
 		@Override
-		public String getDescr() 
+		public String getDescr()
 		{
 			return Main.gameEngine.dict.get(descr);
 		}

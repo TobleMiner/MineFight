@@ -10,7 +10,7 @@ public class PermissionInterfaceFallbackMode extends PermissionInterface
 	@Override
 	public boolean hasPlayerPermissionTo(Player p, String perm)
 	{
-		if(p != null)
+		if (p != null)
 		{
 			return p.isOp();
 		}

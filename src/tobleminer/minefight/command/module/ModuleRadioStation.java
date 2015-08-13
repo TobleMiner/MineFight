@@ -1,5 +1,7 @@
 package tobleminer.minefight.command.module;
 
+import java.util.HashSet;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,76 +20,79 @@ public class ModuleRadioStation extends CommandModule
 	public boolean handleCommand(String[] args, CommandSender sender)
 	{
 		Player p = null;
-		if(sender instanceof Player)
-			p = (Player)sender;
-		if(args.length >= 1)
+		if (sender instanceof Player)
+			p = (Player) sender;
+		if (args.length >= 1)
 		{
-			if(p == null)
+			if (p == null)
 			{
 				sender.sendMessage(playerOnly);
 				return true;
 			}
-			if(args[0].equalsIgnoreCase("add"))
+			if (args[0].equalsIgnoreCase("add"))
 			{
-				if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_RS_ADD))
+				if (!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_RS_ADD))
 				{
 					sender.sendMessage(this.noPermMsg);
 					return true;
 				}
-				Block tb = p.getTargetBlock(null,10);
-				if(tb != null && (tb.getType().equals(Material.WALL_SIGN)))
+				Block tb = p.getTargetBlock((HashSet<Byte>) null, 10);
+				if (tb != null && (tb.getType().equals(Material.WALL_SIGN)))
 				{
 					String name = "";
 					boolean sky = true;
-					if(args.length >= 2)
+					if (args.length >= 2)
 					{
 						name = args[1];
-						if(args.length >= 3)
+						if (args.length >= 3)
 						{
 							try
 							{
 								sky = Boolean.parseBoolean(args[2]);
 							}
-							catch(Exception ex) { };
+							catch (Exception ex)
+							{};
 						}
 					}
-					Sign sign = (Sign)tb.getState();
-					RadioStation.buildRadioStation(sign,RadioStation.getFacing(sign));
+					Sign sign = (Sign) tb.getState();
+					RadioStation.buildRadioStation(sign, RadioStation.getFacing(sign));
 					Main.gameEngine.configuration.addRadioStation(new RadioStationContainer(sign, name, sky));
-					Main.gameEngine.configuration.addNewProtectedRegion(sign.getLocation().clone().subtract(11d, 11d, 11d), sign.getLocation().clone().add(11d, 11d, 11d));
-					sender.sendMessage(ChatColor.DARK_GREEN+Main.gameEngine.dict.get("addRs"));
+					Main.gameEngine.configuration.addNewProtectedRegion(
+							sign.getLocation().clone().subtract(11d, 11d, 11d),
+							sign.getLocation().clone().add(11d, 11d, 11d));
+					sender.sendMessage(ChatColor.DARK_GREEN + Main.gameEngine.dict.get("addRs"));
 				}
 				else
 				{
-					sender.sendMessage(ChatColor.DARK_RED+Main.gameEngine.dict.get("mustPointOnSign"));
+					sender.sendMessage(ChatColor.DARK_RED + Main.gameEngine.dict.get("mustPointOnSign"));
 				}
-				return true;						
+				return true;
 			}
-			
-			if(args[0].equalsIgnoreCase("remove"))
+
+			if (args[0].equalsIgnoreCase("remove"))
 			{
-				if(!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_RS_DEL))
+				if (!Main.cmdhandler.pm.hasPlayerPermission(p, Permission.MPVP_RS_DEL))
 				{
 					sender.sendMessage(this.noPermMsg);
 					return true;
 				}
-				Block tb = p.getTargetBlock(null,10);
-				if(tb != null && (tb.getType().equals(Material.WALL_SIGN)))
+				Block tb = p.getTargetBlock((HashSet<Byte>) null, 10);
+				if (tb != null && (tb.getType().equals(Material.WALL_SIGN)))
 				{
-					Sign sign = (Sign)tb.getState();
+					Sign sign = (Sign) tb.getState();
 					Main.gameEngine.configuration.removeRadioStation(sign);
-					sender.sendMessage(ChatColor.DARK_GREEN+Main.gameEngine.dict.get("rmRs"));
+					sender.sendMessage(ChatColor.DARK_GREEN + Main.gameEngine.dict.get("rmRs"));
 				}
 				else
 				{
-					sender.sendMessage(ChatColor.DARK_RED+Main.gameEngine.dict.get("mustPointOnSign"));
+					sender.sendMessage(ChatColor.DARK_RED + Main.gameEngine.dict.get("mustPointOnSign"));
 				}
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	@Override
 	public String getName()
 	{
@@ -97,22 +102,23 @@ public class ModuleRadioStation extends CommandModule
 	@Override
 	public CommandHelp getHelp(String cmd)
 	{
-		for(CommandHelp help : CommandRadiostation.values())
-			if(help.getCmd().equalsIgnoreCase(cmd))
+		for (CommandHelp help : CommandRadiostation.values())
+			if (help.getCmd().equalsIgnoreCase(cmd))
 				return help;
 		return null;
 	}
-	
+
 	@Override
 	public CommandHelp[] getHelp()
 	{
 		return CommandRadiostation.values();
 	}
-	
+
 	private enum CommandRadiostation implements CommandHelp
 	{
-		MPVP_RADIOSTATION_ADD("rs","add",0,0,"cmdDescrRsAdd","/mpvp rs add",Permission.MPVP_RS_ADD.toString()),
-		MPVP_RADIOSTATION_DEL("rs","remove",0,0,"cmdDescrRsDel","/mpvp rs remove",Permission.MPVP_RS_DEL.toString());
+		MPVP_RADIOSTATION_ADD("rs", "add", 0, 0, "cmdDescrRsAdd", "/mpvp rs add",
+				Permission.MPVP_RS_ADD.toString()), MPVP_RADIOSTATION_DEL("rs", "remove", 0, 0, "cmdDescrRsDel",
+						"/mpvp rs remove", Permission.MPVP_RS_DEL.toString());
 
 		public final String module;
 		public final String cmd;
@@ -121,8 +127,9 @@ public class ModuleRadioStation extends CommandModule
 		private final String descr;
 		public final String perm;
 		public final String syntax;
-		
-		CommandRadiostation(String module, String cmd, int argnumMin,int argnumMax, String descr, String syntax, String perm)
+
+		CommandRadiostation(String module, String cmd, int argnumMin, int argnumMax, String descr, String syntax,
+				String perm)
 		{
 			this.module = module;
 			this.cmd = cmd;
@@ -138,7 +145,7 @@ public class ModuleRadioStation extends CommandModule
 		{
 			return cmd;
 		}
-		
+
 		@Override
 		public String getModule()
 		{
@@ -146,7 +153,7 @@ public class ModuleRadioStation extends CommandModule
 		}
 
 		@Override
-		public int argMin() 
+		public int argMin()
 		{
 			return argnumMin;
 		}
@@ -158,7 +165,7 @@ public class ModuleRadioStation extends CommandModule
 		}
 
 		@Override
-		public String getDescr() 
+		public String getDescr()
 		{
 			return Main.gameEngine.dict.get(descr);
 		}

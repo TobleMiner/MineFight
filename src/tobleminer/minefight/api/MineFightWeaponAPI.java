@@ -8,26 +8,27 @@ import tobleminer.minefight.engine.match.Match;
 import tobleminer.minefight.engine.player.PVPPlayer;
 import tobleminer.minefight.weapon.Weapon;
 
-public class MineFightWeaponAPI 
+public class MineFightWeaponAPI
 {
 	public static MineFightWeaponAPI instance;
-	
+
 	public MineFightWeaponAPI()
 	{
 		MineFightWeaponAPI.instance = this;
 	}
-			
+
 	public boolean registerWeapon(Weapon weapon, World w)
 	{
-		Debugger.writeDebugOut(String.format("Registering '%s' World: '%s'", weapon.getClass().getSimpleName(), w.getName()));
+		Debugger.writeDebugOut(
+				String.format("Registering '%s' World: '%s'", weapon.getClass().getSimpleName(), w.getName()));
 		Match m = Main.gameEngine.getMatch(w);
-		if(m != null)
+		if (m != null)
 		{
-			if(weapon instanceof MineFightEventListener)
+			if (weapon instanceof MineFightEventListener)
 			{
-				MineFightEventListener listener = (MineFightEventListener)weapon;
+				MineFightEventListener listener = (MineFightEventListener) weapon;
 				listener.matchCreated(m);
-				for(PVPPlayer p : m.getPlayers())
+				for (PVPPlayer p : m.getPlayers())
 				{
 					listener.onJoin(m, p);
 				}
@@ -35,17 +36,18 @@ public class MineFightWeaponAPI
 		}
 		return Main.gameEngine.weaponRegistry.registerWeapon(weapon, w);
 	}
-	
+
 	public boolean unregisterWeapon(Weapon weapon, World w)
 	{
-		Debugger.writeDebugOut(String.format("Unregistering '%s' World: '%s'", weapon.getClass().getSimpleName(), w.getName()));
+		Debugger.writeDebugOut(
+				String.format("Unregistering '%s' World: '%s'", weapon.getClass().getSimpleName(), w.getName()));
 		Match m = Main.gameEngine.getMatch(w);
-		if(m != null)
+		if (m != null)
 		{
-			if(weapon instanceof MineFightEventListener)
+			if (weapon instanceof MineFightEventListener)
 			{
-				MineFightEventListener listener = (MineFightEventListener)weapon;
-				for(PVPPlayer p : m.getPlayers())
+				MineFightEventListener listener = (MineFightEventListener) weapon;
+				for (PVPPlayer p : m.getPlayers())
 				{
 					listener.onLeave(m, p);
 				}
@@ -53,5 +55,5 @@ public class MineFightWeaponAPI
 			}
 		}
 		return Main.gameEngine.weaponRegistry.unregisterWeapon(weapon, w);
-	}		
+	}
 }

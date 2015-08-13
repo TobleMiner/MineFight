@@ -11,29 +11,31 @@ import tobleminer.minefight.error.Error;
 import tobleminer.minefight.error.ErrorReporter;
 import tobleminer.minefight.error.ErrorSeverity;
 
-public class InventorySyncCalls 
+public class InventorySyncCalls
 {
 	public static void removeItemStack(final Inventory i, final ItemStack is)
 	{
-		if(Main.gameEngine.isExiting)
+		if (Main.gameEngine.isExiting)
 		{
 			try
 			{
 				i.removeItem(is);
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				try
 				{
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					ex.printStackTrace(pw);
-					Error err = new Error("Exception while exiting", sw.toString(), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EntitySyncCalls.class.getName(), ErrorSeverity.INFO);
+					Error err = new Error("Exception while exiting", sw.toString(),
+							"This problem exists due to a ugly botch and the related code is pending a rewrite.",
+							EntitySyncCalls.class.getName(), ErrorSeverity.INFO);
 					ErrorReporter.reportError(err);
 					pw.close();
 					sw.close();
 				}
-				catch(Exception exint)
+				catch (Exception exint)
 				{
 					exint.printStackTrace();
 				}
@@ -41,7 +43,7 @@ public class InventorySyncCalls
 			return;
 		}
 		Main.main.getServer().getScheduler().runTask(Main.main, new Runnable()
-		{		
+		{
 			public void run()
 			{
 				i.removeItem(is);
@@ -51,25 +53,27 @@ public class InventorySyncCalls
 
 	public static void addItemStack(final Inventory i, final ItemStack is)
 	{
-		if(Main.gameEngine.isExiting)
+		if (Main.gameEngine.isExiting)
 		{
 			try
 			{
 				i.addItem(is);
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				try
 				{
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					ex.printStackTrace(pw);
-					Error err = new Error("Exception while exiting", sw.toString(), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EntitySyncCalls.class.getName(), ErrorSeverity.INFO);
+					Error err = new Error("Exception while exiting", sw.toString(),
+							"This problem exists due to a ugly botch and the related code is pending a rewrite.",
+							EntitySyncCalls.class.getName(), ErrorSeverity.INFO);
 					ErrorReporter.reportError(err);
 					pw.close();
 					sw.close();
 				}
-				catch(Exception exint)
+				catch (Exception exint)
 				{
 					exint.printStackTrace();
 				}
@@ -77,7 +81,7 @@ public class InventorySyncCalls
 			return;
 		}
 		Main.main.getServer().getScheduler().runTask(Main.main, new Runnable()
-		{		
+		{
 			public void run()
 			{
 				i.addItem(is);
@@ -87,25 +91,27 @@ public class InventorySyncCalls
 
 	public static void clear(final Inventory i)
 	{
-		if(Main.gameEngine.isExiting)
+		if (Main.gameEngine.isExiting)
 		{
 			try
 			{
 				i.clear();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				try
 				{
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					ex.printStackTrace(pw);
-					Error err = new Error("Exception while exiting", sw.toString(), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EntitySyncCalls.class.getName(), ErrorSeverity.INFO);
+					Error err = new Error("Exception while exiting", sw.toString(),
+							"This problem exists due to a ugly botch and the related code is pending a rewrite.",
+							EntitySyncCalls.class.getName(), ErrorSeverity.INFO);
 					ErrorReporter.reportError(err);
 					pw.close();
 					sw.close();
 				}
-				catch(Exception exint)
+				catch (Exception exint)
 				{
 					exint.printStackTrace();
 				}
@@ -113,7 +119,7 @@ public class InventorySyncCalls
 			return;
 		}
 		Main.main.getServer().getScheduler().runTask(Main.main, new Runnable()
-		{		
+		{
 			public void run()
 			{
 				i.clear();

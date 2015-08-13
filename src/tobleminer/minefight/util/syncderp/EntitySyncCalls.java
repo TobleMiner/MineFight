@@ -10,29 +10,31 @@ import tobleminer.minefight.error.Error;
 import tobleminer.minefight.error.ErrorReporter;
 import tobleminer.minefight.error.ErrorSeverity;
 
-public class EntitySyncCalls 
+public class EntitySyncCalls
 {
 	public static void removeEntity(final Entity ent)
 	{
-		if(Main.gameEngine.isExiting)
+		if (Main.gameEngine.isExiting)
 		{
 			try
 			{
 				ent.remove();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				try
 				{
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					ex.printStackTrace(pw);
-					Error err = new Error("Exception while exiting", sw.toString(), "This problem exists due to a ugly botch and the related code is pending a rewrite.", EntitySyncCalls.class.getName(), ErrorSeverity.INFO);
+					Error err = new Error("Exception while exiting", sw.toString(),
+							"This problem exists due to a ugly botch and the related code is pending a rewrite.",
+							EntitySyncCalls.class.getName(), ErrorSeverity.INFO);
 					ErrorReporter.reportError(err);
 					pw.close();
 					sw.close();
 				}
-				catch(Exception exint)
+				catch (Exception exint)
 				{
 					exint.printStackTrace();
 				}
@@ -40,7 +42,7 @@ public class EntitySyncCalls
 			return;
 		}
 		Main.main.getServer().getScheduler().runTask(Main.main, new Runnable()
-		{		
+		{
 			public void run()
 			{
 				ent.remove();

@@ -9,17 +9,20 @@ import tobleminer.minefight.error.ErrorSeverity;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiversePlugin;
 
-public class MultiverseHandler 
+public class MultiverseHandler
 {
 	private final MultiverseCore mc;
-	
-	public MultiverseHandler(Plugin p) 
+
+	public MultiverseHandler(Plugin p)
 	{
-		if(!(p instanceof MultiversePlugin))
+		if (!(p instanceof MultiversePlugin))
 		{
-			Error err = new Error("Type of Multiverse isn't MultiversePlugin", "Something about your Multiverse seems to be wrong.", "Make sure you have the latest version of Multiverse installed!", this.getClass().getName(), ErrorSeverity.WARNING);
+			Error err = new Error("Type of Multiverse isn't MultiversePlugin",
+					"Something about your Multiverse seems to be wrong.",
+					"Make sure you have the latest version of Multiverse installed!", this.getClass().getName(),
+					ErrorSeverity.WARNING);
 			ErrorReporter.reportError(err);
 		}
-		this.mc = ((MultiversePlugin)p).getCore();
+		this.mc = ((MultiversePlugin) p).getCore();
 	}
 }

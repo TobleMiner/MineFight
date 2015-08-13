@@ -6,7 +6,7 @@ import org.bukkit.World;
 
 import tobleminer.minefight.Main;
 
-public class MineFightWorldAPI 
+public class MineFightWorldAPI
 {
 	public static MineFightWorldAPI instance;
 

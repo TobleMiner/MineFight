@@ -5,9 +5,9 @@ import tobleminer.minefight.util.protection.ProtectionUtil;
 
 public class Util
 {
-	public static BlockUtil block;
-	public static ProtectionUtil protect;
-	
+	public static BlockUtil			block;
+	public static ProtectionUtil	protect;
+
 	public Util()
 	{
 		Util.block = new BlockUtil();

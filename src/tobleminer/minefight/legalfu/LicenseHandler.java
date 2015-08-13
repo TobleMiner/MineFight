@@ -17,17 +17,17 @@ public class LicenseHandler
 	{
 		try
 		{
-			File license = new File(mane.getPluginDir(),"LICENSE");
-			if(license.exists())
+			File license = new File(mane.getPluginDir(), "LICENSE");
+			if (license.exists())
 			{
 				InputStream is = this.getClass().getResourceAsStream("LICENSE");
-				BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF8"));
+				BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF8"));
 				String licenseGood = StreamUtil.getDataAsUTF8(br);
 				String licenseProbe = FileUtil.getAllTextUTF8(license);
 				br.close();
-				if(!HashUtil.hashMatchStringUTF8(licenseGood, licenseProbe))
+				if (!HashUtil.hashMatchStringUTF8(licenseGood, licenseProbe))
 				{
-					Main.logger.log(Level.INFO,"LICENSE checksum missmatch. Replacing LICENSE file.");
+					Main.logger.log(Level.INFO, "LICENSE checksum missmatch. Replacing LICENSE file.");
 					license.delete();
 				}
 				else
@@ -35,7 +35,7 @@ public class LicenseHandler
 					return true;
 				}
 			}
-			if(!license.exists())
+			if (!license.exists())
 			{
 				try
 				{
@@ -44,12 +44,13 @@ public class LicenseHandler
 					is.close();
 					return true;
 				}
-				catch(Exception ex){}
+				catch (Exception ex)
+				{}
 				return false;
 			}
 			return false;
 		}
-		catch(Exception ex)
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
